@@ -24,6 +24,7 @@ func (c *BaseController) Echo(msg ...interface{}) {
 	for _, v := range msg {
 		out += fmt.Sprintf("%v", v)
 	}
+
 	c.Ctx.WriteString(out)
 }
 
@@ -41,6 +42,7 @@ func (c *BaseController) EchoJsonOk(msg ...interface{}) {
 	if msg == nil {
 		msg = []interface{}{"ok"}
 	}
+
 	c.Ctx.Output.Header("Content-Type", "application/json; charset=utf-8")
 	c.Ctx.WriteString(JsonEncode(P{"code": 200, "msg": msg[0]}))
 }
@@ -52,6 +54,7 @@ func (c *BaseController) EchoJsonErr(msg ...interface{}) {
 			out = JoinStr(out, v)
 		}
 	}
+
 	c.Ctx.Output.Header("Content-Type", "application/json; charset=utf-8")
 	c.Ctx.WriteString(JsonEncode(P{"code": GENERAL_ERR, "msg": out}))
 }
@@ -69,6 +72,7 @@ func (c *BaseController) FormToP(keys ...string) (p P) {
 			}
 		}
 	}
+
 	r := c.Ctx.Request
 	r.ParseForm()
 	for k, v := range r.Form {
@@ -80,7 +84,9 @@ func (c *BaseController) FormToP(keys ...string) (p P) {
 			setKv(p, k, v)
 		}
 	}
+
 	delete(p, "auth")
+
 	return
 }
 
@@ -102,16 +108,19 @@ func (c *BaseController) PageParam() (start int, rows int) {
 	page, _ := c.GetInt("page", 1)
 	rows, _ = c.GetInt("rows", 10)
 	start = (page - 1) * rows
+
 	return
 }
 
 func (c *BaseController) GetOid(str string) (oid bson.ObjectId) {
 	oid = ToOid(c.GetString(str))
+
 	return
 }
 
 func (c *BaseController) Hostname() string {
 	hostname := ToString(c.Ctx.Request.Header.Get("Hostname"), "localhost:8080")
+
 	return hostname
 	//return c.Ctx.Request.Host
 }
@@ -155,6 +164,7 @@ func (c *BaseController) HeadToP() (p P) {
 		}
 		Debug("HeadToP", p)
 	}
+
 	return
 }
 
@@ -167,6 +177,7 @@ func (c *BaseController) HeadHref(str string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -175,10 +186,12 @@ func (c *BaseController) GetAuthUser() P {
 	if auth == "" {
 		auth = c.Ctx.GetCookie("auth")
 	}
+
 	user := P{}
 	if !IsEmpty(auth) {
 		user = *GetUserByAuth(auth)
 	}
+
 	if user["_id"] == nil {
 		return nil
 	} else {
@@ -188,6 +201,7 @@ func (c *BaseController) GetAuthUser() P {
 
 func GetUserByEmail(email string) *P {
 	user := D(User).Find(P{"email": email}).One()
+
 	return user
 }
 

@@ -18,8 +18,6 @@ const (
 	MODE_TEST string = "TEST"
 	MODE_EE   string = "EE"
 
-	Cname string = "job"
-
 	// Collection
 	BoardGroup string = "boardgroup"
 	Corp       string = "corp"
