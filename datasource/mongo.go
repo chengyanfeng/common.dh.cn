@@ -1,12 +1,14 @@
 package datasource
 
 import (
-	. "datahunter.cn/def"
-	. "datahunter.cn/util"
+	"time"
+
 	"github.com/orcaman/concurrent-map"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"time"
+
+	. "common.dh.cn/def"
+	. "common.dh.cn/util"
 )
 
 var sessionMap = cmap.New()
@@ -385,8 +387,8 @@ func (m *MongoModel) Sql(sql string) (r string, err error) {
 	return
 }
 
-func (this *MongoModel) Import(tblname string, f func([]P), page ...int) (e error) {
-	pos := this.loadPos(tblname)
+func (c *MongoModel) Import(tblname string, f func([]P), page ...int) (e error) {
+	pos := c.loadPos(tblname)
 	data := []P{}
 	if IsEmpty(pos) {
 		tmp := *D(tblname).Find(P{}).Field("_id").Sort("_id").One()
@@ -407,30 +409,30 @@ func (this *MongoModel) Import(tblname string, f func([]P), page ...int) (e erro
 		if len(tmp) > 0 {
 			lastRow := tmp[len(data)-1]
 			pos = ToString(lastRow["_id"])
-			this.savePos(tblname, pos)
+			c.savePos(tblname, pos)
 		}
 	}
 	return
 }
 
-func (this *MongoModel) loadPos(name string) (r string) {
-	p := *D(DbPos).Find(P{"key": this.getStoreKey(name)}).One()
+func (c *MongoModel) loadPos(name string) (r string) {
+	p := *D(DbPos).Find(P{"key": c.getStoreKey(name)}).One()
 	if len(p) > 0 {
 		r = ToString(p["pos"])
 	}
 	return
 }
 
-func (this *MongoModel) savePos(name string, pos string) {
-	D(DbPos).Upsert(P{"key": this.getStoreKey(name)}, P{"key": this.getStoreKey(name), "pos": pos})
+func (c *MongoModel) savePos(name string, pos string) {
+	D(DbPos).Upsert(P{"key": c.getStoreKey(name)}, P{"key": c.getStoreKey(name), "pos": pos})
 }
 
-func (this *MongoModel) ClearPos(name string) {
-	D(DbPos).Remove(P{"key": this.getStoreKey(name)})
+func (c *MongoModel) ClearPos(name string) {
+	D(DbPos).Remove(P{"key": c.getStoreKey(name)})
 }
 
-func (this *MongoModel) getStoreKey(name string) string {
-	return Md5(this.Cfg, name)
+func (c *MongoModel) getStoreKey(name string) string {
+	return Md5(c.Cfg, name)
 }
 
 func MgoLike(v string) (result interface{}) {

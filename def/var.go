@@ -6,6 +6,8 @@ import (
 	"github.com/nanobox-io/golang-scribble"
 	"github.com/orcaman/concurrent-map"
 	"gopkg.in/robfig/cron.v2"
+
+	. "common.dh.cn/util"
 )
 
 var (
@@ -17,6 +19,8 @@ var (
 
 	Jdbc_proxy_url    string = "http://jdbc.datahunter.cn/sql"
 	Fitting_proxy_url string = "http://jdbc.datahunter.cn/fitting"
+
+	EE_CFG P = P{}
 
 	Cron *cron.Cron
 	Cmap cmap.ConcurrentMap

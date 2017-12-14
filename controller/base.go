@@ -8,6 +8,7 @@ import (
 	"github.com/astaxie/beego"
 	"gopkg.in/mgo.v2/bson"
 
+	. "common.dh.cn/datasource"
 	. "common.dh.cn/def"
 	. "common.dh.cn/util"
 )
@@ -167,4 +168,29 @@ func (c *BaseController) HeadHref(str string) bool {
 		}
 	}
 	return false
+}
+
+func (c *BaseController) GetAuthUser() P {
+	auth := c.GetString("auth")
+	if auth == "" {
+		auth = c.Ctx.GetCookie("auth")
+	}
+	user := P{}
+	if !IsEmpty(auth) {
+		user = *GetUserByAuth(auth)
+	}
+	if user["_id"] == nil {
+		return nil
+	} else {
+		return user
+	}
+}
+
+func GetUserByEmail(email string) *P {
+	user := D(User).Find(P{"email": email}).One()
+	return user
+}
+
+func GetUserByAuth(auth string) *P {
+	return D(User).Find(P{"auth": auth}).Cache().One()
 }

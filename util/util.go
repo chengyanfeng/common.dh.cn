@@ -36,11 +36,12 @@ import (
 	"time"
 
 	"code.google.com/p/mahonia"
-	. "datahunter.cn/def"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/cache"
 	"github.com/clbanning/mxj"
 	"gopkg.in/mgo.v2/bson"
+
+	. "common.dh.cn/def"
 )
 
 var localCache cache.Cache
