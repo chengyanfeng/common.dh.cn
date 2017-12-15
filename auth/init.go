@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	. "common.dh.cn/util"
+	. "common.dh.cn/utils"
 )
 
 func Init() {

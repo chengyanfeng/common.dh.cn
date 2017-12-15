@@ -1,13 +1,13 @@
-package util
+package utils
 
 import (
-	"fmt"
-	"net/http"
-	"io/ioutil"
-	"crypto/sha1"
-	"sort"
-	"encoding/json"
 	"bytes"
+	"crypto/sha1"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"sort"
 )
 
 var UC_CONFIG map[string]string = map[string]string{

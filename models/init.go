@@ -1,11 +1,11 @@
-package datasource
+package models
 
 import (
 	"os"
 	"strings"
 
 	. "common.dh.cn/def"
-	. "common.dh.cn/util"
+	. "common.dh.cn/utils"
 )
 
 func Init() {
