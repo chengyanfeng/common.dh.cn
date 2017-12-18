@@ -1,4 +1,4 @@
-package datasource
+package models
 
 import (
 	"time"
@@ -8,7 +8,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	. "common.dh.cn/def"
-	. "common.dh.cn/util"
+	. "common.dh.cn/utils"
 )
 
 var sessionMap = cmap.New()

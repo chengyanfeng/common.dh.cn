@@ -1,4 +1,4 @@
-package controller
+package controllers
 
 import (
 	"fmt"
@@ -8,9 +8,9 @@ import (
 	"github.com/astaxie/beego"
 	"gopkg.in/mgo.v2/bson"
 
-	. "common.dh.cn/datasource"
 	. "common.dh.cn/def"
-	. "common.dh.cn/util"
+	. "common.dh.cn/models"
+	. "common.dh.cn/utils"
 )
 
 var Num = []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
