@@ -32,7 +32,7 @@ const (
 	Relation   string = "relat"
 	Relation14 string = "relat14"
 	Snapshot   string = "snapshot"
-	User       string = "user"
+	//User       string = "user"
 	UserCorp   string = "usercorp"
 	WxUser     string = "wxuser"
 	WhiteList  string = "whitelist"
