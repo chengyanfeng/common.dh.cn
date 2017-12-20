@@ -1,34 +1,23 @@
 package utils
 
 import (
-	"bufio"
 	"bytes"
 	"crypto/hmac"
 	"crypto/md5"
 	"crypto/sha1"
 	"crypto/sha256"
-	"crypto/tls"
 	"encoding/base64"
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"hash"
 	"io"
-	"io/ioutil"
 	"math/rand"
-	"mime/multipart"
-	"net"
-	"net/http"
-	"net/smtp"
-	"net/url"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"reflect"
 	"regexp"
 	"runtime"
-	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -38,7 +27,6 @@ import (
 	"code.google.com/p/mahonia"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/cache"
-	"github.com/clbanning/mxj"
 	"gopkg.in/mgo.v2/bson"
 
 	. "common.dh.cn/def"
@@ -57,116 +45,6 @@ func InitCache() {
 	}
 }
 
-type P map[string]interface{}
-
-func (p *P) Copy() P {
-	pn := make(P)
-	for k, v := range *p {
-		pn[k] = v
-	}
-	return pn
-}
-
-func (p P) CopyFrom(from P) {
-	for k, v := range from {
-		if IsEmpty(p[k]) {
-			p[k] = v
-		}
-	}
-}
-
-func (p *P) ToInt(s ...string) {
-	for _, k := range s {
-		v := ToString((*p)[k])
-		if !IsEmpty(v) {
-			(*p)[k] = ToInt(v)
-		}
-	}
-}
-
-func (p *P) ToOid(s ...string) {
-	for _, k := range s {
-		v := ToString((*p)[k])
-		if !IsEmpty(v) {
-			if !IsOid(v) {
-				Unset(*p, k)
-				continue
-			}
-			(*p)[k] = ToOid(v)
-		}
-	}
-}
-
-func (p *P) ToOids(s ...string) {
-	for _, k := range s {
-		v := ToStrings((*p)[k])
-		if !IsEmpty(v) && len(v) > 0 {
-			(*p)[k] = ToOids(v)
-		} else {
-			Unset(*p, k)
-		}
-	}
-}
-
-func (p *P) Like(s ...string) {
-	for _, k := range s {
-		v := ToString((*p)[k])
-		if !IsEmpty(v) {
-			(*p)[k] = &bson.RegEx{Pattern: v, Options: "i"}
-		}
-	}
-}
-
-func (p *P) ToP(s ...string) (r P) {
-	for _, k := range s {
-		v := ToString((*p)[k])
-		r = *JsonDecode([]byte(v))
-		(*p)[k] = r
-		Debug("ToP", k, (*p)[k])
-	}
-	return
-}
-
-func (p *P) Get(k string, def interface{}) interface{} {
-	r := (*p)[k]
-	if r == nil {
-		r = def
-	}
-	return r
-}
-
-func ToInt(s interface{}, default_v ...int) int {
-	i, e := strconv.Atoi(ToString(s))
-	if e != nil && len(default_v) > 0 {
-		return default_v[0]
-	}
-	return i
-}
-
-func ToInt64(s interface{}, default_v ...int64) int64 {
-	switch s.(type) {
-	case int64:
-		return s.(int64)
-	case int:
-		return int64(s.(int))
-	case float64:
-		return int64(s.(float64))
-	}
-	i64, e := strconv.ParseInt(ToString(s), 10, 64)
-	if e != nil && len(default_v) > 0 {
-		return default_v[0]
-	}
-	return i64
-}
-
-func ToFloat(s interface{}, default_v ...float64) float64 {
-	f64, e := strconv.ParseFloat(ToString(s), 64)
-	if e != nil && len(default_v) > 0 {
-		return default_v[0]
-	}
-	return f64
-}
-
 func IsInt(s interface{}) bool {
 	_, e := strconv.ParseInt(ToString(s), 10, 64)
 	return e == nil
@@ -174,11 +52,6 @@ func IsInt(s interface{}) bool {
 
 func IsFloat(s interface{}) bool {
 	_, e := strconv.ParseFloat(ToString(s), 64)
-	return e == nil
-}
-
-func IsDate(s interface{}) bool {
-	_, e := ToDate(ToString(s))
 	return e == nil
 }
 
@@ -247,42 +120,6 @@ func Base64Decode(s string) []byte {
 	return r
 }
 
-func Timestamp() int64 {
-	return time.Now().UnixNano() / int64(time.Millisecond)
-}
-
-func DateTimeStr() string {
-	return time.Now().Format("2006/01/02 15:04:05")
-}
-
-func ToDate(s string) (str string, e error) {
-	fmt := []string{
-		"2006-01-02 15:04:05",
-		"2006-1-2 15:04:05",
-		"2006-01-02T15:04:05",
-		"2006/01/02 15:04:05",
-		"2006/1/2 15:04:05",
-		"2006/01/02",
-		"2006-01-02",
-		"2006.01.02",
-		"01-02-2006",
-		"01-02-06",
-		"2006年01月",
-		"200601",
-		"2006年1月",
-		"2006年01月02日 15:04:05",
-		"2006年01月02日"}
-	var t time.Time
-	for _, f := range fmt {
-		t, e = time.Parse(f, s)
-		if e == nil {
-			return t.Format("2006-01-02 15:04:05"), e
-		}
-	}
-	s = ""
-	return s, e
-}
-
 func InArray(s string, a []string) bool {
 	for _, x := range a {
 		if x == s {
@@ -316,72 +153,6 @@ func Unset(p P, keys ...string) {
 	}
 }
 
-func ReadFile(path string) string {
-	return string(ReadFileBytes(path))
-}
-
-func ReadFileBytes(path string) []byte {
-	c, err := ioutil.ReadFile(path)
-	if err != nil {
-		Error("ReadFile", err)
-	}
-	return c
-}
-
-func WriteFile(path string, body []byte) {
-	err := ioutil.WriteFile(path, body, 0644)
-	if err != nil {
-		Error(err)
-	}
-}
-
-func AppendFile(file string, text string) {
-	f, err := os.OpenFile(file, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
-	defer f.Close()
-	if err != nil {
-		Error(err)
-	}
-	if _, err = f.WriteString(text); err != nil {
-		Error(err)
-	}
-}
-
-func DeleteFile(path string) {
-	err := os.Remove(path)
-	if err != nil {
-		Error(err)
-	}
-}
-
-func ReadLine(fileName string, limit int, offset int) (r string, e error) {
-	f, err := os.Open(fileName)
-	if err != nil {
-		e = err
-		return
-	}
-	buf := bufio.NewReader(f)
-	for i := 0; i < offset+limit; i++ {
-		line, err := buf.ReadString('\n')
-		if i >= offset {
-			r = r + line
-		}
-		if err != nil {
-			if err == io.EOF {
-				return
-			}
-			return
-		}
-	}
-	return
-}
-
-func ReplaceLine(fileName string, line int, with string) (string, error) {
-	if line < 1 {
-		return "", errors.New(JoinStr("无效的行号", line))
-	}
-	return Exec(fmt.Sprintf(`sed -i '' '%vs/.*/%v/' %v`, line, with, fileName))
-}
-
 func Rand(start int, end int) int {
 	rand.Seed(time.Now().UnixNano())
 	r := rand.Intn(end)
@@ -390,66 +161,6 @@ func Rand(start int, end int) int {
 	}
 	//time.Sleep(1 * time.Nanosecond)
 	return r
-}
-
-func JsonDecode(b []byte) (p *P) {
-	p = &P{}
-	err := json.Unmarshal(b, p)
-	if err != nil {
-		Error("JsonDecode", string(b), err)
-	}
-	return
-}
-
-func JsonEncode(v interface{}) (r string) {
-	b, err := json.Marshal(v)
-	if err != nil {
-		Error(err)
-	}
-	r = string(b)
-	return
-}
-
-func IsJson(b []byte) bool {
-	var j json.RawMessage
-	return json.Unmarshal(b, &j) == nil
-}
-
-func JsonDecodeArray(b []byte) (p []P, e error) {
-	p = []P{}
-	e = json.Unmarshal(b, &p)
-	return
-}
-
-func JsonDecodeArray_str(b []byte) (p []string, e error) {
-	p = []string{}
-	e = json.Unmarshal(b, &p)
-	return
-}
-
-//func JsonDecodeArrays(b []byte) (p *[]P) {
-//	p = &[]P{}
-//	e := json.Unmarshal(b, p)
-//	if e != nil {
-//		Error(e)
-//	}
-//	return
-//}
-
-func JsonDecodeStrings(s string) (r []string) {
-	r = []string{}
-	e := json.Unmarshal([]byte(s), &r)
-	if e != nil {
-		Error(e, s)
-	}
-	return
-}
-
-func JoinStr(val ...interface{}) (r string) {
-	for _, v := range val {
-		r += ToString(v)
-	}
-	return
 }
 
 func Replace(src string, find []string, r string) string {
@@ -464,265 +175,6 @@ func Count(src string, find []string) (c int) {
 		c += strings.Count(src, v)
 	}
 	return
-}
-
-func Pathinfo(url string) P {
-	p := P{}
-	url = strings.Replace(url, "\\", "/", -1)
-	if strings.Index(url, "/") < 0 {
-		url = JoinStr("./", url)
-	}
-	re := regexp.MustCompile("(.*)/([^/]*)\\.([^.]*)")
-	match := re.FindAllStringSubmatch(url, -1)
-	if len(match) > 0 {
-		m0 := match[0]
-		fmt.Println(m0)
-		if len(m0) == 4 {
-			p["basename"] = m0[0]
-			p["dirname"] = m0[1]
-			p["filename"] = m0[2]
-			p["extension"] = strings.ToLower(m0[3])
-		}
-	}
-	return p
-}
-
-func HttpGet(url string, header *P, param *P) (body string, e error) {
-	r, err := HttpGetBytes(url, header, param)
-	if err != nil {
-		Error(err)
-	}
-	e = err
-	body = string(r)
-	return
-}
-
-func HttpGetBytes(url string, header *P, param *P) (body []byte, e error) {
-	return HttpDo("GET", url, header, param)
-}
-
-func HttpPost(url string, header *P, param *P) (body string, err error) {
-	r, e := HttpDo("POST", url, header, param)
-	if e != nil {
-		Error("HttpPost", e)
-		body = e.Error()
-		err = e
-	} else {
-		body = string(r)
-	}
-	return
-}
-
-func HttpDelete(url string, header *P, param *P) (body []byte, e error) {
-	return HttpDo("DELETE", url, header, param)
-}
-
-func HttpDo(method string, httpurl string, header *P, param *P) (body []byte, err error) {
-	client := &http.Client{Timeout: time.Duration(DEFAULT_HTTP_TIMEOUT)}
-	var req *http.Request
-	vs := url.Values{}
-	if param != nil {
-		for k, v := range *param {
-			key := ToString(k)
-			if IsMapArray(v) {
-				vs.Set(key, JsonEncode(v))
-			} else if IsArray(v) {
-				a, _ := v.([]interface{})
-				for i, iv := range a {
-					if i == 0 {
-						vs.Set(key, ToString(iv))
-					} else {
-						vs.Add(key, ToString(iv))
-					}
-				}
-			} else {
-				vs.Set(key, ToString(v))
-			}
-		}
-	}
-	method = strings.ToUpper(method)
-	req, err = http.NewRequest(method, httpurl, strings.NewReader(vs.Encode()))
-	if header != nil {
-		for k, v := range *header {
-			req.Header.Set(ToString(k), ToString(v))
-		}
-	}
-	if method == "POST" {
-		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		return []byte(ToString(resp)), err
-	}
-	defer func() {
-		if resp != nil {
-			resp.Body.Close()
-		}
-	}()
-	body, err = ioutil.ReadAll(resp.Body)
-	return
-}
-
-func HttpPostBody(url string, header *P, body []byte) (string, error) {
-	client := &http.Client{Timeout: DEFAULT_HTTP_TIMEOUT}
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
-	req.Header.Set("Content-Type", "application/json")
-	if header != nil {
-		for k, v := range *header {
-			req.Header.Set(ToString(k), ToString(v))
-		}
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		return ToString(resp), err
-	}
-	defer func() {
-		if resp != nil {
-			resp.Body.Close()
-		}
-	}()
-	b, err := ioutil.ReadAll(resp.Body)
-	return string(b), err
-}
-
-func Upload(url, file string) (body []byte, err error) {
-	// Prepare a form that you will submit to that URL.
-	var b bytes.Buffer
-	w := multipart.NewWriter(&b)
-	// Add your file
-	f, err := os.Open(file)
-	if err != nil {
-		return
-	}
-	defer f.Close()
-	fw, err := w.CreateFormFile("bin", file)
-	if err != nil {
-		return
-	}
-	if _, err = io.Copy(fw, f); err != nil {
-		return
-	}
-	// Add the other fields
-	if fw, err = w.CreateFormField("key"); err != nil {
-		return
-	}
-	if _, err = fw.Write([]byte("KEY")); err != nil {
-		return
-	}
-	// Don't forget to close the multipart writer.
-	// If you don't close it, your request will be missing the terminating boundary.
-	w.Close()
-
-	// Now that you have a form, you can submit it to your handler.
-	req, err := http.NewRequest("POST", url, &b)
-	if err != nil {
-		return
-	}
-	// Don't forget to set the content type, this will contain the boundary.
-	req.Header.Set("Content-Type", w.FormDataContentType())
-
-	// Submit the request
-	client := &http.Client{}
-	res, err := client.Do(req)
-	if err != nil {
-		return []byte(ToString(res)), err
-	}
-	defer func() {
-		if res != nil {
-			res.Body.Close()
-		}
-	}()
-	body, err = ioutil.ReadAll(res.Body)
-	return
-}
-
-func ToString(v interface{}, def ...string) string {
-	if v != nil {
-		switch v.(type) {
-		case bson.ObjectId:
-			return v.(bson.ObjectId).Hex()
-		case []byte:
-			return string(v.([]byte))
-		case *P, P:
-			var p P
-			switch v.(type) {
-			case *P:
-				if v.(*P) != nil {
-					p = *v.(*P)
-				}
-			case P:
-				p = v.(P)
-			}
-			var keys []string
-			for k := range p {
-				keys = append(keys, k)
-			}
-			sort.Strings(keys)
-			r := "P{"
-			for _, k := range keys {
-				r = JoinStr(r, k, ":", p[k], " ")
-			}
-			r = JoinStr(r, "}")
-			return r
-		case map[string]interface{}, []P, []interface{}:
-			return JsonEncode(v)
-		case int64:
-			return strconv.FormatInt(v.(int64), 10)
-		case []string:
-			s := ""
-			for _, j := range v.([]string) {
-				s = JoinStr(s, ",", j)
-			}
-			if len(s) > 0 {
-				s = s[1:]
-			}
-			return s
-		default:
-			return fmt.Sprintf("%v", v)
-		}
-	}
-	if len(def) > 0 {
-		return def[0]
-	} else {
-		return ""
-	}
-}
-
-func ToP(v interface{}) P {
-	if v != nil {
-		switch v.(type) {
-		case P:
-			return v.(P)
-		case *P:
-			return *v.(*P)
-		case string:
-			return *JsonDecode([]byte(v.(string)))
-		case map[string]interface{}:
-			return v.(map[string]interface{})
-		default:
-			Error("ToP fail", ToString(v))
-		}
-	}
-	return P{}
-}
-
-func ToStrings(v interface{}) []string {
-	strs := []string{}
-	if v != nil {
-		switch v.(type) {
-		case []interface{}:
-			for _, i := range v.([]interface{}) {
-				strs = append(strs, ToString(i))
-			}
-		case []string:
-			for _, i := range v.([]string) {
-				strs = append(strs, i)
-			}
-		case string, interface{}:
-			strs = append(strs, ToString(v))
-		}
-	}
-	return strs
 }
 
 // 记录debug信息
@@ -764,131 +216,6 @@ func Ip2Int(ip string) int64 {
 	return 0
 }
 
-func FileExists(path string) bool {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true
-	}
-	if os.IsNotExist(err) {
-		return false
-	}
-	return true
-}
-
-func Xml2Json(src string) (s string, err error) {
-	m, err := mxj.NewMapXml([]byte(src))
-	return JsonEncode(m), err
-}
-
-func SendMailTls(addr string, auth smtp.Auth, from string, to []string, msg []byte) (err error) {
-
-	c, err := func(addr string) (*smtp.Client, error) {
-		conn, err := tls.Dial("tcp", addr, nil)
-		if err != nil {
-			Error("SendMail", err)
-			return nil, err
-		}
-		//分解主机端口字符串
-		host, _, _ := net.SplitHostPort(addr)
-		return smtp.NewClient(conn, host)
-	}(addr)
-	//create smtp client
-	//c, err := dial(addr)
-	if err != nil {
-		Error("SendMail", err)
-		return err
-	}
-	defer c.Close()
-
-	if auth != nil {
-		if ok, _ := c.Extension("AUTH"); ok {
-			if err = c.Auth(auth); err != nil {
-				Error("SendMail", err)
-				return err
-			}
-		}
-	}
-
-	if err = c.Mail(from); err != nil {
-		return err
-	}
-
-	for _, addr := range to {
-		if err = c.Rcpt(addr); err != nil {
-			return err
-		}
-	}
-
-	w, err := c.Data()
-	if err != nil {
-		return err
-	}
-
-	_, err = w.Write(msg)
-	if err != nil {
-		return err
-	}
-
-	err = w.Close()
-	if err != nil {
-		return err
-	}
-
-	return c.Quit()
-}
-
-func Mail(to string, subject string, body string) {
-	if IsEmpty(to) || IsEmpty(subject) || IsEmpty(body) {
-		Error("SendMail", to, subject, body)
-		return
-	}
-	host := "smtp.exmail.qq.com"
-	port := 465
-	email := "support@datahunter.cn"
-	password := "mRocker8"
-
-	header := P{}
-	header["From"] = "DataHunter" + "<" + email + ">"
-	header["To"] = to
-	subject = base64.StdEncoding.EncodeToString([]byte(subject))
-	header["Subject"] = "=?UTF-8?B?" + subject + "?="
-	header["Content-Type"] = "text/html; charset=UTF-8"
-
-	message := ""
-	for k, v := range header {
-		message += fmt.Sprintf("%s: %s\r\n", k, v)
-	}
-	message += "\r\n" + body
-
-	auth := smtp.PlainAuth(
-		"",
-		email,
-		password,
-		host,
-	)
-
-	err := SendMailTls(
-		fmt.Sprintf("%s:%d", host, port),
-		auth,
-		email,
-		[]string{to},
-		[]byte(message),
-	)
-
-	if err != nil {
-		Error(err)
-	}
-}
-
-func UrlEncoded(str string) (string, error) {
-	str = strings.Replace(str, "%", "%25", -1)
-	u, err := url.Parse(str)
-	if err != nil {
-		return "", err
-	}
-	return u.String(), nil
-}
-
 func GetCronStr(sec int) (str string) {
 	ss := sec % 60
 	ii := sec / 60
@@ -919,10 +246,6 @@ func RenderTpl(tpl string, data interface{}) string {
 	}
 	t.Execute(&bb, data)
 	return bb.String()
-}
-
-func Mkdir(path string) error {
-	return os.MkdirAll(path, os.ModePerm)
 }
 
 func AddInOid(oids *[]bson.ObjectId, nid bson.ObjectId) {
@@ -961,38 +284,6 @@ func SDel(key string) error {
 	return localCache.Delete(Md5(key))
 }
 
-func ExtractFile(path string, target string, ext string) {
-	err := filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
-		Debug(path)
-		//if !f.IsDir() {
-		if strings.HasSuffix(f.Name(), ext) {
-			Copy(path, target+"/"+f.Name())
-		}
-		//}
-		return nil
-	})
-	Debug("filepath.Walk() %v\n", err)
-}
-
-func DirTree(path string, ext string, limit int) (files []P) {
-	files = []P{}
-	i := 0
-	filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
-		//Debug(path)
-		if i >= limit {
-			return errors.New("reach limit")
-		}
-		i++
-		if f != nil && !f.IsDir() {
-			if strings.HasSuffix(f.Name(), ext) {
-				files = append(files, P{"file": path})
-			}
-		}
-		return nil
-	})
-	return
-}
-
 func Copy(src, dst string) error {
 	in, err := os.Open(src)
 	if err != nil {
@@ -1023,41 +314,6 @@ func RegSplit(text string, delimeter string) []string {
 	}
 	result[len(indexes)] = text[laststart:]
 	return result
-}
-
-func ToFields(s string, div string) (r []string) {
-	s = Replace(s, []string{`""`}, "")
-	tmp := strings.Split(s, div)
-	r = []string{}
-	state := ""
-	seg := ""
-	for _, v := range tmp {
-		v = Trim(v)
-		if len(v) > 1 && StartsWith(v, `"`) && !EndsWith(v, `"`) {
-			state = `s`
-		} else if !StartsWith(v, `"`) && EndsWith(v, `"`) {
-			state = "e"
-		} else if state == `s` && v == `"` {
-			state = "e"
-		}
-		if state == "s" {
-			seg += "," + v
-			seg = TransFunc(seg)
-		} else if state == "e" {
-			seg += "," + v
-			if len(seg) > 1 {
-				seg = seg[1:]
-			}
-			seg = TransFunc(seg)
-			r = append(r, seg)
-			seg = ""
-			state = ""
-		} else {
-			v = TransFunc(v)
-			r = append(r, v)
-		}
-	}
-	return
 }
 
 func IsCsvEnd(s string, half bool) (b bool) {
@@ -1131,50 +387,6 @@ func Exec(cmd string, exp ...int) (str string, e error) {
 func Cwd() string {
 	cwd, _ := os.Getwd()
 	return cwd
-}
-
-func FileRemoveLine(file string, start int, lines int) {
-	cmd := fmt.Sprintf("sed -i '%v,%vd' %v", start, start+lines-1, file)
-	Exec(cmd)
-}
-
-func RemoveSpaceLine(file string, filter interface{}) {
-	cmd := fmt.Sprintf("sed -i '/%v/d' %v", filter, file)
-	Exec(cmd)
-}
-
-func FileInsertLine(file string, start int, txt string) {
-	cmd := fmt.Sprintf("sed -i '%vi %v' %v", start, txt, file)
-	Exec(cmd)
-}
-
-func ToOid(id interface{}) (oid bson.ObjectId) {
-	s := ToString(id)
-	if bson.IsObjectIdHex(s) {
-		oid = bson.ObjectIdHex(s)
-	}
-	return
-}
-
-func ToOids(ids interface{}) (oids []bson.ObjectId) {
-	oids = []bson.ObjectId{}
-	switch ids.(type) {
-	case []string:
-		for _, id := range ids.([]string) {
-			if IsOid(id) {
-				oids = append(oids, ToOid(id))
-			}
-		}
-	case []interface{}:
-		for _, id := range ids.([]interface{}) {
-			if IsOid(ToString(id)) {
-				oids = append(oids, ToOid(ToString(id)))
-			}
-		}
-	case []bson.ObjectId:
-		oids = ids.([]bson.ObjectId)
-	}
-	return
 }
 
 func NewId() bson.ObjectId {
@@ -1339,43 +551,4 @@ func ParseTableHead(th interface{}) []P {
 		}
 	}
 	return tmp
-}
-
-func GetHostname() (host string) {
-	host, _ = os.Hostname()
-	if IsEmpty(host) {
-		host = "www.datahunter.cn"
-	}
-	Debug("host", host)
-	return host
-}
-
-func GetAuthNumber() int {
-	_, err := os.Stat("license.key")
-	if err == nil {
-		p := map[string]interface{}{}
-		data, _ := ioutil.ReadFile("license.key")
-		json.Unmarshal([]byte(data), &p)
-		number := fmt.Sprintf("%v", p["user"])
-		return ToInt(number)
-	}
-	return 10
-}
-
-func Etho() (str string) {
-	interfaces, _ := net.Interfaces()
-	for _, inter := range interfaces {
-		if inter.Name == "eth0" {
-			str = inter.HardwareAddr.String()
-		}
-	}
-	return
-}
-
-func Sha_256(sha_str string) (str string) {
-	s := sha256.New()
-	s.Write([]byte(sha_str))
-	ss := s.Sum(nil)
-	str = hex.EncodeToString(ss)
-	return
 }

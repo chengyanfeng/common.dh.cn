@@ -208,3 +208,15 @@ func GetUserByEmail(email string) *P {
 func GetUserByAuth(auth string) *P {
 	return D(User).Find(P{"auth": auth}).Cache().One()
 }
+
+func GetUserById(uid interface{}) *P {
+	var oid bson.ObjectId
+	switch uid.(type) {
+	case string:
+		oid = ToOid(uid.(string))
+	case bson.ObjectId:
+		oid = uid.(bson.ObjectId)
+	}
+	user := D(User).Find(P{"_id": oid}).Cache().One()
+	return user
+}

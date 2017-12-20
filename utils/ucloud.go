@@ -10,7 +10,7 @@ import (
 	"sort"
 )
 
-var UC_CONFIG map[string]string = map[string]string{
+var m_CONFIG map[string]string = map[string]string{
 	"public_key":  "ucloudsupport@mrocker.com1392263197892193080",
 	"private_key": "cff5a64df861f90a91eba840c51bae8f44fe008b",
 	"project_id":  "org-5875",
@@ -20,17 +20,17 @@ var UC_CONFIG map[string]string = map[string]string{
 type Ucloud struct {
 }
 
-func (this *Ucloud) SendSms(msg string, mobile ...string) (result string) {
-	params := this.CommonParams()
+func (m *Ucloud) SendSms(msg string, mobile ...string) (result string) {
+	params := m.CommonParams()
 	params["Action"] = "SendSms"
 	params["Content"] = msg
 
 	for key, val := range mobile {
 		params["Phone."+string(key)] = val
 	}
-	params["Signature"] = this.VerfyAc(params, UC_CONFIG["private_key"])
+	params["Signature"] = m.VerfyAc(params, m_CONFIG["private_key"])
 
-	data, err := this.Request(UC_CONFIG["base_url"], params)
+	data, err := m.Request(m_CONFIG["base_url"], params)
 	if err != nil {
 		Error(err)
 	}
@@ -39,15 +39,15 @@ func (this *Ucloud) SendSms(msg string, mobile ...string) (result string) {
 	return
 }
 
-func (this *Ucloud) RefreshCdn(url string) (result string) {
-	params := this.CommonParams()
+func (m *Ucloud) RefreshCdn(url string) (result string) {
+	params := m.CommonParams()
 	params["Action"] = "RefreshUcdnDomainCache"
 	params["Type"] = "dir"
 	params["DomainId"] = "ucdn-d11yag"
 	params["UrlList.0"] = url
-	params["Signature"] = this.VerfyAc(params, UC_CONFIG["private_key"])
+	params["Signature"] = m.VerfyAc(params, m_CONFIG["private_key"])
 
-	data, err := this.Request(UC_CONFIG["base_url"], params)
+	data, err := m.Request(m_CONFIG["base_url"], params)
 	if err != nil {
 		Error(err)
 	}
@@ -56,14 +56,14 @@ func (this *Ucloud) RefreshCdn(url string) (result string) {
 	return
 }
 
-func (uc *Ucloud) CommonParams() map[string]string {
+func (m *Ucloud) CommonParams() map[string]string {
 	params := map[string]string{}
-	params["PublicKey"] = UC_CONFIG["public_key"]
-	params["ProjectId"] = UC_CONFIG["project_id"]
+	params["PublicKey"] = m_CONFIG["public_key"]
+	params["ProjectId"] = m_CONFIG["project_id"]
 	return params
 }
 
-func (uc *Ucloud) VerfyAc(params map[string]string, private_key string) string {
+func (m *Ucloud) VerfyAc(params map[string]string, private_key string) string {
 	params_data := ""
 
 	sorted_keys := make([]string, 0)
@@ -83,7 +83,7 @@ func (uc *Ucloud) VerfyAc(params map[string]string, private_key string) string {
 	return fmt.Sprintf("%x", sha1.Sum([]byte(params_data)))
 }
 
-func (uc *Ucloud) Request(base_url string, params map[string]string) (string, error) {
+func (m *Ucloud) Request(base_url string, params map[string]string) (string, error) {
 	client := &http.Client{}
 	b, err := json.Marshal(params)
 

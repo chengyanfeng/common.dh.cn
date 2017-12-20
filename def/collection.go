@@ -1,0 +1,31 @@
+package def
+
+const (
+	// Collection
+	BoardGroup string = "boardgroup"
+	Corp       string = "corp"
+	Dashboard  string = "dashboard"
+	DataSource string = "datasource"
+	Record     string = "record"
+	DbConn     string = "dbconn"
+	DbPos      string = "dbpos"
+	DsGroup    string = "dsgroup"
+	DsType     string = "dstype"
+	Icode      string = "icode"
+	Relation   string = "relat"
+	Relation14 string = "relat14"
+	Snapshot   string = "snapshot"
+	User       string = "user"
+	UserCorp   string = "usercorp"
+	WxUser     string = "wxuser"
+	WhiteList  string = "whitelist"
+	Widget     string = "widget"
+	Admin      string = "admin"
+	Root       string = "root"
+	ChatMsg    string = "chatmsg"
+	Linkshare  string = "linkshare"
+	ApiData    string = "apidata"
+	Comment    string = "comment"
+	Notify     string = "notify"
+	Warning    string = "warning"
+)

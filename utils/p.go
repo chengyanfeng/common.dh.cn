@@ -1,0 +1,83 @@
+package utils
+
+import (
+	"gopkg.in/mgo.v2/bson"
+)
+
+type P map[string]interface{}
+
+func (p *P) Copy() P {
+	pn := make(P)
+	for k, v := range *p {
+		pn[k] = v
+	}
+	return pn
+}
+
+func (p P) CopyFrom(from P) {
+	for k, v := range from {
+		if IsEmpty(p[k]) {
+			p[k] = v
+		}
+	}
+}
+
+func (p *P) ToInt(s ...string) {
+	for _, k := range s {
+		v := ToString((*p)[k])
+		if !IsEmpty(v) {
+			(*p)[k] = ToInt(v)
+		}
+	}
+}
+
+func (p *P) ToOid(s ...string) {
+	for _, k := range s {
+		v := ToString((*p)[k])
+		if !IsEmpty(v) {
+			if !IsOid(v) {
+				Unset(*p, k)
+				continue
+			}
+			(*p)[k] = ToOid(v)
+		}
+	}
+}
+
+func (p *P) ToOids(s ...string) {
+	for _, k := range s {
+		v := ToStrings((*p)[k])
+		if !IsEmpty(v) && len(v) > 0 {
+			(*p)[k] = ToOids(v)
+		} else {
+			Unset(*p, k)
+		}
+	}
+}
+
+func (p *P) Like(s ...string) {
+	for _, k := range s {
+		v := ToString((*p)[k])
+		if !IsEmpty(v) {
+			(*p)[k] = &bson.RegEx{Pattern: v, Options: "i"}
+		}
+	}
+}
+
+func (p *P) ToP(s ...string) (r P) {
+	for _, k := range s {
+		v := ToString((*p)[k])
+		r = *JsonDecode([]byte(v))
+		(*p)[k] = r
+		Debug("ToP", k, (*p)[k])
+	}
+	return
+}
+
+func (p *P) Get(k string, def interface{}) interface{} {
+	r := (*p)[k]
+	if r == nil {
+		r = def
+	}
+	return r
+}
