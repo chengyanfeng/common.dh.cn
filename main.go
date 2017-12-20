@@ -87,6 +87,9 @@ func ganerateModel(table string) string {
 			if HasPrefix(field_type, "varchar") || HasPrefix(field_type, "char") || HasPrefix(field_type, "text") {
 				mate_data.Type = "string"
 			}
+			if HasPrefix(field_type, "int") || HasPrefix(field_type, "bigint") {
+				mate_data.Type = "int64"
+			}
 			if HasPrefix(field_type, "tinyint") {
 				mate_data.Type = "int"
 			}

@@ -13,7 +13,7 @@ type DhDashboardWarning struct {
     WidgetId string `json:"widget_id"`
     Key string `json:"key"`
     Compare string `json:"compare"`
-    Value  `json:"value"`
+    Value int64 `json:"value"`
     Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
