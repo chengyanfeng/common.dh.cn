@@ -10,11 +10,11 @@ type DhDatasourceRelation struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    Datasource1 string `json:"datasource1"`
-    Datasource2 string `json:"datasource2"`
-    Join string `json:"join"`
-    On string `json:"on"`
-    Status int `json:"status"`
+    	Datasource1 string `json:"datasource1"`
+    	Datasource2 string `json:"datasource2"`
+    	Join string `json:"join"`
+    	On string `json:"on"`
+    	Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }

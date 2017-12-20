@@ -10,10 +10,10 @@ type DhStoryboard struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    GroupId string `json:"group_id"`
-    Name string `json:"name"`
-    Status int `json:"status"`
-    Sort int `json:"sort"`
+    	GroupId string `json:"group_id"`
+    	Name string `json:"name"`
+    	Status int `json:"status"`
+    	Sort int `json:"sort"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }

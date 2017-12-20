@@ -10,12 +10,12 @@ type DhDatasourceMeta struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    DatasourceId string `json:"datasource_id"`
-    Column string `json:"column"`
-    Name string `json:"name"`
-    Type string `json:"type"`
-    Extra string `json:"extra"`
-    Status int `json:"status"`
+    	DatasourceId string `json:"datasource_id"`
+    	Column string `json:"column"`
+    	Name string `json:"name"`
+    	Type string `json:"type"`
+    	Extra string `json:"extra"`
+    	Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }
