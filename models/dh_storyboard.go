@@ -6,35 +6,31 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-type DhUser struct {
+type DhStoryboard struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
+    	GroupId string `json:"group_id"`
     	Name string `json:"name"`
-    	Email string `json:"email"`
-    	Mobile string `json:"mobile"`
-    	Password string `json:"password"`
-    	Auth string `json:"auth"`
-    	Avatar string `json:"avatar"`
-    	Icode string `json:"icode"`
     	Status int `json:"status"`
+    	Sort int `json:"sort"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }
 
 func init() {
-	orm.RegisterModel(new(DhUser))
+	orm.RegisterModel(new(DhStoryboard))
 }
 
-func (m *DhUser) TableName() string {
-    return "dh_user"
+func (m *DhStoryboard) TableName() string {
+    return "dh_storyboard"
 }
 
-func (m *DhUser) Query() orm.QuerySeter {
+func (m *DhStoryboard) Query() orm.QuerySeter {
 	return m.query(m)
 }
 
-func (m *DhUser) Save() bool{
+func (m *DhStoryboard) Save() bool{
 	if m.Id == 0 {
 		return m.create(m)
 	} else {
@@ -42,21 +38,21 @@ func (m *DhUser) Save() bool{
 	}
 }
 
-func (m *DhUser) Find(args ...interface{}) *DhUser {
+func (m *DhStoryboard) Find(args ...interface{}) *DhStoryboard {
 	data := m.find(m,args...)
 	if data != nil {
-		return data.(*DhUser)
+		return data.(*DhStoryboard)
 	} else {
 		return nil
 	}
 }
 
-func (m *DhUser) Delete(index interface{}) bool {
+func (m *DhStoryboard) Delete(index interface{}) bool {
 	return m.delete(m,index)
 }
 
-func (m *DhUser) List(filters map[string]interface{}) []*DhUser {
-	var list []*DhUser
+func (m *DhStoryboard) List(filters map[string]interface{}) []*DhStoryboard {
+	var list []*DhStoryboard
 	_, err := m.findByFilters(m,filters).All(&list)
 	if err != nil {
 		utils.Error(err)
@@ -65,8 +61,8 @@ func (m *DhUser) List(filters map[string]interface{}) []*DhUser {
 	return list
 }
 
-func (m *DhUser) Pager(page int64, page_size int64, filters map[string]interface{}) (total int64, total_page int64, result []*DhUser) {
-	var list []*DhUser
+func (m *DhStoryboard) Pager(page int64, page_size int64, filters map[string]interface{}) (total int64, total_page int64, result []*DhStoryboard) {
+	var list []*DhStoryboard
 	total,total_page = m.pager(m, filters, page_size)
 	_, err := m.pagerList(m,page, page_size, filters).All(&list)
 	if err != nil {
