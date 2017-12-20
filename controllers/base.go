@@ -9,7 +9,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	. "common.dh.cn/def"
-	. "common.dh.cn/models"
+	. "common.dh.cn/mongo"
 	. "common.dh.cn/utils"
 )
 
