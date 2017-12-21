@@ -6,35 +6,33 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-type DhUser struct {
+type DhConnect struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
+    	CropId string `json:"crop_id"`
+    	UserId string `json:"user_id"`
     	Name string `json:"name"`
-    	Email string `json:"email"`
-    	Mobile string `json:"mobile"`
-    	Password string `json:"password"`
-    	Auth string `json:"auth"`
-    	Avatar string `json:"avatar"`
-    	Icode string `json:"icode"`
+    	Type string `json:"type"`
+    	Config string `json:"config"`
     	Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }
 
 func init() {
-	orm.RegisterModel(new(DhUser))
+	orm.RegisterModel(new(DhConnect))
 }
 
-func (m *DhUser) TableName() string {
-    return "dh_user"
+func (m *DhConnect) TableName() string {
+    return "dh_connect"
 }
 
-func (m *DhUser) Query() orm.QuerySeter {
+func (m *DhConnect) Query() orm.QuerySeter {
 	return m.query(m)
 }
 
-func (m *DhUser) Save() bool{
+func (m *DhConnect) Save() bool{
 	if m.Id == 0 {
 		return m.create(m)
 	} else {
@@ -42,21 +40,21 @@ func (m *DhUser) Save() bool{
 	}
 }
 
-func (m *DhUser) Find(args ...interface{}) *DhUser {
+func (m *DhConnect) Find(args ...interface{}) *DhConnect {
 	data := m.find(m,args...)
 	if data != nil {
-		return data.(*DhUser)
+		return data.(*DhConnect)
 	} else {
 		return nil
 	}
 }
 
-func (m *DhUser) Delete(index interface{}) bool {
+func (m *DhConnect) Delete(index interface{}) bool {
 	return m.delete(m,index)
 }
 
-func (m *DhUser) List(filters map[string]interface{}) []*DhUser {
-	var list []*DhUser
+func (m *DhConnect) List(filters map[string]interface{}) []*DhConnect {
+	var list []*DhConnect
 	_, err := m.findByFilters(m,filters).All(&list)
 	if err != nil {
 		utils.Error(err)
@@ -65,8 +63,8 @@ func (m *DhUser) List(filters map[string]interface{}) []*DhUser {
 	return list
 }
 
-func (m *DhUser) Pager(page int64, page_size int64, filters map[string]interface{}) (total int64, total_page int64, result []*DhUser) {
-	var list []*DhUser
+func (m *DhConnect) Pager(page int64, page_size int64, filters map[string]interface{}) (total int64, total_page int64, result []*DhConnect) {
+	var list []*DhConnect
 	total,total_page = m.pager(m, filters, page_size)
 	_, err := m.pagerList(m,page, page_size, filters).All(&list)
 	if err != nil {
