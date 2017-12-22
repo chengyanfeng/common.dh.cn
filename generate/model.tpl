@@ -2,7 +2,6 @@ package models
 
 import (
 	"time"
-	"common.dh.cn/utils"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -38,7 +37,12 @@ func (m *{{.ModelName}}) Save() bool{
 func (m *{{.ModelName}}) Find(args ...interface{}) *{{.ModelName}} {
 	data := m.find(m,args...)
 	if data != nil {
-		return data.(*{{.ModelName}})
+		_data,ok := data.(*{{.ModelName}})
+		if ok {
+			return _data
+		} else {
+			return nil
+		}
 	} else {
 		return nil
 	}
@@ -48,11 +52,15 @@ func (m *{{.ModelName}}) Delete(index interface{}) bool {
 	return m.delete(m,index)
 }
 
+func (m *{{.ModelName}}) SoftDelete(index interface{}) bool {
+	return m.softDelete(m,index)
+}
+
 func (m *{{.ModelName}}) List(filters map[string]interface{}) []*{{.ModelName}} {
 	var list []*{{.ModelName}}
-	_, err := m.findByFilters(m,filters).All(&list)
+	_, err := m.findByFilters(m, filters).All(&list)
 	if err != nil {
-		utils.Error(err)
+		m.errReport(err)
 		return nil
 	}
 	return list
@@ -61,9 +69,9 @@ func (m *{{.ModelName}}) List(filters map[string]interface{}) []*{{.ModelName}} 
 func (m *{{.ModelName}}) Pager(page int64, page_size int64, filters map[string]interface{}) (total int64, total_page int64, result []*{{.ModelName}}) {
 	var list []*{{.ModelName}}
 	total,total_page = m.pager(m, filters, page_size)
-	_, err := m.pagerList(m,page, page_size, filters).All(&list)
+	_, err := m.pagerList(m, page, page_size, filters).All(&list)
 	if err != nil {
-		utils.Error(err)
+		m.errReport(err)
 		return 0,0,nil
 	}
 	return total, total_page, list

@@ -143,17 +143,23 @@ func (m *DhBase) softDelete(entity interface{}, args ...interface{}) bool {
 
 func (m *DhBase) find(entity interface{},args ...interface{}) interface{} {
 	total := len(args)
+	var err interface{}
 	if total == 1 {
 		index := args[0]
 		switch index.(type) {
 			case string,*string:
-				return m.findByObjectID(entity,index.(string)).One(entity)
+				err = m.findByObjectID(entity,index.(string)).One(entity)
 			case int,*int:
-				return m.findByID(entity,index.(int64)).One(entity)
+				err = m.findByID(entity,index.(int64)).One(entity)
 			case map[string]interface{}:
-				return m.findByFilters(entity,index.(map[string]interface{})).One(entity)
+				err = m.findByFilters(entity,index.(map[string]interface{})).One(entity)
 			default:
 				return nil
+		}
+		if err != nil {
+			return nil
+		} else {
+			return entity
 		}
 	} else if total == 2 {
 		key := args[0]
@@ -162,7 +168,12 @@ func (m *DhBase) find(entity interface{},args ...interface{}) interface{} {
 		if !ok {
 			return nil
 		}
-		return m.findByFilter(entity, _key, value).One(entity)
+		err = m.findByFilter(entity, _key, value).One(entity)
+		if err != nil {
+			return nil
+		} else {
+			return entity
+		}
 	} else {
 		return nil
 	}
@@ -205,4 +216,8 @@ func (m *DhBase) pager(entity interface{}, filters map[string]interface{}, page_
 
 func (m *DhBase) pagerList(entity interface{}, page int64, page_size int64, filters map[string]interface{}) orm.QuerySeter {
 	return m.findByFilters(entity,filters).Offset(page * page_size).Limit(page_size)
+}
+
+func (m *DhBase) errReport(err interface{}) {
+	utils.Error(err)
 }
