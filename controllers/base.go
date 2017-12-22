@@ -220,3 +220,44 @@ func GetUserById(uid interface{}) *P {
 	user := D(User).Find(P{"_id": oid}).Cache().One()
 	return user
 }
+
+func GetUserCorps(uid string, members bool) (corps []P) {
+	p := P{}
+	p["uid"] = ToOid(uid)
+	corps = D(UserCorp).Find(p).All()
+	user := *GetUserById(uid)
+	for _, v := range corps {
+		corp := *D(Corp).Find(P{"_id": v["cid"]}).Cache().One()
+		v.CopyFrom(corp)
+		v["_id"] = v["cid"]
+		v["uid"] = corp["uid"]
+		if members {
+			users := []P{}
+			tmp := D(UserCorp).Find(P{"cid": v["cid"]}).Cache().All()
+			for _, uc := range tmp {
+				u := *D(User).Find(P{"_id": uc["uid"], "audit": AUDIT_PASS}).Field("name", "img", "email", "mobile").Cache().One()
+				if u["_id"] != nil {
+					u["role"] = uc["role"]
+					u["ct"] = uc["ct"]
+					users = append(users, u)
+				}
+			}
+			v["mid"] = users
+		}
+	}
+	Unset(user, "password", "auth", "audit", "engine")
+	user["role"] = Admin
+	corps = append(corps, P{"name": "私人空间",
+		"_id":     uid,
+		"uid":     uid,
+		"default": 1,
+		"mid":     []P{user}})
+	waiting := D(Corp).Find(P{"uid": user["_id"], "audit": AUDIT_WAIT}).All()
+	corps = append(corps, waiting...)
+	return
+}
+
+func GetCorpById(cid interface{}) *P {
+	corp := D(Corp).Find(P{"_id": ToOid(cid)}).Cache().One()
+	return corp
+}

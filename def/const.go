@@ -11,5 +11,7 @@ const (
 	MODE_TEST string = "TEST"
 	MODE_EE   string = "EE"
 
-	DashboardKey string = "Dash!(boarD^)@)$1l17"
+	AUDIT_WAIT string = "wait"
+	AUDIT_PASS string = "pass"
+	AUDIT_BAN  string = "ban"
 )
