@@ -9,5 +9,7 @@ type ErrorController struct {
 }
 
 func (c *ErrorController) Error404() {
-	c.Redirect("/", 302)
+	//	c.Redirect("/", 302)
+	c.Data["content"] = "page not found"
+	c.TplName = "404.tpl"
 }
