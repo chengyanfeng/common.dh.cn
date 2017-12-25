@@ -5,7 +5,7 @@ import (
 	"time"
 	"fmt"
 	"reflect"
-	"github.com/rs/xid"
+	"gopkg.in/mgo.v2/bson"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
@@ -40,7 +40,7 @@ func (m *DhBase) query(entity interface{}) orm.QuerySeter {
 
 func (m *DhBase) create(entity interface{}) bool {
 	mutable := reflect.ValueOf(entity).Elem()
-	mutable.FieldByName("ObjectId").SetString(xid.New().String())
+	mutable.FieldByName("ObjectId").SetString(bson.NewObjectId().Hex())
 	now := time.Now();
 	mutable.FieldByName("CreateTime").Set(reflect.ValueOf(now))
 	mutable.FieldByName("UpdateTime").Set(reflect.ValueOf(now))
@@ -157,19 +157,21 @@ func (m *DhBase) find(entity interface{},args ...interface{}) interface{} {
 				return nil
 		}
 		if err != nil {
+			utils.Error(err)
 			return nil
 		} else {
 			return entity
 		}
 	} else if total == 2 {
 		key := args[0]
-		value := args[0]
+		value := args[1]
 		_key,ok := key.(string)
 		if !ok {
 			return nil
 		}
 		err = m.findByFilter(entity, _key, value).One(entity)
 		if err != nil {
+			utils.Error(err)
 			return nil
 		} else {
 			return entity
