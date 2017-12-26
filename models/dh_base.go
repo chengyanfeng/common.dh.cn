@@ -153,6 +153,8 @@ func (m *DhBase) find(entity interface{},args ...interface{}) interface{} {
 				err = m.findByID(entity,index.(int64)).One(entity)
 			case map[string]interface{}:
 				err = m.findByFilters(entity,index.(map[string]interface{})).One(entity)
+			case *orm.Condition:
+				err = m.query(entity).SetCond(index.(*orm.Condition)).One(entity)
 			default:
 				return nil
 		}

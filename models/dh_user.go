@@ -9,10 +9,11 @@ type DhUser struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    	Name string `json:"name"`
+		Name string `json:"name"`
+		Corp string `json:"corp"`
     	Email string `json:"email"`
     	Mobile string `json:"mobile"`
-    	Password string `json:"password"`
+    	Password string `json:"-"`
     	Auth string `json:"auth"`
     	Avatar string `json:"avatar"`
     	Icode string `json:"icode"`

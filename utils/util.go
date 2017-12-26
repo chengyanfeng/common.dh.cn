@@ -35,7 +35,7 @@ import (
 var localCache cache.Cache
 var CronAuth = &P{"Authorization": JoinStr("Basic ", Base64Encode([]byte("mrocker:mrocker")))}
 
-func InitCache() {
+func init() {
 	c, err := cache.NewCache("memory", `{"interval":60}`)
 	//c, err := cache.NewCache("file", `{"CachePath":"./dhcache","FileSuffix":".cache","DirectoryLevel":2,"EmbedExpiry":120}`)
 	if err != nil {

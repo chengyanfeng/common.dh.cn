@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"reflect"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -90,4 +91,19 @@ func SetKv(p P, k string, v []string) {
 	} else {
 		p[k] = v
 	}
+}
+
+func ModelToP(o interface{}) P {
+	info := P{}
+	s := reflect.ValueOf(o).Elem()
+	for i := 0; i < s.NumField(); i++ {
+		f := s.Type().Field(i)
+		key := f.Tag.Get("json")
+		if key == "" || key == "-" {
+            continue
+        }
+		value := s.Field(i).Interface()
+		info[key] = value
+	}
+	return info
 }

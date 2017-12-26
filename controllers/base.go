@@ -159,7 +159,6 @@ func (c *BaseController) GetAuthUser() *models.DhUser {
 	if auth == "" {
 		auth = c.Ctx.GetCookie("auth")
 	}
-	utils.Debug(auth)
 	if !utils.IsEmpty(auth) {
 		return new(models.DhUser).Find("auth",auth)
 	} else {
@@ -173,6 +172,7 @@ func (c *BaseController) GetUserCorps(user_id string) []utils.P {
 	info := utils.P{}
 	info["_id"] = user_id
 	info["name"] = "私人空间"
+	info["role"] = "admin"
 	corps = append(corps,info)
 	//其他团队
 	filters := map[string]interface{}{}
@@ -183,6 +183,7 @@ func (c *BaseController) GetUserCorps(user_id string) []utils.P {
 		info := utils.P{}
 		info["_id"] = corp.ObjectId
 		info["name"] = corp.Name
+		info["role"] = v.Role
 		corps = append(corps,info)
 	}
 	return corps
