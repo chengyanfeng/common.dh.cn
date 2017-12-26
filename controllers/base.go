@@ -160,29 +160,18 @@ func (c *BaseController) GetAuthUser() *models.DhUser {
 		auth = c.Ctx.GetCookie("auth")
 	}
 	if !utils.IsEmpty(auth) {
-		return new(models.DhUser).Find("auth",auth)
+		user := new(models.DhUser).Find("auth",auth)
+		if (user != nil) {
+			if user.Status != -1 {
+				return user
+			} else {
+				return nil
+			}
+		} else {
+			return nil
+		}
 	} else {
-		return user
-	}
-}
-
-func GetUserByEmail(email string) *P {
-	user := D(User).Find(P{"email": email}).One()
-
-	return user
-}
-
-func GetUserByAuth(auth string) *P {
-	return D(User).Find(P{"auth": auth}).One()
-}
-
-func GetUserById(uid interface{}) *P {
-	var oid bson.ObjectId
-	switch uid.(type) {
-	case string:
-		oid = ToOid(uid.(string))
-	case bson.ObjectId:
-		oid = uid.(bson.ObjectId)
+		return nil
 	}
 }
 
@@ -207,4 +196,17 @@ func (c *BaseController) GetUserCorps(user_id string) []utils.P {
 		corps = append(corps,info)
 	}
 	return corps
+}
+
+func (c *BaseController) Notify(from_crop_id string, from_user_id string, user_id string, notify_type string, config interface {}) {
+	notify := new(models.DhNotify)
+	notify.FromCropId = from_crop_id
+	notify.FromUserId = from_user_id
+	notify.UserId = user_id
+	notify.Type = notify_type
+	notify.Config = utils.JsonEncode(config)
+	result := notify.Save()
+	if result {
+		//TODO Websocket NotifySend
+	}
 }
