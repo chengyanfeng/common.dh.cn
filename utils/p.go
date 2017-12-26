@@ -81,3 +81,13 @@ func (p *P) Get(k string, def interface{}) interface{} {
 	}
 	return r
 }
+
+func SetKv(p P, k string, v []string) {
+	if len(v) == 1 {
+		if len(v[0]) > 0 {
+			p[k] = v[0]
+		}
+	} else {
+		p[k] = v
+	}
+}
