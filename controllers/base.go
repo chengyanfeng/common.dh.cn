@@ -206,7 +206,7 @@ func GetUserByEmail(email string) *P {
 }
 
 func GetUserByAuth(auth string) *P {
-	return D(User).Find(P{"auth": auth}).Cache().One()
+	return D(User).Find(P{"auth": auth}).One()
 }
 
 func GetUserById(uid interface{}) *P {
