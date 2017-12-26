@@ -162,7 +162,27 @@ func (c *BaseController) GetAuthUser() *models.DhUser {
 	if !utils.IsEmpty(auth) {
 		return new(models.DhUser).Find("auth",auth)
 	} else {
-		return nil
+		return user
+	}
+}
+
+func GetUserByEmail(email string) *P {
+	user := D(User).Find(P{"email": email}).One()
+
+	return user
+}
+
+func GetUserByAuth(auth string) *P {
+	return D(User).Find(P{"auth": auth}).One()
+}
+
+func GetUserById(uid interface{}) *P {
+	var oid bson.ObjectId
+	switch uid.(type) {
+	case string:
+		oid = ToOid(uid.(string))
+	case bson.ObjectId:
+		oid = uid.(bson.ObjectId)
 	}
 }
 
