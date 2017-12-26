@@ -50,12 +50,12 @@ func (m *DhUserCorp) Find(args ...interface{}) *DhUserCorp {
 	}
 }
 
-func (m *DhUserCorp) Delete(index interface{}) bool {
-	return m.delete(m,index)
+func (m *DhUserCorp) Delete(args ...interface{}) bool {
+	return m.delete(m,args...)
 }
 
-func (m *DhUserCorp) SoftDelete(index interface{}) bool {
-	return m.softDelete(m,index)
+func (m *DhUserCorp) SoftDelete(args ...interface{}) bool {
+	return m.softDelete(m,args...)
 }
 
 func (m *DhUserCorp) List(filters map[string]interface{}) []*DhUserCorp {

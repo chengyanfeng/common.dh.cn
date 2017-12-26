@@ -53,12 +53,12 @@ func (m *DhConnect) Find(args ...interface{}) *DhConnect {
 	}
 }
 
-func (m *DhConnect) Delete(index interface{}) bool {
-	return m.delete(m,index)
+func (m *DhConnect) Delete(args ...interface{}) bool {
+	return m.delete(m,args...)
 }
 
-func (m *DhConnect) SoftDelete(index interface{}) bool {
-	return m.softDelete(m,index)
+func (m *DhConnect) SoftDelete(args ...interface{}) bool {
+	return m.softDelete(m,args...)
 }
 
 func (m *DhConnect) List(filters map[string]interface{}) []*DhConnect {

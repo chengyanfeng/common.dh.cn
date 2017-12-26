@@ -56,12 +56,12 @@ func (m *DhDatasource) Find(args ...interface{}) *DhDatasource {
 	}
 }
 
-func (m *DhDatasource) Delete(index interface{}) bool {
-	return m.delete(m,index)
+func (m *DhDatasource) Delete(args ...interface{}) bool {
+	return m.delete(m,args...)
 }
 
-func (m *DhDatasource) SoftDelete(index interface{}) bool {
-	return m.softDelete(m,index)
+func (m *DhDatasource) SoftDelete(args ...interface{}) bool {
+	return m.softDelete(m,args...)
 }
 
 func (m *DhDatasource) List(filters map[string]interface{}) []*DhDatasource {

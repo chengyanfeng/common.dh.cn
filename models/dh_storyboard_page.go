@@ -51,12 +51,12 @@ func (m *DhStoryboardPage) Find(args ...interface{}) *DhStoryboardPage {
 	}
 }
 
-func (m *DhStoryboardPage) Delete(index interface{}) bool {
-	return m.delete(m,index)
+func (m *DhStoryboardPage) Delete(args ...interface{}) bool {
+	return m.delete(m,args...)
 }
 
-func (m *DhStoryboardPage) SoftDelete(index interface{}) bool {
-	return m.softDelete(m,index)
+func (m *DhStoryboardPage) SoftDelete(args ...interface{}) bool {
+	return m.softDelete(m,args...)
 }
 
 func (m *DhStoryboardPage) List(filters map[string]interface{}) []*DhStoryboardPage {

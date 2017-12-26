@@ -48,12 +48,12 @@ func (m *{{.ModelName}}) Find(args ...interface{}) *{{.ModelName}} {
 	}
 }
 
-func (m *{{.ModelName}}) Delete(index interface{}) bool {
-	return m.delete(m,index)
+func (m *{{.ModelName}}) Delete(args ...interface{}) bool {
+	return m.delete(m,args...)
 }
 
-func (m *{{.ModelName}}) SoftDelete(index interface{}) bool {
-	return m.softDelete(m,index)
+func (m *{{.ModelName}}) SoftDelete(args ...interface{}) bool {
+	return m.softDelete(m,args...)
 }
 
 func (m *{{.ModelName}}) List(filters map[string]interface{}) []*{{.ModelName}} {

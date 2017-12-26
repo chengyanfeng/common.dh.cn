@@ -9,7 +9,7 @@ type DhVcode struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-		Mobile string `json:"mobile"`
+    	Mobile string `json:"mobile"`
     	Code string `json:"code"`
     	Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
@@ -50,12 +50,12 @@ func (m *DhVcode) Find(args ...interface{}) *DhVcode {
 	}
 }
 
-func (m *DhVcode) Delete(index interface{}) bool {
-	return m.delete(m,index)
+func (m *DhVcode) Delete(args ...interface{}) bool {
+	return m.delete(m,args...)
 }
 
-func (m *DhVcode) SoftDelete(index interface{}) bool {
-	return m.softDelete(m,index)
+func (m *DhVcode) SoftDelete(args ...interface{}) bool {
+	return m.softDelete(m,args...)
 }
 
 func (m *DhVcode) List(filters map[string]interface{}) []*DhVcode {

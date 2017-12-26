@@ -50,12 +50,12 @@ func (m *DhApiData) Find(args ...interface{}) *DhApiData {
 	}
 }
 
-func (m *DhApiData) Delete(index interface{}) bool {
-	return m.delete(m,index)
+func (m *DhApiData) Delete(args ...interface{}) bool {
+	return m.delete(m,args...)
 }
 
-func (m *DhApiData) SoftDelete(index interface{}) bool {
-	return m.softDelete(m,index)
+func (m *DhApiData) SoftDelete(args ...interface{}) bool {
+	return m.softDelete(m,args...)
 }
 
 func (m *DhApiData) List(filters map[string]interface{}) []*DhApiData {

@@ -52,12 +52,12 @@ func (m *DhDashboardWarning) Find(args ...interface{}) *DhDashboardWarning {
 	}
 }
 
-func (m *DhDashboardWarning) Delete(index interface{}) bool {
-	return m.delete(m,index)
+func (m *DhDashboardWarning) Delete(args ...interface{}) bool {
+	return m.delete(m,args...)
 }
 
-func (m *DhDashboardWarning) SoftDelete(index interface{}) bool {
-	return m.softDelete(m,index)
+func (m *DhDashboardWarning) SoftDelete(args ...interface{}) bool {
+	return m.softDelete(m,args...)
 }
 
 func (m *DhDashboardWarning) List(filters map[string]interface{}) []*DhDashboardWarning {

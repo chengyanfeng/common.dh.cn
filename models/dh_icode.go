@@ -49,12 +49,12 @@ func (m *DhIcode) Find(args ...interface{}) *DhIcode {
 	}
 }
 
-func (m *DhIcode) Delete(index interface{}) bool {
-	return m.delete(m,index)
+func (m *DhIcode) Delete(args ...interface{}) bool {
+	return m.delete(m,args...)
 }
 
-func (m *DhIcode) SoftDelete(index interface{}) bool {
-	return m.softDelete(m,index)
+func (m *DhIcode) SoftDelete(args ...interface{}) bool {
+	return m.softDelete(m,args...)
 }
 
 func (m *DhIcode) List(filters map[string]interface{}) []*DhIcode {

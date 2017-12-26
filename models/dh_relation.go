@@ -55,12 +55,12 @@ func (m *DhRelation) Find(args ...interface{}) *DhRelation {
 	}
 }
 
-func (m *DhRelation) Delete(index interface{}) bool {
-	return m.delete(m,index)
+func (m *DhRelation) Delete(args ...interface{}) bool {
+	return m.delete(m,args...)
 }
 
-func (m *DhRelation) SoftDelete(index interface{}) bool {
-	return m.softDelete(m,index)
+func (m *DhRelation) SoftDelete(args ...interface{}) bool {
+	return m.softDelete(m,args...)
 }
 
 func (m *DhRelation) List(filters map[string]interface{}) []*DhRelation {

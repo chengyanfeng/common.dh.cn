@@ -52,12 +52,12 @@ func (m *DhLinkshare) Find(args ...interface{}) *DhLinkshare {
 	}
 }
 
-func (m *DhLinkshare) Delete(index interface{}) bool {
-	return m.delete(m,index)
+func (m *DhLinkshare) Delete(args ...interface{}) bool {
+	return m.delete(m,args...)
 }
 
-func (m *DhLinkshare) SoftDelete(index interface{}) bool {
-	return m.softDelete(m,index)
+func (m *DhLinkshare) SoftDelete(args ...interface{}) bool {
+	return m.softDelete(m,args...)
 }
 
 func (m *DhLinkshare) List(filters map[string]interface{}) []*DhLinkshare {

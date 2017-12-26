@@ -53,12 +53,12 @@ func (m *DhComment) Find(args ...interface{}) *DhComment {
 	}
 }
 
-func (m *DhComment) Delete(index interface{}) bool {
-	return m.delete(m,index)
+func (m *DhComment) Delete(args ...interface{}) bool {
+	return m.delete(m,args...)
 }
 
-func (m *DhComment) SoftDelete(index interface{}) bool {
-	return m.softDelete(m,index)
+func (m *DhComment) SoftDelete(args ...interface{}) bool {
+	return m.softDelete(m,args...)
 }
 
 func (m *DhComment) List(filters map[string]interface{}) []*DhComment {

@@ -9,11 +9,11 @@ type DhUser struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-		Name string `json:"name"`
-		Corp string `json:"corp"`
+    	Name string `json:"name"`
+    	Corp string `json:"corp"`
     	Email string `json:"email"`
     	Mobile string `json:"mobile"`
-    	Password string `json:"-"`
+    	Password string `json:"password"`
     	Auth string `json:"auth"`
     	Avatar string `json:"avatar"`
     	Icode string `json:"icode"`
@@ -56,12 +56,12 @@ func (m *DhUser) Find(args ...interface{}) *DhUser {
 	}
 }
 
-func (m *DhUser) Delete(index interface{}) bool {
-	return m.delete(m,index)
+func (m *DhUser) Delete(args ...interface{}) bool {
+	return m.delete(m,args...)
 }
 
-func (m *DhUser) SoftDelete(index interface{}) bool {
-	return m.softDelete(m,index)
+func (m *DhUser) SoftDelete(args ...interface{}) bool {
+	return m.softDelete(m,args...)
 }
 
 func (m *DhUser) List(filters map[string]interface{}) []*DhUser {
