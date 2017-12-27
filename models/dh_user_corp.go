@@ -10,7 +10,7 @@ type DhUserCorp struct {
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
     	UserId string `json:"user_id"`
-    	CropId string `json:"crop_id"`
+    	CorpId string `json:"corp_id"`
     	Role string `json:"role"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
@@ -58,9 +58,23 @@ func (m *DhUserCorp) SoftDelete(args ...interface{}) bool {
 	return m.softDelete(m,args...)
 }
 
+func (m *DhUserCorp) Count(filters map[string]interface{}) int64 {
+	return m.count(m,filters)
+}
+
 func (m *DhUserCorp) List(filters map[string]interface{}) []*DhUserCorp {
 	var list []*DhUserCorp
 	_, err := m.findByFilters(m, filters).All(&list)
+	if err != nil {
+		m.errReport(err)
+		return nil
+	}
+	return list
+}
+
+func (m *DhUserCorp) OrderList(filters map[string]interface{},order ...string) []*DhUserCorp {
+	var list []*DhUserCorp
+	_, err := m.findByFilters(m, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
 		return nil

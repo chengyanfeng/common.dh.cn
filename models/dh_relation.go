@@ -9,7 +9,7 @@ type DhRelation struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    	CropId string `json:"crop_id"`
+    	CorpId string `json:"corp_id"`
     	UserId string `json:"user_id"`
     	RelateType string `json:"relate_type"`
     	RelateId string `json:"relate_id"`
@@ -63,9 +63,23 @@ func (m *DhRelation) SoftDelete(args ...interface{}) bool {
 	return m.softDelete(m,args...)
 }
 
+func (m *DhRelation) Count(filters map[string]interface{}) int64 {
+	return m.count(m,filters)
+}
+
 func (m *DhRelation) List(filters map[string]interface{}) []*DhRelation {
 	var list []*DhRelation
 	_, err := m.findByFilters(m, filters).All(&list)
+	if err != nil {
+		m.errReport(err)
+		return nil
+	}
+	return list
+}
+
+func (m *DhRelation) OrderList(filters map[string]interface{},order ...string) []*DhRelation {
+	var list []*DhRelation
+	_, err := m.findByFilters(m, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
 		return nil

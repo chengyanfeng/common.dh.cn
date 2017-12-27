@@ -58,9 +58,23 @@ func (m *DhVcode) SoftDelete(args ...interface{}) bool {
 	return m.softDelete(m,args...)
 }
 
+func (m *DhVcode) Count(filters map[string]interface{}) int64 {
+	return m.count(m,filters)
+}
+
 func (m *DhVcode) List(filters map[string]interface{}) []*DhVcode {
 	var list []*DhVcode
 	_, err := m.findByFilters(m, filters).All(&list)
+	if err != nil {
+		m.errReport(err)
+		return nil
+	}
+	return list
+}
+
+func (m *DhVcode) OrderList(filters map[string]interface{},order ...string) []*DhVcode {
+	var list []*DhVcode
+	_, err := m.findByFilters(m, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
 		return nil

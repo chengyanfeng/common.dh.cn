@@ -60,9 +60,23 @@ func (m *DhLinkshare) SoftDelete(args ...interface{}) bool {
 	return m.softDelete(m,args...)
 }
 
+func (m *DhLinkshare) Count(filters map[string]interface{}) int64 {
+	return m.count(m,filters)
+}
+
 func (m *DhLinkshare) List(filters map[string]interface{}) []*DhLinkshare {
 	var list []*DhLinkshare
 	_, err := m.findByFilters(m, filters).All(&list)
+	if err != nil {
+		m.errReport(err)
+		return nil
+	}
+	return list
+}
+
+func (m *DhLinkshare) OrderList(filters map[string]interface{},order ...string) []*DhLinkshare {
+	var list []*DhLinkshare
+	_, err := m.findByFilters(m, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
 		return nil

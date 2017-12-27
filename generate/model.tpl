@@ -56,9 +56,23 @@ func (m *{{.ModelName}}) SoftDelete(args ...interface{}) bool {
 	return m.softDelete(m,args...)
 }
 
+func (m *{{.ModelName}}) Count(filters map[string]interface{}) int64 {
+	return m.count(m,filters)
+}
+
 func (m *{{.ModelName}}) List(filters map[string]interface{}) []*{{.ModelName}} {
 	var list []*{{.ModelName}}
 	_, err := m.findByFilters(m, filters).All(&list)
+	if err != nil {
+		m.errReport(err)
+		return nil
+	}
+	return list
+}
+
+func (m *{{.ModelName}}) OrderList(filters map[string]interface{},order ...string) []*{{.ModelName}} {
+	var list []*{{.ModelName}}
+	_, err := m.findByFilters(m, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
 		return nil

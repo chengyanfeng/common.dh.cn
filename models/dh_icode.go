@@ -57,9 +57,23 @@ func (m *DhIcode) SoftDelete(args ...interface{}) bool {
 	return m.softDelete(m,args...)
 }
 
+func (m *DhIcode) Count(filters map[string]interface{}) int64 {
+	return m.count(m,filters)
+}
+
 func (m *DhIcode) List(filters map[string]interface{}) []*DhIcode {
 	var list []*DhIcode
 	_, err := m.findByFilters(m, filters).All(&list)
+	if err != nil {
+		m.errReport(err)
+		return nil
+	}
+	return list
+}
+
+func (m *DhIcode) OrderList(filters map[string]interface{},order ...string) []*DhIcode {
+	var list []*DhIcode
+	_, err := m.findByFilters(m, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
 		return nil

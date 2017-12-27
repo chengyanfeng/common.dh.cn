@@ -60,9 +60,23 @@ func (m *DhStoryboardWidget) SoftDelete(args ...interface{}) bool {
 	return m.softDelete(m,args...)
 }
 
+func (m *DhStoryboardWidget) Count(filters map[string]interface{}) int64 {
+	return m.count(m,filters)
+}
+
 func (m *DhStoryboardWidget) List(filters map[string]interface{}) []*DhStoryboardWidget {
 	var list []*DhStoryboardWidget
 	_, err := m.findByFilters(m, filters).All(&list)
+	if err != nil {
+		m.errReport(err)
+		return nil
+	}
+	return list
+}
+
+func (m *DhStoryboardWidget) OrderList(filters map[string]interface{},order ...string) []*DhStoryboardWidget {
+	var list []*DhStoryboardWidget
+	_, err := m.findByFilters(m, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
 		return nil

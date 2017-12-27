@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"reflect"
 	"net/url"
 	"strings"
 	"github.com/astaxie/beego"
@@ -209,4 +210,169 @@ func (c *BaseController) Notify(from_crop_id string, from_user_id string, user_i
 	if result {
 		//TODO Websocket NotifySend
 	}
+}
+
+func (c *BaseController) NewRelation(crop_id string, user_id string, relate_type string, relate_id string, name string, auth string) bool {
+	relation := new(models.DhRelation)
+	relation.CropId = crop_id
+	relation.UserId = user_id
+	relation.RelateType = relate_type
+	relation.RelateId = relate_id
+	relation.Name = name
+	relation.Auth = auth
+	relation.Sort = 0
+	return relation.Save()
+}
+
+func (c *BaseController) SortRelation(crop_id string, user_id string, relate_type string, relate_ids []string) bool {
+	o := new(models.DhBase).Orm()
+	for k,relate_id := range relate_ids {
+		params := map[string]interface{}{}
+		params["crop_id"] = crop_id
+		params["user_id"] = user_id
+		params["relate_type"] = relate_type
+		params["relate_id"] = relate_id
+		relation := new(models.DhRelation).Find(params)
+		if relation != nil {
+			relation.Sort = k
+			result := relation.Save()
+			if !result {
+				o.Rollback()
+				return false
+			}
+		}
+	}
+	o.Commit()
+	return true
+}
+
+func (c *BaseController) Share(crop_id string, user_ids []string, relate_type string, relate_id string) bool {
+	o := new(models.DhBase).Orm()
+	var err error
+	err = o.Begin()
+	if err != nil {
+		return false
+	}
+	share_name := c.GetShareName(relate_type,relate_id)
+	if share_name == "" {
+		o.Commit()
+		return false
+	}
+	result := c.RemoveShare(relate_type,relate_id,"share")
+	if !result {
+		o.Rollback()
+		return false
+	}
+	for _,user_id := range user_ids {
+		result := c.NewRelation(crop_id, user_id, relate_type, relate_id, share_name, "share")
+		if !result {
+			o.Rollback()
+			return false
+		}
+	}
+	o.Commit()
+	return true
+}
+
+func (c *BaseController) ShareOut(user_emails []string, relate_type string, relate_id string) bool {
+	user_ids := []string{}
+	for _,user_email := range user_emails {
+		user := new(models.DhUser).Find("email",user_email)
+		if user != nil {
+			user_ids = append(user_ids, user.ObjectId)
+		}
+	}
+	if len(user_ids) > 0 {
+		o := new(models.DhBase).Orm()
+		var err error
+		err = o.Begin()
+		if err != nil {
+			return false
+		}
+		share_name := c.GetShareName(relate_type,relate_id)
+		if share_name == "" {
+			o.Commit()
+			return false
+		}
+		result := c.RemoveShare(relate_type,relate_id,"share_out")
+		if !result {
+			o.Rollback()
+			return false
+		}
+		for _,user_id := range user_ids {
+			//跨组分享进入默认分组
+			result := c.NewRelation(user_id, user_id, relate_type, relate_id, share_name, "share_out")
+			if !result {
+				o.Rollback()
+				return false
+			}
+		}
+		o.Commit()
+		return true
+	} else {
+		return false
+	}
+}
+
+func (c *BaseController) RemoveShare(relate_type string, relate_id string, auth string) bool {
+	params := map[string]interface{}{}
+	params["relate_type"] = relate_type
+	params["relate_id"] = relate_id
+	params["auth"] = "share"
+	return new(models.DhRelation).Delete(params)
+}
+
+func (c *BaseController) GetShareName(relate_type string, relate_id string) string {
+	var relate_object interface{}
+	switch (relate_type) {
+		case "dh_dashboard_group":
+			relate_object = new(models.DhDashboardGroup).Find(relate_id)
+		case "dh_dashboard":
+			relate_object = new(models.DhDashboard).Find(relate_id)
+		case "dh_storyboard_group":
+			relate_object = new(models.DhStoryboardGroup).Find(relate_id)
+		case "dh_storyboard":
+			relate_object = new(models.DhStoryboard).Find(relate_id)
+		case "dh_datasource_group":
+			relate_object = new(models.DhDatasourceGroup).Find(relate_id)
+		case "dh_datasource":
+			relate_object = new(models.DhDatasource).Find(relate_id)
+	}
+	if relate_object == nil {
+		return ""
+	} else {
+		return reflect.ValueOf(relate_object).Elem().FieldByName("Name").String()
+	}
+}
+
+func (c *BaseController) GetShareUsers(relate_type string, relate_id string) []*models.DhUser {
+	users := []*models.DhUser{}
+	params := map[string]interface{}{}
+	params["relate_type"] = relate_type
+	params["relate_id"] = relate_id
+	params["auth"] = "share"
+	relations := new(models.DhRelation).List(params)
+	for _, v := range relations {
+		user := new(models.DhUser).Find(v.UserId)
+		if user != nil {
+			users = append(users,user)
+		}
+	}
+	return users
+}
+
+func (c *BaseController) GetShareOutUsers(relate_type string, relate_id string) []*models.DhUser {
+	users := []*models.DhUser{}
+	params := map[string]interface{}{}
+	params["relate_type"] = relate_type
+	params["relate_id"] = relate_id
+	params["auth"] = "share"
+	relations := new(models.DhRelation).List(params)
+	for _, v := range relations {
+		user := new(models.DhUser).Find(v.UserId)
+		if user != nil {
+			users = append(users,user)
+		}
+	}
+	return users
 }

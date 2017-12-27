@@ -111,3 +111,11 @@ func ModelToP(o interface{}) P {
 		return info
 	}
 }
+
+func ModelToArrayP(o []*interface{}) []P {
+	var array = []P{}
+	for _,v := range o {
+		array = append(array,ModelToP(v))
+	}
+	return array
+}

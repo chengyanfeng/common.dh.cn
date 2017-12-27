@@ -63,9 +63,23 @@ func (m *DhDatasourceModify) SoftDelete(args ...interface{}) bool {
 	return m.softDelete(m,args...)
 }
 
+func (m *DhDatasourceModify) Count(filters map[string]interface{}) int64 {
+	return m.count(m,filters)
+}
+
 func (m *DhDatasourceModify) List(filters map[string]interface{}) []*DhDatasourceModify {
 	var list []*DhDatasourceModify
 	_, err := m.findByFilters(m, filters).All(&list)
+	if err != nil {
+		m.errReport(err)
+		return nil
+	}
+	return list
+}
+
+func (m *DhDatasourceModify) OrderList(filters map[string]interface{},order ...string) []*DhDatasourceModify {
+	var list []*DhDatasourceModify
+	_, err := m.findByFilters(m, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
 		return nil

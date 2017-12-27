@@ -60,9 +60,23 @@ func (m *DhDashboard) SoftDelete(args ...interface{}) bool {
 	return m.softDelete(m,args...)
 }
 
+func (m *DhDashboard) Count(filters map[string]interface{}) int64 {
+	return m.count(m,filters)
+}
+
 func (m *DhDashboard) List(filters map[string]interface{}) []*DhDashboard {
 	var list []*DhDashboard
 	_, err := m.findByFilters(m, filters).All(&list)
+	if err != nil {
+		m.errReport(err)
+		return nil
+	}
+	return list
+}
+
+func (m *DhDashboard) OrderList(filters map[string]interface{},order ...string) []*DhDashboard {
+	var list []*DhDashboard
+	_, err := m.findByFilters(m, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
 		return nil
