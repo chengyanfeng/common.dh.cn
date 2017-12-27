@@ -8,7 +8,6 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 	"reflect"
-	"common.dh.cn/models"
 )
 
 func ToInt(s interface{}, default_v ...int) int {
@@ -207,11 +206,11 @@ func StructToMap(obj interface{}) P {
 	return data
 }
 
-func StructToMapArray(obj interface{}) (datas []P) {
-	if objs, ok := obj.([]*models.DhBase); ok {
-		for _, value := range objs {
-			datas = append(datas, StructToMap(*value))
-		}
-	}
-	return
-}
+//func StructToMapArray(obj interface{}) (datas []P) {
+// 	if objs, ok := obj.([]*models.DhBase); ok {
+// 		for _, value := range objs {
+// 			datas = append(datas, StructToMap(*value))
+// 		}
+// 	}
+// 	return
+// }
