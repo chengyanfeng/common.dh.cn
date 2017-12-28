@@ -161,7 +161,7 @@ func (c *BaseController) GetAuthUser() *models.DhUser {
 		auth = c.Ctx.GetCookie("auth")
 	}
 	if !utils.IsEmpty(auth) {
-		user := new(models.DhUser).Find("auth",auth)
+		user := new(models.DhUser).Find("auth", auth)
 		if (user != nil) {
 			if user.Status != -1 {
 				return user
@@ -183,7 +183,7 @@ func (c *BaseController) GetUserCorps(user_id string) []utils.P {
 	info["_id"] = user_id
 	info["name"] = "私人空间"
 	info["role"] = "admin"
-	corps = append(corps,info)
+	corps = append(corps, info)
 	//其他团队
 	filters := map[string]interface{}{}
 	filters["user_id"] = user_id
@@ -194,12 +194,12 @@ func (c *BaseController) GetUserCorps(user_id string) []utils.P {
 		info["_id"] = corp.ObjectId
 		info["name"] = corp.Name
 		info["role"] = v.Role
-		corps = append(corps,info)
+		corps = append(corps, info)
 	}
 	return corps
 }
 
-func (c *BaseController) Notify(from_crop_id string, from_user_id string, user_id string, notify_type string, config interface {}) {
+func (c *BaseController) Notify(from_crop_id string, from_user_id string, user_id string, notify_type string, config interface{}) {
 	notify := new(models.DhNotify)
 	notify.FromCropId = from_crop_id
 	notify.FromUserId = from_user_id
@@ -212,8 +212,12 @@ func (c *BaseController) Notify(from_crop_id string, from_user_id string, user_i
 	}
 }
 
-func (c *BaseController) NewRelation(crop_id string, user_id string, relate_type string, relate_id string, name string, auth string) bool {
+func (c *BaseController) SaveRelation(id int64, object_id string, crop_id string, user_id string, relate_type string, relate_id string, name string, auth string) bool {
 	relation := new(models.DhRelation)
+	if id != 0 {
+		relation.Id = id
+		relation.ObjectId = object_id
+	}
 	relation.CorpId = crop_id
 	relation.UserId = user_id
 	relation.RelateType = relate_type
@@ -226,7 +230,7 @@ func (c *BaseController) NewRelation(crop_id string, user_id string, relate_type
 
 func (c *BaseController) SortRelation(crop_id string, user_id string, relate_type string, relate_ids []string) bool {
 	o := new(models.DhBase).Orm()
-	for k,relate_id := range relate_ids {
+	for k, relate_id := range relate_ids {
 		params := map[string]interface{}{}
 		params["crop_id"] = crop_id
 		params["user_id"] = user_id
@@ -253,19 +257,22 @@ func (c *BaseController) Share(crop_id string, user_ids []string, relate_type st
 	if err != nil {
 		return false
 	}
-	share_name := c.GetShareName(relate_type,relate_id)
+	share_name := c.GetShareName(relate_type, relate_id)
 	if share_name == "" {
+		fmt.Println(2)
 		o.Commit()
 		return false
 	}
-	result := c.RemoveShare(relate_type,relate_id,"share")
+	result := c.RemoveShare(relate_type, relate_id, "share")
 	if !result {
+		fmt.Println(3)
 		o.Rollback()
 		return false
 	}
-	for _,user_id := range user_ids {
-		result := c.NewRelation(crop_id, user_id, relate_type, relate_id, share_name, "share")
+	for _, user_id := range user_ids {
+		result := c.SaveRelation(0, "", crop_id, user_id, relate_type, relate_id, share_name, "share")
 		if !result {
+			fmt.Println(4)
 			o.Rollback()
 			return false
 		}
@@ -276,8 +283,8 @@ func (c *BaseController) Share(crop_id string, user_ids []string, relate_type st
 
 func (c *BaseController) ShareOut(user_emails []string, relate_type string, relate_id string) bool {
 	user_ids := []string{}
-	for _,user_email := range user_emails {
-		user := new(models.DhUser).Find("email",user_email)
+	for _, user_email := range user_emails {
+		user := new(models.DhUser).Find("email", user_email)
 		if user != nil {
 			user_ids = append(user_ids, user.ObjectId)
 		}
@@ -289,19 +296,19 @@ func (c *BaseController) ShareOut(user_emails []string, relate_type string, rela
 		if err != nil {
 			return false
 		}
-		share_name := c.GetShareName(relate_type,relate_id)
+		share_name := c.GetShareName(relate_type, relate_id)
 		if share_name == "" {
 			o.Commit()
 			return false
 		}
-		result := c.RemoveShare(relate_type,relate_id,"share_out")
+		result := c.RemoveShare(relate_type, relate_id, "share_out")
 		if !result {
 			o.Rollback()
 			return false
 		}
-		for _,user_id := range user_ids {
+		for _, user_id := range user_ids {
 			//跨组分享进入默认分组
-			result := c.NewRelation(user_id, user_id, relate_type, relate_id, share_name, "share_out")
+			result := c.SaveRelation(0, "", user_id, user_id, relate_type, relate_id, share_name, "share_out")
 			if !result {
 				o.Rollback()
 				return false
@@ -318,25 +325,25 @@ func (c *BaseController) RemoveShare(relate_type string, relate_id string, auth 
 	params := map[string]interface{}{}
 	params["relate_type"] = relate_type
 	params["relate_id"] = relate_id
-	params["auth"] = "share"
+	params["auth"] = auth
 	return new(models.DhRelation).Delete(params)
 }
 
 func (c *BaseController) GetShareName(relate_type string, relate_id string) string {
 	var relate_object interface{}
 	switch (relate_type) {
-		case "dh_dashboard_group":
-			relate_object = new(models.DhDashboardGroup).Find(relate_id)
-		case "dh_dashboard":
-			relate_object = new(models.DhDashboard).Find(relate_id)
-		case "dh_storyboard_group":
-			relate_object = new(models.DhStoryboardGroup).Find(relate_id)
-		case "dh_storyboard":
-			relate_object = new(models.DhStoryboard).Find(relate_id)
-		case "dh_datasource_group":
-			relate_object = new(models.DhDatasourceGroup).Find(relate_id)
-		case "dh_datasource":
-			relate_object = new(models.DhDatasource).Find(relate_id)
+	case "dh_dashboard_group":
+		relate_object = new(models.DhDashboardGroup).Find(relate_id)
+	case "dh_dashboard":
+		relate_object = new(models.DhDashboard).Find(relate_id)
+	case "dh_storyboard_group":
+		relate_object = new(models.DhStoryboardGroup).Find(relate_id)
+	case "dh_storyboard":
+		relate_object = new(models.DhStoryboard).Find(relate_id)
+	case "dh_datasource_group":
+		relate_object = new(models.DhDatasourceGroup).Find(relate_id)
+	case "dh_datasource":
+		relate_object = new(models.DhDatasource).Find(relate_id)
 	}
 	if relate_object == nil {
 		return ""
@@ -355,7 +362,7 @@ func (c *BaseController) GetShareUsers(relate_type string, relate_id string) []*
 	for _, v := range relations {
 		user := new(models.DhUser).Find(v.UserId)
 		if user != nil {
-			users = append(users,user)
+			users = append(users, user)
 		}
 	}
 	return users
@@ -366,12 +373,12 @@ func (c *BaseController) GetShareOutUsers(relate_type string, relate_id string) 
 	params := map[string]interface{}{}
 	params["relate_type"] = relate_type
 	params["relate_id"] = relate_id
-	params["auth"] = "share"
+	params["auth"] = "share_out"
 	relations := new(models.DhRelation).List(params)
 	for _, v := range relations {
 		user := new(models.DhUser).Find(v.UserId)
 		if user != nil {
-			users = append(users,user)
+			users = append(users, user)
 		}
 	}
 	return users
