@@ -190,6 +190,8 @@ func (c *BaseController) GetUserCorps(user_id string) []utils.P {
 	info["_id"] = user_id
 	info["name"] = "私人空间"
 	info["role"] = "admin"
+	info["status"] = 1
+	info["default"] = 1
 	corps = append(corps, info)
 	//其他团队
 	filters := map[string]interface{}{}
@@ -201,6 +203,8 @@ func (c *BaseController) GetUserCorps(user_id string) []utils.P {
 		info["_id"] = corp.ObjectId
 		info["name"] = corp.Name
 		info["role"] = v.Role
+		info["status"] = corp.Status
+		info["default"] = 0
 		corps = append(corps, info)
 	}
 	return corps
