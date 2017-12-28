@@ -155,7 +155,13 @@ func (c *BaseController) HeadHref(str string) bool {
 	return false
 }
 
-func (c *BaseController) GetAuthUser() *models.DhUser {
+func (c *BaseController) GetAuthUser() (m *models.DhUser) {
+	defer func() {
+		if m == nil{
+			c.EchoJsonErr("用户不存在")
+			c.StopRun()
+		}
+	}()
 	auth := c.GetString("auth")
 	if auth == "" {
 		auth = c.Ctx.GetCookie("auth")
@@ -164,16 +170,17 @@ func (c *BaseController) GetAuthUser() *models.DhUser {
 		user := new(models.DhUser).Find("auth", auth)
 		if (user != nil) {
 			if user.Status != -1 {
-				return user
+				m = user
 			} else {
-				return nil
+				m = nil
 			}
 		} else {
-			return nil
+			m = nil
 		}
 	} else {
-		return nil
+		m = nil
 	}
+	return
 }
 
 func (c *BaseController) GetUserCorps(user_id string) []utils.P {
