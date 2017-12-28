@@ -189,7 +189,7 @@ func (c *BaseController) GetUserCorps(user_id string) []utils.P {
 	filters["user_id"] = user_id
 	user_corps := new(models.DhUserCorp).List(filters)
 	for _, v := range user_corps {
-		corp := new(models.DhCorp).Find(v.CropId)
+		corp := new(models.DhCorp).Find(v.CorpId)
 		info := utils.P{}
 		info["_id"] = corp.ObjectId
 		info["name"] = corp.Name
@@ -214,7 +214,7 @@ func (c *BaseController) Notify(from_crop_id string, from_user_id string, user_i
 
 func (c *BaseController) NewRelation(crop_id string, user_id string, relate_type string, relate_id string, name string, auth string) bool {
 	relation := new(models.DhRelation)
-	relation.CropId = crop_id
+	relation.CorpId = crop_id
 	relation.UserId = user_id
 	relation.RelateType = relate_type
 	relation.RelateId = relate_id
