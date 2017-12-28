@@ -24,7 +24,8 @@ import (
 	"text/template"
 	"time"
 
-	"code.google.com/p/mahonia"
+	//"code.google.com/p/mahonia"
+	"github.com/henrylee2cn/mahonia"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/cache"
 	"gopkg.in/mgo.v2/bson"
