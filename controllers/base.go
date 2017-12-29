@@ -159,13 +159,12 @@ func (c *BaseController) HeadHref(str string) bool {
 
 func (c *BaseController) GetAuthUser() (m *models.DhUser) {
 	defer func() {
-		if m == nil{
+		if m == nil {
 			c.EchoJsonErr("用户不存在")
 			c.StopRun()
 		}
 	}()
 	auth := c.GetString("auth")
-	utils.Debug("auth", auth)
 	if auth == "" {
 		auth = c.Ctx.GetCookie("auth")
 	}
