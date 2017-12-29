@@ -2,13 +2,15 @@ package controllers
 
 import (
 	"fmt"
-	"reflect"
 	"net/url"
+	"reflect"
 	"strings"
+
 	"github.com/astaxie/beego"
 	"gopkg.in/mgo.v2/bson"
-	"common.dh.cn/models"
+
 	"common.dh.cn/def"
+	"common.dh.cn/models"
 	"common.dh.cn/utils"
 )
 
@@ -157,12 +159,13 @@ func (c *BaseController) HeadHref(str string) bool {
 
 func (c *BaseController) GetAuthUser() *models.DhUser {
 	auth := c.GetString("auth")
+	utils.Debug("auth", auth)
 	if auth == "" {
 		auth = c.Ctx.GetCookie("auth")
 	}
 	if !utils.IsEmpty(auth) {
 		user := new(models.DhUser).Find("auth", auth)
-		if (user != nil) {
+		if user != nil {
 			if user.Status != -1 {
 				return user
 			} else {
@@ -208,7 +211,7 @@ func (c *BaseController) Notify(from_crop_id string, from_user_id string, user_i
 	notify.Config = utils.JsonEncode(config)
 	result := notify.Save()
 	if result {
-		//TODO Websocket NotifySend
+		utils.NotifyHandle(user_id)
 	}
 }
 
@@ -331,7 +334,7 @@ func (c *BaseController) RemoveShare(relate_type string, relate_id string, auth 
 
 func (c *BaseController) GetShareName(relate_type string, relate_id string) string {
 	var relate_object interface{}
-	switch (relate_type) {
+	switch relate_type {
 	case "dh_dashboard_group":
 		relate_object = new(models.DhDashboardGroup).Find(relate_id)
 	case "dh_dashboard":
