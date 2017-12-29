@@ -14,7 +14,7 @@ var (
 	Monitor = "http://alert.datahunter.cn:16880/transfer/portal"
 	Tos     = "WangChengLong"
 
-	Rpc = "https://rpc.dh.cn:8080"
+	Rpc = "http://ws.dh.cn:8001/v2/notify/receive"
 )
 
 func send(tos, appid, title, content, tp string, eventtime int64, merge int8) {
@@ -42,12 +42,8 @@ func Send(tos, title, content string) {
 	send(tos, strings.TrimSpace(appid), title, content, "Error", now, 1)
 }
 
-func NotifyHandle(p P, auth string) {
+func NotifyHandle(uid string) {
 	go func() {
-		p["auth"] = auth
-		req := httplib.Post(Rpc)
-		req.Header("Content-Type", "application/json")
-		req.Body([]byte(JsonEncode(p)))
-		req.Response()
+		HttpPost(Rpc, nil, &P{"uid": uid})
 	}()
 }
