@@ -239,11 +239,11 @@ func (c *BaseController) SaveRelation(id int64, object_id string, crop_id string
 	return relation.Save()
 }
 
-func (c *BaseController) SortRelation(crop_id string, user_id string, relate_type string, relate_ids []string) bool {
+func (c *BaseController) SortRelation(corp_id string, user_id string, relate_type string, relate_ids []string) bool {
 	o := new(models.DhBase).Orm()
 	for k, relate_id := range relate_ids {
 		params := map[string]interface{}{}
-		params["crop_id"] = crop_id
+		params["corp_id"] = corp_id
 		params["user_id"] = user_id
 		params["relate_type"] = relate_type
 		params["relate_id"] = relate_id
