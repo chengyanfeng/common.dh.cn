@@ -16,7 +16,6 @@ type DhRelation struct {
     	Auth string `json:"auth"`
     	Name string `json:"name"`
     	Sort int `json:"sort"`
-    	UodateTime time.Time `json:"uodate_time"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }
