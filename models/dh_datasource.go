@@ -78,7 +78,7 @@ func (m *DhDatasource) List(filters map[string]interface{}) []*DhDatasource {
 	return list
 }
 
-func (m *DhDatasource) OrderList(filters map[string]interface{},order ...string) []*DhDatasource {
+func (m *DhDatasource) OrderList(filters map[string]interface{}, order ...string) []*DhDatasource {
 	var list []*DhDatasource
 	_, err := m.findByFilters(m, filters).OrderBy(order...).All(&list)
 	if err != nil {
@@ -92,6 +92,17 @@ func (m *DhDatasource) Pager(page int64, page_size int64, filters map[string]int
 	var list []*DhDatasource
 	total,total_page = m.pager(m, filters, page_size)
 	_, err := m.pagerList(m, page, page_size, filters).All(&list)
+	if err != nil {
+		m.errReport(err)
+		return 0,0,nil
+	}
+	return total, total_page, list
+}
+
+func (m *DhDatasource) OrderPager(page int64, page_size int64, filters map[string]interface{}, order ...string) (total int64, total_page int64, result []*DhDatasource) {
+	var list []*DhDatasource
+	total,total_page = m.pager(m, filters, page_size)
+	_, err := m.pagerList(m, page, page_size, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
 		return 0,0,nil

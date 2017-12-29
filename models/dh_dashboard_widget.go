@@ -73,7 +73,7 @@ func (m *DhDashboardWidget) List(filters map[string]interface{}) []*DhDashboardW
 	return list
 }
 
-func (m *DhDashboardWidget) OrderList(filters map[string]interface{},order ...string) []*DhDashboardWidget {
+func (m *DhDashboardWidget) OrderList(filters map[string]interface{}, order ...string) []*DhDashboardWidget {
 	var list []*DhDashboardWidget
 	_, err := m.findByFilters(m, filters).OrderBy(order...).All(&list)
 	if err != nil {
@@ -87,6 +87,17 @@ func (m *DhDashboardWidget) Pager(page int64, page_size int64, filters map[strin
 	var list []*DhDashboardWidget
 	total,total_page = m.pager(m, filters, page_size)
 	_, err := m.pagerList(m, page, page_size, filters).All(&list)
+	if err != nil {
+		m.errReport(err)
+		return 0,0,nil
+	}
+	return total, total_page, list
+}
+
+func (m *DhDashboardWidget) OrderPager(page int64, page_size int64, filters map[string]interface{}, order ...string) (total int64, total_page int64, result []*DhDashboardWidget) {
+	var list []*DhDashboardWidget
+	total,total_page = m.pager(m, filters, page_size)
+	_, err := m.pagerList(m, page, page_size, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
 		return 0,0,nil

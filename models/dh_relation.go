@@ -16,6 +16,7 @@ type DhRelation struct {
     	Auth string `json:"auth"`
     	Name string `json:"name"`
     	Sort int `json:"sort"`
+    	UodateTime time.Time `json:"uodate_time"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }
@@ -76,7 +77,7 @@ func (m *DhRelation) List(filters map[string]interface{}) []*DhRelation {
 	return list
 }
 
-func (m *DhRelation) OrderList(filters map[string]interface{},order ...string) []*DhRelation {
+func (m *DhRelation) OrderList(filters map[string]interface{}, order ...string) []*DhRelation {
 	var list []*DhRelation
 	_, err := m.findByFilters(m, filters).OrderBy(order...).All(&list)
 	if err != nil {
@@ -90,6 +91,17 @@ func (m *DhRelation) Pager(page int64, page_size int64, filters map[string]inter
 	var list []*DhRelation
 	total,total_page = m.pager(m, filters, page_size)
 	_, err := m.pagerList(m, page, page_size, filters).All(&list)
+	if err != nil {
+		m.errReport(err)
+		return 0,0,nil
+	}
+	return total, total_page, list
+}
+
+func (m *DhRelation) OrderPager(page int64, page_size int64, filters map[string]interface{}, order ...string) (total int64, total_page int64, result []*DhRelation) {
+	var list []*DhRelation
+	total,total_page = m.pager(m, filters, page_size)
+	_, err := m.pagerList(m, page, page_size, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
 		return 0,0,nil

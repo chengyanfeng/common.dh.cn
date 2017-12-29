@@ -72,7 +72,7 @@ func (m *DhVcode) List(filters map[string]interface{}) []*DhVcode {
 	return list
 }
 
-func (m *DhVcode) OrderList(filters map[string]interface{},order ...string) []*DhVcode {
+func (m *DhVcode) OrderList(filters map[string]interface{}, order ...string) []*DhVcode {
 	var list []*DhVcode
 	_, err := m.findByFilters(m, filters).OrderBy(order...).All(&list)
 	if err != nil {
@@ -86,6 +86,17 @@ func (m *DhVcode) Pager(page int64, page_size int64, filters map[string]interfac
 	var list []*DhVcode
 	total,total_page = m.pager(m, filters, page_size)
 	_, err := m.pagerList(m, page, page_size, filters).All(&list)
+	if err != nil {
+		m.errReport(err)
+		return 0,0,nil
+	}
+	return total, total_page, list
+}
+
+func (m *DhVcode) OrderPager(page int64, page_size int64, filters map[string]interface{}, order ...string) (total int64, total_page int64, result []*DhVcode) {
+	var list []*DhVcode
+	total,total_page = m.pager(m, filters, page_size)
+	_, err := m.pagerList(m, page, page_size, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
 		return 0,0,nil

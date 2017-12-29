@@ -10,8 +10,8 @@ type DhUser struct {
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
     	Name string `json:"name"`
-		Email string `json:"email"`
-		Corp string `json:"corp"`
+    	Corp string `json:"corp"`
+    	Email string `json:"email"`
     	Mobile string `json:"mobile"`
     	Password string `json:"password"`
     	Auth string `json:"auth"`
@@ -78,7 +78,7 @@ func (m *DhUser) List(filters map[string]interface{}) []*DhUser {
 	return list
 }
 
-func (m *DhUser) OrderList(filters map[string]interface{},order ...string) []*DhUser {
+func (m *DhUser) OrderList(filters map[string]interface{}, order ...string) []*DhUser {
 	var list []*DhUser
 	_, err := m.findByFilters(m, filters).OrderBy(order...).All(&list)
 	if err != nil {
@@ -92,6 +92,17 @@ func (m *DhUser) Pager(page int64, page_size int64, filters map[string]interface
 	var list []*DhUser
 	total,total_page = m.pager(m, filters, page_size)
 	_, err := m.pagerList(m, page, page_size, filters).All(&list)
+	if err != nil {
+		m.errReport(err)
+		return 0,0,nil
+	}
+	return total, total_page, list
+}
+
+func (m *DhUser) OrderPager(page int64, page_size int64, filters map[string]interface{}, order ...string) (total int64, total_page int64, result []*DhUser) {
+	var list []*DhUser
+	total,total_page = m.pager(m, filters, page_size)
+	_, err := m.pagerList(m, page, page_size, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
 		return 0,0,nil
