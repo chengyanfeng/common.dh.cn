@@ -74,7 +74,7 @@ func (m *DhStoryboardWidget) List(filters map[string]interface{}) []*DhStoryboar
 	return list
 }
 
-func (m *DhStoryboardWidget) OrderList(filters map[string]interface{},order ...string) []*DhStoryboardWidget {
+func (m *DhStoryboardWidget) OrderList(filters map[string]interface{}, order ...string) []*DhStoryboardWidget {
 	var list []*DhStoryboardWidget
 	_, err := m.findByFilters(m, filters).OrderBy(order...).All(&list)
 	if err != nil {
@@ -88,6 +88,17 @@ func (m *DhStoryboardWidget) Pager(page int64, page_size int64, filters map[stri
 	var list []*DhStoryboardWidget
 	total,total_page = m.pager(m, filters, page_size)
 	_, err := m.pagerList(m, page, page_size, filters).All(&list)
+	if err != nil {
+		m.errReport(err)
+		return 0,0,nil
+	}
+	return total, total_page, list
+}
+
+func (m *DhStoryboardWidget) OrderPager(page int64, page_size int64, filters map[string]interface{}, order ...string) (total int64, total_page int64, result []*DhStoryboardWidget) {
+	var list []*DhStoryboardWidget
+	total,total_page = m.pager(m, filters, page_size)
+	_, err := m.pagerList(m, page, page_size, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
 		return 0,0,nil

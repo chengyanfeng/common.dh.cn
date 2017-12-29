@@ -97,3 +97,14 @@ func (m *DhRelation) Pager(page int64, page_size int64, filters map[string]inter
 	}
 	return total, total_page, list
 }
+
+func (m *DhRelation) OrderPager(page int64, page_size int64, filters map[string]interface{}, order ...string) (total int64, total_page int64, result []*DhRelation) {
+	var list []*DhRelation
+	total,total_page = m.pager(m, filters, page_size)
+	_, err := m.pagerList(m, page, page_size, filters).OrderBy(order...).All(&list)
+	if err != nil {
+		m.errReport(err)
+		return 0,0,nil
+	}
+	return total, total_page, list
+}

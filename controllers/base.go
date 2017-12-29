@@ -157,7 +157,13 @@ func (c *BaseController) HeadHref(str string) bool {
 	return false
 }
 
-func (c *BaseController) GetAuthUser() *models.DhUser {
+func (c *BaseController) GetAuthUser() (m *models.DhUser) {
+	defer func() {
+		if m == nil{
+			c.EchoJsonErr("用户不存在")
+			c.StopRun()
+		}
+	}()
 	auth := c.GetString("auth")
 	utils.Debug("auth", auth)
 	if auth == "" {
@@ -167,16 +173,17 @@ func (c *BaseController) GetAuthUser() *models.DhUser {
 		user := new(models.DhUser).Find("auth", auth)
 		if user != nil {
 			if user.Status != -1 {
-				return user
+				m = user
 			} else {
-				return nil
+				m = nil
 			}
 		} else {
-			return nil
+			m = nil
 		}
 	} else {
-		return nil
+		m = nil
 	}
+	return
 }
 
 func (c *BaseController) GetUserCorps(user_id string) []utils.P {
@@ -186,6 +193,8 @@ func (c *BaseController) GetUserCorps(user_id string) []utils.P {
 	info["_id"] = user_id
 	info["name"] = "私人空间"
 	info["role"] = "admin"
+	info["status"] = 1
+	info["default"] = 1
 	corps = append(corps, info)
 	//其他团队
 	filters := map[string]interface{}{}
@@ -197,6 +206,8 @@ func (c *BaseController) GetUserCorps(user_id string) []utils.P {
 		info["_id"] = corp.ObjectId
 		info["name"] = corp.Name
 		info["role"] = v.Role
+		info["status"] = corp.Status
+		info["default"] = 0
 		corps = append(corps, info)
 	}
 	return corps
@@ -231,11 +242,11 @@ func (c *BaseController) SaveRelation(id int64, object_id string, crop_id string
 	return relation.Save()
 }
 
-func (c *BaseController) SortRelation(crop_id string, user_id string, relate_type string, relate_ids []string) bool {
+func (c *BaseController) SortRelation(corp_id string, user_id string, relate_type string, relate_ids []string) bool {
 	o := new(models.DhBase).Orm()
 	for k, relate_id := range relate_ids {
 		params := map[string]interface{}{}
-		params["crop_id"] = crop_id
+		params["corp_id"] = corp_id
 		params["user_id"] = user_id
 		params["relate_type"] = relate_type
 		params["relate_id"] = relate_id

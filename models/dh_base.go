@@ -87,7 +87,7 @@ func (m *DhBase) delete(entity interface{}, args ...interface{}) bool {
 		return true
 	} else if total == 2 {
 		key := args[0]
-		value := args[0]
+		value := args[1]
 		_key,ok := key.(string)
 		if !ok {
 			return false
@@ -125,7 +125,7 @@ func (m *DhBase) softDelete(entity interface{}, args ...interface{}) bool {
 		return true
 	} else if total == 2 {
 		key := args[0]
-		value := args[0]
+		value := args[1]
 		_key,ok := key.(string)
 		if !ok {
 			return false
