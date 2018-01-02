@@ -9,12 +9,12 @@ type DhCorp struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    	Name string `json:"name"`
-    	Email string `json:"email"`
-    	Mobile string `json:"mobile"`
-    	Vcode string `json:"vcode"`
-		Status int `json:"status"`
-		ConnectId string `json:"connect_id"`
+    Name string `json:"name"`
+    Email string `json:"email"`
+    Mobile string `json:"mobile"`
+    Vcode string `json:"vcode"`
+	Status int `json:"status"`
+	ConnectId string `json:"connect_id"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }
