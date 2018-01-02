@@ -9,12 +9,12 @@ type DhConnect struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    	CorpId string `json:"corp_id"`
-    	UserId string `json:"user_id"`
-    	Name string `json:"name"`
-    	Type string `json:"type"`
-    	Config string `json:"config"`
-    	Status int `json:"status"`
+    CorpId string `json:"corp_id"`
+    UserId string `json:"user_id"`
+    Name string `json:"name"`
+    Type string `json:"type"`
+    Config string `json:"config"`
+    Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }

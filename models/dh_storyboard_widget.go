@@ -9,11 +9,11 @@ type DhStoryboardWidget struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    	PageId string `json:"page_id"`
-    	Type string `json:"type"`
-    	Position string `json:"position"`
-    	Content string `json:"content"`
-    	Status int `json:"status"`
+    PageId string `json:"page_id"`
+    Type string `json:"type"`
+    Position string `json:"position"`
+    Content string `json:"content"`
+    Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }

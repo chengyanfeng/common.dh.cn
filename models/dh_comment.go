@@ -9,12 +9,12 @@ type DhComment struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    	RelateType string `json:"relate_type"`
-    	RelateId string `json:"relate_id"`
-    	UserId string `json:"user_id"`
-    	Type string `json:"type"`
-    	Content string `json:"content"`
-    	ReplayId string `json:"replay_id"`
+    RelateType string `json:"relate_type"`
+    RelateId string `json:"relate_id"`
+    UserId string `json:"user_id"`
+    Type string `json:"type"`
+    Content string `json:"content"`
+    ReplayId string `json:"replay_id"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }

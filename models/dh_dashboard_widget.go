@@ -9,10 +9,10 @@ type DhDashboardWidget struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    	DashboardId string `json:"dashboard_id"`
-    	Grid string `json:"grid"`
-    	Config string `json:"config"`
-    	Status int `json:"status"`
+    DashboardId string `json:"dashboard_id"`
+    Grid string `json:"grid"`
+    Config string `json:"config"`
+    Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }

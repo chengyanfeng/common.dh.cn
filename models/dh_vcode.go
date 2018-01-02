@@ -9,9 +9,9 @@ type DhVcode struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    	Mobile string `json:"mobile"`
-    	Code string `json:"code"`
-    	Status int `json:"status"`
+    Mobile string `json:"mobile"`
+    Code string `json:"code"`
+    Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }

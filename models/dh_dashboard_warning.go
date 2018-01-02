@@ -9,11 +9,11 @@ type DhDashboardWarning struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    	WidgetId string `json:"widget_id"`
-    	Key string `json:"key"`
-    	Compare string `json:"compare"`
-    	Value int64 `json:"value"`
-    	Status int `json:"status"`
+    WidgetId string `json:"widget_id"`
+    Key string `json:"key"`
+    Compare string `json:"compare"`
+    Value int64 `json:"value"`
+    Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }

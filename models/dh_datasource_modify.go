@@ -9,14 +9,14 @@ type DhDatasourceModify struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    	UserId string `json:"user_id"`
-    	DatasourceId string `json:"datasource_id"`
-    	Table string `json:"table"`
-    	RowId string `json:"row_id"`
-    	Column string `json:"column"`
-    	Type string `json:"type"`
-    	OldValue string `json:"old_value"`
-    	NewValue string `json:"new_value"`
+    UserId string `json:"user_id"`
+    DatasourceId string `json:"datasource_id"`
+    Table string `json:"table"`
+    RowId string `json:"row_id"`
+    Column string `json:"column"`
+    Type string `json:"type"`
+    OldValue string `json:"old_value"`
+    NewValue string `json:"new_value"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }
