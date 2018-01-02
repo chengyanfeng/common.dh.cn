@@ -21,7 +21,7 @@ func init() {
 }
 
 func (m *{{.ModelName}}) TableName() string {
-    return "{{.TableName}}"
+	return "{{.TableName}}"
 }
 
 func (m *{{.ModelName}}) Query() orm.QuerySeter {
