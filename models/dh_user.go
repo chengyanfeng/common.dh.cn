@@ -16,7 +16,8 @@ type DhUser struct {
     	Password string `json:"password"`
     	Auth string `json:"auth"`
     	Avatar string `json:"avatar"`
-    	Icode string `json:"icode"`
+		Icode string `json:"icode"`
+		IsAdmin int `json:"is_admin"`
     	Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
