@@ -9,16 +9,16 @@ type DhUser struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    Name string `json:"name"`
-    Corp string `json:"corp"`
-    Email string `json:"email"`
-    Mobile string `json:"mobile"`
-    Password string `json:"password"`
-    Auth string `json:"auth"`
-    Avatar string `json:"avatar"`
-    Icode string `json:"icode"`
-    IsAdmin int `json:"is_admin"`
-    Status int `json:"status"`
+	Name string `json:"name"`
+	Corp string `json:"corp"`
+	Email string `json:"email"`
+	Mobile string `json:"mobile"`
+	Password string `json:"password"`
+	Auth string `json:"auth"`
+	Avatar string `json:"avatar"`
+	Icode string `json:"icode"`
+	IsAdmin int `json:"is_admin"`
+	Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }

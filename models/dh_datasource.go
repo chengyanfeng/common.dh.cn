@@ -9,15 +9,15 @@ type DhDatasource struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    GroupId string `json:"group_id"`
-    Name string `json:"name"`
-    Table string `json:"table"`
-    Type string `json:"type"`
-    Format string `json:"format"`
-    Url string `json:"url"`
-    ConnectId string `json:"connect_id"`
-    Status int `json:"status"`
-    Sort int `json:"sort"`
+	GroupId string `json:"group_id"`
+	Name string `json:"name"`
+	Table string `json:"table"`
+	Type string `json:"type"`
+	Format string `json:"format"`
+	Url string `json:"url"`
+	ConnectId string `json:"connect_id"`
+	Status int `json:"status"`
+	Sort int `json:"sort"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }

@@ -9,12 +9,12 @@ type DhNotify struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    FromCropId string `json:"from_crop_id"`
-    FromUserId string `json:"from_user_id"`
-    UserId string `json:"user_id"`
-    Type string `json:"type"`
-    Config string `json:"config"`
-    Status int `json:"status"`
+	FromCropId string `json:"from_crop_id"`
+	FromUserId string `json:"from_user_id"`
+	UserId string `json:"user_id"`
+	Type string `json:"type"`
+	Config string `json:"config"`
+	Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }

@@ -9,9 +9,9 @@ type DhDashboardGroup struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    Name string `json:"name"`
-    Status int `json:"status"`
-    Sort int `json:"sort"`
+	Name string `json:"name"`
+	Status int `json:"status"`
+	Sort int `json:"sort"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }

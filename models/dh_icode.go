@@ -9,8 +9,8 @@ type DhIcode struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    Code string `json:"code"`
-    Status int `json:"status"`
+	Code string `json:"code"`
+	Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }

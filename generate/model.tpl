@@ -10,7 +10,7 @@ type {{.ModelName}} struct {
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
 	{{- range .Fields}}
-    {{.Name}} {{.Type}} {{.Tag}}
+	{{.Name}} {{.Type}} {{.Tag}}
 	{{- end}}
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`

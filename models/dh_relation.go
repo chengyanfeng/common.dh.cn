@@ -9,14 +9,14 @@ type DhRelation struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    CorpId string `json:"corp_id"`
-    UserId string `json:"user_id"`
-    RelateType string `json:"relate_type"`
-    RelateId string `json:"relate_id"`
-    Auth string `json:"auth"`
-    Name string `json:"name"`
-    Sort int `json:"sort"`
-    UodateTime time.Time `json:"uodate_time"`
+	CorpId string `json:"corp_id"`
+	UserId string `json:"user_id"`
+	RelateType string `json:"relate_type"`
+	RelateId string `json:"relate_id"`
+	Auth string `json:"auth"`
+	Name string `json:"name"`
+	Sort int `json:"sort"`
+	UodateTime time.Time `json:"uodate_time"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }

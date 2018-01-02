@@ -9,9 +9,9 @@ type DhUserCorp struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
-    UserId string `json:"user_id"`
-    CorpId string `json:"corp_id"`
-    Role string `json:"role"`
+	UserId string `json:"user_id"`
+	CorpId string `json:"corp_id"`
+	Role string `json:"role"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }
