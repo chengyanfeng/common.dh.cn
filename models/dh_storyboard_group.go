@@ -21,7 +21,7 @@ func init() {
 }
 
 func (m *DhStoryboardGroup) TableName() string {
-    return "dh_storyboard_group"
+	return "dh_storyboard_group"
 }
 
 func (m *DhStoryboardGroup) Query() orm.QuerySeter {

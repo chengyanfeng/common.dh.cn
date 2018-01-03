@@ -22,7 +22,7 @@ func init() {
 }
 
 func (m *DhApiData) TableName() string {
-    return "dh_api_data"
+	return "dh_api_data"
 }
 
 func (m *DhApiData) Query() orm.QuerySeter {

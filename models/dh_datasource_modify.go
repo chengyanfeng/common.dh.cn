@@ -26,7 +26,7 @@ func init() {
 }
 
 func (m *DhDatasourceModify) TableName() string {
-    return "dh_datasource_modify"
+	return "dh_datasource_modify"
 }
 
 func (m *DhDatasourceModify) Query() orm.QuerySeter {

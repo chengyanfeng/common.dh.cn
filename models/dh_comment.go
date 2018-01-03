@@ -24,7 +24,7 @@ func init() {
 }
 
 func (m *DhComment) TableName() string {
-    return "dh_comment"
+	return "dh_comment"
 }
 
 func (m *DhComment) Query() orm.QuerySeter {

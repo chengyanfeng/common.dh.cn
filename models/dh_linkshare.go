@@ -23,7 +23,7 @@ func init() {
 }
 
 func (m *DhLinkshare) TableName() string {
-    return "dh_linkshare"
+	return "dh_linkshare"
 }
 
 func (m *DhLinkshare) Query() orm.QuerySeter {

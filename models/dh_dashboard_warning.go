@@ -23,7 +23,7 @@ func init() {
 }
 
 func (m *DhDashboardWarning) TableName() string {
-    return "dh_dashboard_warning"
+	return "dh_dashboard_warning"
 }
 
 func (m *DhDashboardWarning) Query() orm.QuerySeter {

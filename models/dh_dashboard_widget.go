@@ -22,7 +22,7 @@ func init() {
 }
 
 func (m *DhDashboardWidget) TableName() string {
-    return "dh_dashboard_widget"
+	return "dh_dashboard_widget"
 }
 
 func (m *DhDashboardWidget) Query() orm.QuerySeter {

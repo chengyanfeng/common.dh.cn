@@ -21,7 +21,7 @@ func init() {
 }
 
 func (m *DhUserCorp) TableName() string {
-    return "dh_user_corp"
+	return "dh_user_corp"
 }
 
 func (m *DhUserCorp) Query() orm.QuerySeter {

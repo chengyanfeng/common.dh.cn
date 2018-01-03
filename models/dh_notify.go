@@ -24,7 +24,7 @@ func init() {
 }
 
 func (m *DhNotify) TableName() string {
-    return "dh_notify"
+	return "dh_notify"
 }
 
 func (m *DhNotify) Query() orm.QuerySeter {

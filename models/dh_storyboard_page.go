@@ -22,7 +22,7 @@ func init() {
 }
 
 func (m *DhStoryboardPage) TableName() string {
-    return "dh_storyboard_page"
+	return "dh_storyboard_page"
 }
 
 func (m *DhStoryboardPage) Query() orm.QuerySeter {

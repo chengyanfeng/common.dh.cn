@@ -26,7 +26,7 @@ func init() {
 }
 
 func (m *DhRelation) TableName() string {
-    return "dh_relation"
+	return "dh_relation"
 }
 
 func (m *DhRelation) Query() orm.QuerySeter {

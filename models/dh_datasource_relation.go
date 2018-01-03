@@ -23,7 +23,7 @@ func init() {
 }
 
 func (m *DhDatasourceRelation) TableName() string {
-    return "dh_datasource_relation"
+	return "dh_datasource_relation"
 }
 
 func (m *DhDatasourceRelation) Query() orm.QuerySeter {

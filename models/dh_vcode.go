@@ -21,7 +21,7 @@ func init() {
 }
 
 func (m *DhVcode) TableName() string {
-    return "dh_vcode"
+	return "dh_vcode"
 }
 
 func (m *DhVcode) Query() orm.QuerySeter {

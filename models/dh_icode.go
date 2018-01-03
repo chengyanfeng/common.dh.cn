@@ -20,7 +20,7 @@ func init() {
 }
 
 func (m *DhIcode) TableName() string {
-    return "dh_icode"
+	return "dh_icode"
 }
 
 func (m *DhIcode) Query() orm.QuerySeter {

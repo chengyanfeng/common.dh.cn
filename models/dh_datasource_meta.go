@@ -24,7 +24,7 @@ func init() {
 }
 
 func (m *DhDatasourceMeta) TableName() string {
-    return "dh_datasource_meta"
+	return "dh_datasource_meta"
 }
 
 func (m *DhDatasourceMeta) Query() orm.QuerySeter {

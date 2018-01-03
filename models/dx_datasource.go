@@ -5,31 +5,36 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-type DhConnect struct {
+type DxDatasource struct {
 	DhBase
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
 	Name string `json:"name"`
 	Type string `json:"type"`
-	Config string `json:"config"`
+	Format string `json:"format"`
+	Url string `json:"url"`
+	ConnectId string `json:"connect_id"`
+	Sql  `json:"sql"`
+	Data  `json:"data"`
+	Sort int `json:"sort"`
 	Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }
 
 func init() {
-	orm.RegisterModel(new(DhConnect))
+	orm.RegisterModel(new(DxDatasource))
 }
 
-func (m *DhConnect) TableName() string {
-	return "dh_connect"
+func (m *DxDatasource) TableName() string {
+	return "dx_datasource"
 }
 
-func (m *DhConnect) Query() orm.QuerySeter {
+func (m *DxDatasource) Query() orm.QuerySeter {
 	return m.query(m)
 }
 
-func (m *DhConnect) Save() bool{
+func (m *DxDatasource) Save() bool{
 	if m.Id == 0 {
 		return m.create(m)
 	} else {
@@ -37,10 +42,10 @@ func (m *DhConnect) Save() bool{
 	}
 }
 
-func (m *DhConnect) Find(args ...interface{}) *DhConnect {
+func (m *DxDatasource) Find(args ...interface{}) *DxDatasource {
 	data := m.find(m,args...)
 	if data != nil {
-		_data,ok := data.(*DhConnect)
+		_data,ok := data.(*DxDatasource)
 		if ok {
 			return _data
 		} else {
@@ -51,20 +56,20 @@ func (m *DhConnect) Find(args ...interface{}) *DhConnect {
 	}
 }
 
-func (m *DhConnect) Delete(args ...interface{}) bool {
+func (m *DxDatasource) Delete(args ...interface{}) bool {
 	return m.delete(m,args...)
 }
 
-func (m *DhConnect) SoftDelete(args ...interface{}) bool {
+func (m *DxDatasource) SoftDelete(args ...interface{}) bool {
 	return m.softDelete(m,args...)
 }
 
-func (m *DhConnect) Count(filters map[string]interface{}) int64 {
+func (m *DxDatasource) Count(filters map[string]interface{}) int64 {
 	return m.count(m,filters)
 }
 
-func (m *DhConnect) List(filters map[string]interface{}) []*DhConnect {
-	var list []*DhConnect
+func (m *DxDatasource) List(filters map[string]interface{}) []*DxDatasource {
+	var list []*DxDatasource
 	_, err := m.findByFilters(m, filters).All(&list)
 	if err != nil {
 		m.errReport(err)
@@ -73,8 +78,8 @@ func (m *DhConnect) List(filters map[string]interface{}) []*DhConnect {
 	return list
 }
 
-func (m *DhConnect) OrderList(filters map[string]interface{}, order ...string) []*DhConnect {
-	var list []*DhConnect
+func (m *DxDatasource) OrderList(filters map[string]interface{}, order ...string) []*DxDatasource {
+	var list []*DxDatasource
 	_, err := m.findByFilters(m, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
@@ -83,8 +88,8 @@ func (m *DhConnect) OrderList(filters map[string]interface{}, order ...string) [
 	return list
 }
 
-func (m *DhConnect) Pager(page int64, page_size int64, filters map[string]interface{}) (total int64, total_page int64, result []*DhConnect) {
-	var list []*DhConnect
+func (m *DxDatasource) Pager(page int64, page_size int64, filters map[string]interface{}) (total int64, total_page int64, result []*DxDatasource) {
+	var list []*DxDatasource
 	total,total_page = m.pager(m, filters, page_size)
 	_, err := m.pagerList(m, page, page_size, filters).All(&list)
 	if err != nil {
@@ -94,8 +99,8 @@ func (m *DhConnect) Pager(page int64, page_size int64, filters map[string]interf
 	return total, total_page, list
 }
 
-func (m *DhConnect) OrderPager(page int64, page_size int64, filters map[string]interface{}, order ...string) (total int64, total_page int64, result []*DhConnect) {
-	var list []*DhConnect
+func (m *DxDatasource) OrderPager(page int64, page_size int64, filters map[string]interface{}, order ...string) (total int64, total_page int64, result []*DxDatasource) {
+	var list []*DxDatasource
 	total,total_page = m.pager(m, filters, page_size)
 	_, err := m.pagerList(m, page, page_size, filters).OrderBy(order...).All(&list)
 	if err != nil {
