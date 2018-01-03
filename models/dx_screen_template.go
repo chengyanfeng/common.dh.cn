@@ -10,6 +10,7 @@ type DxScreenTemplate struct {
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
 	ScreenId string `json:"screen_id"`
+	Name string `json:"name"`
 	Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
