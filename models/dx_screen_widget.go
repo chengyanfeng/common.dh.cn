@@ -11,7 +11,7 @@ type DxScreenWidget struct {
 	ObjectId string `json:"_id"`
 	ScreenId string `json:"screen_id"`
 	DatasourceId string `json:"datasource_id"`
-	Config  `json:"config"`
+	Config string `json:"config"`
 	Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`

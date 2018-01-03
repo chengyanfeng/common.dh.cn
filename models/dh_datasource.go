@@ -16,8 +16,11 @@ type DhDatasource struct {
 	Format string `json:"format"`
 	Url string `json:"url"`
 	ConnectId string `json:"connect_id"`
-	Status int `json:"status"`
+	IsAutoUpdate int `json:"is_auto_update"`
+	UpdateFrequency int `json:"update_frequency"`
+	UpdateLocation int64 `json:"update_location"`
 	Sort int `json:"sort"`
+	Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }

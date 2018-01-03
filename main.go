@@ -146,13 +146,13 @@ func ganerateModel(table string) string {
 			mate_data := MateData{}
 			mate_data.Name = strFirstToUpper(field_name)
 			mate_data.Tag = fmt.Sprintf("`json:\"%s\"`",field_name)
-			if HasPrefix(field_type, "varchar") || HasPrefix(field_type, "char") || HasPrefix(field_type, "text") {
+			if HasPrefix(field_type, "varchar") || HasPrefix(field_type, "char") || HasPrefix(field_type, "text") || HasPrefix(field_type, "longtext") {
 				mate_data.Type = "string"
 			}
 			if HasPrefix(field_type, "int") || HasPrefix(field_type, "bigint") {
 				mate_data.Type = "int64"
 			}
-			if HasPrefix(field_type, "tinyint") {
+			if HasPrefix(field_type, "tinyint") || HasPrefix(field_type, "mediumint") {
 				mate_data.Type = "int"
 			}
 			if HasPrefix(field_type, "timestamp") {

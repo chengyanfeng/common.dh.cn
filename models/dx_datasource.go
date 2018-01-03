@@ -14,8 +14,10 @@ type DxDatasource struct {
 	Format string `json:"format"`
 	Url string `json:"url"`
 	ConnectId string `json:"connect_id"`
-	Sql  `json:"sql"`
-	Data  `json:"data"`
+	Sql string `json:"sql"`
+	Data string `json:"data"`
+	IsAutoUpdate int `json:"is_auto_update"`
+	UpdateFrequency int `json:"update_frequency"`
 	Sort int `json:"sort"`
 	Status int `json:"status"`
 	CreateTime time.Time `json:"-"`

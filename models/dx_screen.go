@@ -10,8 +10,8 @@ type DxScreen struct {
 	Id int64 `json:"-"`
 	ObjectId string `json:"_id"`
 	Name string `json:"name"`
-	Config  `json:"config"`
-	Thumbnail  `json:"thumbnail"`
+	Config string `json:"config"`
+	Thumbnail string `json:"thumbnail"`
 	Status int `json:"status"`
 	Sort int `json:"sort"`
 	CreateTime time.Time `json:"-"`
