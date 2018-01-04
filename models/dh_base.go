@@ -24,7 +24,10 @@ func init() {
 	orm.SetMaxIdleConns("default", 30)
 	orm.SetMaxOpenConns("default", 30)
 	orm.DefaultTimeLoc = time.UTC
-	orm.Debug = true
+	runmode := beego.AppConfig.DefaultString("runmode","dev")
+	if runmode == "dev" {
+		orm.Debug = true
+	}
 }
 
 type DhBase struct {
