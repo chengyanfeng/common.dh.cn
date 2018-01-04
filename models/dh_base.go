@@ -219,7 +219,7 @@ func (m *DhBase) pager(entity interface{}, filters map[string]interface{}, page_
 }
 
 func (m *DhBase) pagerList(entity interface{}, page int64, page_size int64, filters map[string]interface{}) orm.QuerySeter {
-	return m.findByFilters(entity,filters).Offset(page * page_size).Limit(page_size)
+	return m.findByFilters(entity,filters).Offset((page - 1) * page_size).Limit(page_size)
 }
 
 func (m *DhBase) errReport(err interface{}) {
