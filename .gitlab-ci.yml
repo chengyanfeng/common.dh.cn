@@ -4,14 +4,15 @@ stages:
   - test
 
 before_script:
+  - export CURRENT_BUILD_PATH=$(pwd)
   - go get github.com/tools/godep
-  - cp -r /builds/user /go/src/github.com/user/
-  - cd /go/src/github.com/user/repo
+  - cd $CURRENT_BUILD_PATH
 
 build-my-project:
   stage: build
   script:
     - godep restore
+    - cd
     - godep go build
 
 test-my-project:
