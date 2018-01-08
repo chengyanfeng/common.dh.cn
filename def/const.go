@@ -7,6 +7,7 @@ import (
 const (
 	DEFAULT_HTTP_TIMEOUT time.Duration = 60 * time.Second
 	CACHE_TTL_DEFAULT                  = 60
+	MAX_UPLOAD_SIZE      int64         = 50 * 1024 * 1024
 
 	MODE_TEST string = "TEST"
 	MODE_EE   string = "EE"
@@ -16,12 +17,11 @@ const (
 	AUDIT_BAN  string = "ban"
 )
 
-
-var	SHARE_TYPE = map[string]int{
-	"dh_dashboard_group":1,
-	"dh_dashboard":1,
-	"dh_storyboard_group":1,
-	"dh_storyboard":1,
-	"dh_datasource_group":1,
-	"dh_datasource":1,
+var SHARE_TYPE = map[string]int{
+	"dh_dashboard_group":  1,
+	"dh_dashboard":        1,
+	"dh_storyboard_group": 1,
+	"dh_storyboard":       1,
+	"dh_datasource_group": 1,
+	"dh_datasource":       1,
 }
