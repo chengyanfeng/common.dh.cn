@@ -272,20 +272,17 @@ func (c *BaseController) Share(crop_id string, user_ids []string, relate_type st
 	}
 	share_name := c.GetShareName(relate_type, relate_id)
 	if share_name == "" {
-		fmt.Println(2)
 		o.Commit()
 		return false
 	}
 	result := c.RemoveShare(relate_type, relate_id, "share")
 	if !result {
-		fmt.Println(3)
 		o.Rollback()
 		return false
 	}
 	for _, user_id := range user_ids {
 		result := c.SaveRelation(0, "", crop_id, user_id, relate_type, relate_id, share_name, "share")
 		if !result {
-			fmt.Println(4)
 			o.Rollback()
 			return false
 		}

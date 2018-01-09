@@ -11,7 +11,7 @@ type DhLinkshare struct {
 	ObjectId string `json:"_id"`
 	RelateType string `json:"relate_type"`
 	RelateId string `json:"relate_id"`
-	Type string `json:"type"`
+	Type int `json:"type"`
 	Password string `json:"password"`
 	Url string `json:"url"`
 	CreateTime time.Time `json:"-"`
