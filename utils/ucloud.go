@@ -30,7 +30,7 @@ func NewUcloud() *Ucloud {
 	}
 }
 
-func (m *Ucloud) SendSms(msg string, mobile ...string) (result string) {
+func (m *Ucloud) SendSms(msg string, mobile ...string) bool {
 	params := P{}
 	params["PublicKey"] = m.Config["public_key"]
 	params["ProjectId"] = m.Config["project_id"]
@@ -44,8 +44,16 @@ func (m *Ucloud) SendSms(msg string, mobile ...string) (result string) {
 	data, err := HttpPostBody(m.Config["base_url"], &P{}, body)
 	if err != nil {
 		Error("Ucloud Send Sms Error :", err)
+		return false
 	}
-	return data
+	result := *JsonDecode([]byte(data))
+	code, _ := result["RetCode"].(int)
+	if code == 0 {
+		return true
+	} else {
+		Error("Ucloud Send Sms Error :", result)
+		return false
+	}
 }
 
 func (m *Ucloud) RefreshCdn(url string) (result string) {
