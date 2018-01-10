@@ -9,35 +9,39 @@ import (
 	"github.com/astaxie/beego/config"
 )
 
-var UCLOUND_CONFIG map[string]string
+type Ucloud struct {
+	Config map[string]string
+}
 
-func init() {
+func NewUcloud() *Ucloud {
 	cnf, err := config.NewConfig("ini", "conf/ucloud.conf")
 	if err != nil {
 		Debug("ucloud配置文件失败")
+		return nil
 	} else {
-		UCLOUND_CONFIG, err = cnf.GetSection("ucloud")
+		config, err := cnf.GetSection("ucloud")
 		if err != nil {
 			Debug("获取ucloud配置文件失败")
+			return nil
 		}
+		ucloud := new(Ucloud)
+		ucloud.Config = config
+		return ucloud
 	}
-}
-
-type Ucloud struct {
 }
 
 func (m *Ucloud) SendSms(msg string, mobile ...string) (result string) {
 	params := P{}
-	params["PublicKey"] = UCLOUND_CONFIG["public_key"]
-	params["ProjectId"] = UCLOUND_CONFIG["project_id"]
+	params["PublicKey"] = m.Config["public_key"]
+	params["ProjectId"] = m.Config["project_id"]
 	params["Action"] = "SendSms"
 	params["Content"] = msg
 	for key, val := range mobile {
 		params["Phone."+string(key)] = val
 	}
-	params["Signature"] = m.VerfyAc(params, UCLOUND_CONFIG["private_key"])
+	params["Signature"] = m.VerfyAc(params, m.Config["private_key"])
 	body, _ := json.Marshal(params)
-	data, err := HttpPostBody(UCLOUND_CONFIG["base_url"], &P{}, body)
+	data, err := HttpPostBody(m.Config["base_url"], &P{}, body)
 	if err != nil {
 		Error("Ucloud Send Sms Error :", err)
 	}
@@ -46,15 +50,15 @@ func (m *Ucloud) SendSms(msg string, mobile ...string) (result string) {
 
 func (m *Ucloud) RefreshCdn(url string) (result string) {
 	params := P{}
-	params["PublicKey"] = UCLOUND_CONFIG["public_key"]
-	params["ProjectId"] = UCLOUND_CONFIG["project_id"]
+	params["PublicKey"] = m.Config["public_key"]
+	params["ProjectId"] = m.Config["project_id"]
 	params["Action"] = "RefreshUcdnDomainCache"
 	params["Type"] = "dir"
 	params["DomainId"] = "ucdn-d11yag"
 	params["UrlList.0"] = url
-	params["Signature"] = m.VerfyAc(params, UCLOUND_CONFIG["private_key"])
+	params["Signature"] = m.VerfyAc(params, m.Config["private_key"])
 	body, _ := json.Marshal(params)
-	data, err := HttpPostBody(UCLOUND_CONFIG["base_url"], &P{}, body)
+	data, err := HttpPostBody(m.Config["base_url"], &P{}, body)
 	if err != nil {
 		Error("Ucloud Refresh Cdn Error :", err)
 	}
