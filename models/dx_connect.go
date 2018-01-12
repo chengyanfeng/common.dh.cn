@@ -10,10 +10,10 @@ type DxConnect struct {
 	DhBase
 	Id         int64     `json:"-"`
 	ObjectId   string    `json:"_id"`
-	UserId     string    `json:"user_id"`
 	Name       string    `json:"name"`
 	Type       string    `json:"type"`
 	Config     string    `json:"config"`
+	ErrMsg     string    `json:"err_msg"`
 	Status     int       `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
