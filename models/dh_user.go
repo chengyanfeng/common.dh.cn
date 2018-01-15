@@ -18,8 +18,8 @@ type DhUser struct {
 	Avatar string `json:"avatar"`
 	Icode string `json:"icode"`
 	IsAdmin int `json:"is_admin"`
-	IsDataIUser int `json:"is_dataI_user"`
-	IsDataXUser int `json:"is_dataX_user"`
+	IsDataIUser int `json:"is_dataI_user" orm:"column(is_dataI_user)"`
+	IsDataXUser int `json:"is_dataX_user" orm:"column(is_dataX_user)"`
 	Status int `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`

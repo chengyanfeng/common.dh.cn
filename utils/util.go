@@ -343,7 +343,7 @@ func TransFunc(o string) (n string) {
 			}
 		}
 	} else if StartsWith(o, `"`) && EndsWith(o, `"`) && Count(o, []string{","}) == 0 {
-		n = o[1 : len(o)-1]
+		n = o[1: len(o)-1]
 	} else {
 		n = o
 	}
@@ -552,4 +552,10 @@ func ParseTableHead(th interface{}) []P {
 		}
 	}
 	return tmp
+}
+
+func CopyToP(from, to P) {
+	for k, v := range from {
+		to[k] = v
+	}
 }
