@@ -1,15 +1,16 @@
 package models
 
 import (
-	"math"
-	"time"
 	"fmt"
+	"math"
 	"reflect"
-	"gopkg.in/mgo.v2/bson"
+	"time"
+
+	"common.dh.cn/utils"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
-	"common.dh.cn/utils"
+	"gopkg.in/mgo.v2/bson"
 )
 
 func init() {
@@ -24,7 +25,7 @@ func init() {
 	orm.SetMaxIdleConns("default", 30)
 	orm.SetMaxOpenConns("default", 30)
 	orm.DefaultTimeLoc = time.UTC
-	runmode := beego.AppConfig.DefaultString("runmode","dev")
+	runmode := beego.AppConfig.DefaultString("runmode", "dev")
 	if runmode == "dev" {
 		orm.Debug = true
 	}
@@ -44,7 +45,7 @@ func (m *DhBase) query(entity interface{}) orm.QuerySeter {
 func (m *DhBase) create(entity interface{}) bool {
 	mutable := reflect.ValueOf(entity).Elem()
 	mutable.FieldByName("ObjectId").SetString(bson.NewObjectId().Hex())
-	now := time.Now();
+	now := time.Now()
 	mutable.FieldByName("CreateTime").Set(reflect.ValueOf(now))
 	mutable.FieldByName("UpdateTime").Set(reflect.ValueOf(now))
 	_id, err := orm.NewOrm().Insert(entity)
@@ -58,7 +59,7 @@ func (m *DhBase) create(entity interface{}) bool {
 
 func (m *DhBase) update(entity interface{}) bool {
 	mutable := reflect.ValueOf(entity).Elem()
-	now := time.Now();
+	now := time.Now()
 	mutable.FieldByName("UpdateTime").Set(reflect.ValueOf(now))
 	_, err := orm.NewOrm().Update(entity)
 	if err != nil {
@@ -70,18 +71,18 @@ func (m *DhBase) update(entity interface{}) bool {
 }
 
 func (m *DhBase) delete(entity interface{}, args ...interface{}) bool {
-	var err interface{}
+	var err error
 	total := len(args)
 	if total == 1 {
 		index := args[0]
 		switch index.(type) {
-			case string,*string:
-				_, err = m.findByObjectID(entity, index.(string)).Delete()
-			case int64,*int64:
-				_, err = m.findByID(entity, index.(int64)).Delete()
-			case map[string]interface{}:
-				_, err = m.findByFilters(entity,index.(map[string]interface{})).Delete()
-			default:
+		case string, *string:
+			_, err = m.findByObjectID(entity, index.(string)).Delete()
+		case int64, *int64:
+			_, err = m.findByID(entity, index.(int64)).Delete()
+		case map[string]interface{}:
+			_, err = m.findByFilters(entity, index.(map[string]interface{})).Delete()
+		default:
 		}
 		if err != nil {
 			utils.Error(err)
@@ -91,7 +92,7 @@ func (m *DhBase) delete(entity interface{}, args ...interface{}) bool {
 	} else if total == 2 {
 		key := args[0]
 		value := args[1]
-		_key,ok := key.(string)
+		_key, ok := key.(string)
 		if !ok {
 			return false
 		}
@@ -107,35 +108,35 @@ func (m *DhBase) delete(entity interface{}, args ...interface{}) bool {
 }
 
 func (m *DhBase) softDelete(entity interface{}, args ...interface{}) bool {
-	var err interface{}
+	var err error
 	total := len(args)
-	params := orm.Params{"status":-1}
+	params := orm.Params{"status": -1}
 	if total == 1 {
 		index := args[0]
 		switch index.(type) {
-			case string,*string:
-				_, err = m.findByObjectID(entity, index.(string)).Update(params)
-			case int64,*int64:
-				_, err = m.findByID(entity, index.(int64)).Update(params)
-			case map[string]interface{}:
-				_, err = m.findByFilters(entity,index.(map[string]interface{})).Update(params)
-			default:
+		case string, *string:
+			_, err = m.findByObjectID(entity, index.(string)).Update(params)
+		case int64, *int64:
+			_, err = m.findByID(entity, index.(int64)).Update(params)
+		case map[string]interface{}:
+			_, err = m.findByFilters(entity, index.(map[string]interface{})).Update(params)
+		default:
 		}
 		if err != nil {
-			utils.Error(err)
+			utils.Error(err.Error())
 			return false
 		}
 		return true
 	} else if total == 2 {
 		key := args[0]
 		value := args[1]
-		_key,ok := key.(string)
+		_key, ok := key.(string)
 		if !ok {
 			return false
 		}
 		_, err = m.findByFilter(entity, _key, value).Update(params)
 		if err != nil {
-			utils.Error(err)
+			utils.Error(err.Error())
 			return false
 		}
 		return true
@@ -144,25 +145,25 @@ func (m *DhBase) softDelete(entity interface{}, args ...interface{}) bool {
 	}
 }
 
-func (m *DhBase) find(entity interface{},args ...interface{}) interface{} {
+func (m *DhBase) find(entity interface{}, args ...interface{}) interface{} {
 	total := len(args)
-	var err interface{}
+	var err error
 	if total == 1 {
 		index := args[0]
 		switch index.(type) {
-			case string,*string:
-				err = m.findByObjectID(entity,index.(string)).One(entity)
-			case int,*int:
-				err = m.findByID(entity,index.(int64)).One(entity)
-			case map[string]interface{}:
-				err = m.findByFilters(entity,index.(map[string]interface{})).One(entity)
-			case *orm.Condition:
-				err = m.query(entity).SetCond(index.(*orm.Condition)).One(entity)
-			default:
-				return nil
+		case string, *string:
+			err = m.findByObjectID(entity, index.(string)).One(entity)
+		case int, *int:
+			err = m.findByID(entity, index.(int64)).One(entity)
+		case map[string]interface{}:
+			err = m.findByFilters(entity, index.(map[string]interface{})).One(entity)
+		case *orm.Condition:
+			err = m.query(entity).SetCond(index.(*orm.Condition)).One(entity)
+		default:
+			return nil
 		}
 		if err != nil {
-			utils.Error(err)
+			utils.Error(err.Error())
 			return nil
 		} else {
 			return entity
@@ -170,13 +171,13 @@ func (m *DhBase) find(entity interface{},args ...interface{}) interface{} {
 	} else if total == 2 {
 		key := args[0]
 		value := args[1]
-		_key,ok := key.(string)
+		_key, ok := key.(string)
 		if !ok {
 			return nil
 		}
 		err = m.findByFilter(entity, _key, value).One(entity)
 		if err != nil {
-			utils.Error(err)
+			utils.Error(err.Error())
 			return nil
 		} else {
 			return entity
@@ -186,14 +187,14 @@ func (m *DhBase) find(entity interface{},args ...interface{}) interface{} {
 	}
 }
 
-func (m *DhBase) findByFilter(entity interface{}, key string, value interface {}) orm.QuerySeter {
+func (m *DhBase) findByFilter(entity interface{}, key string, value interface{}) orm.QuerySeter {
 	return m.query(entity).Filter(key, value)
 }
 
 func (m *DhBase) findByFilters(entity interface{}, filters map[string]interface{}) orm.QuerySeter {
 	query := m.query(entity)
-	for k,v := range filters {
-		query = query.Filter(k,v)
+	for k, v := range filters {
+		query = query.Filter(k, v)
 	}
 	return query
 }
@@ -207,7 +208,7 @@ func (m *DhBase) findByObjectID(entity interface{}, object_id string) orm.QueryS
 }
 
 func (m *DhBase) count(entity interface{}, filters map[string]interface{}) int64 {
-	result, err := m.findByFilters(entity,filters).Count()
+	result, err := m.findByFilters(entity, filters).Count()
 	if err != nil {
 		utils.Error(err)
 		return 0
@@ -222,7 +223,7 @@ func (m *DhBase) pager(entity interface{}, filters map[string]interface{}, page_
 }
 
 func (m *DhBase) pagerList(entity interface{}, page int64, page_size int64, filters map[string]interface{}) orm.QuerySeter {
-	return m.findByFilters(entity,filters).Offset((page - 1) * page_size).Limit(page_size)
+	return m.findByFilters(entity, filters).Offset((page - 1) * page_size).Limit(page_size)
 }
 
 func (m *DhBase) errReport(err interface{}) {

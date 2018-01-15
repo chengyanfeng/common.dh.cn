@@ -25,9 +25,8 @@ import (
 	"time"
 
 	//"code.google.com/p/mahonia"
-	"github.com/henrylee2cn/mahonia"
-	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/cache"
+	"github.com/henrylee2cn/mahonia"
 	"gopkg.in/mgo.v2/bson"
 
 	. "common.dh.cn/def"
@@ -176,16 +175,6 @@ func Count(src string, find []string) (c int) {
 		c += strings.Count(src, v)
 	}
 	return
-}
-
-// 记录debug信息
-func Debug(v ...interface{}) {
-	beego.Debug(v)
-}
-
-// 记录err信息
-func Error(v ...interface{}) {
-	beego.Error(v)
 }
 
 func IsEmpty(v interface{}) bool {
@@ -343,7 +332,7 @@ func TransFunc(o string) (n string) {
 			}
 		}
 	} else if StartsWith(o, `"`) && EndsWith(o, `"`) && Count(o, []string{","}) == 0 {
-		n = o[1: len(o)-1]
+		n = o[1 : len(o)-1]
 	} else {
 		n = o
 	}
