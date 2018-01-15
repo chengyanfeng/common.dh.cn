@@ -10,7 +10,6 @@ type DxDatasource struct {
 	DhBase
 	Id              int64     `json:"-"`
 	ObjectId        string    `json:"_id"`
-	UserId          string    `json:"user_id"`
 	Name            string    `json:"name"`
 	Type            string    `json:"type"`
 	Format          string    `json:"format"`
