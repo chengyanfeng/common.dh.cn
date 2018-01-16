@@ -212,6 +212,21 @@ func (c *BaseController) GetUserCorps(user_id string) []utils.P {
 	return corps
 }
 
+func (c *BaseController) CheckRelation(user_id string, relate_id string, relate_type string, need_owner bool) {
+	filter := map[string]interface{}{}
+	filter["relate_id"] = relate_id
+	filter["user_id"] = user_id
+	filter["relate_type"] = relate_type
+	if need_owner {
+		filter["auth"] = "owner"
+	}
+	relation := new(models.DhRelation).Find(filter)
+	if relation == nil {
+		c.EchoJsonErr("您不能操作此数据信息!")
+		c.StopRun()
+	}
+}
+
 func (c *BaseController) Notify(from_crop_id string, from_user_id string, user_id string, notify_type string, config interface{}) {
 	notify := new(models.DhNotify)
 	notify.FromCropId = from_crop_id
