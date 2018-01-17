@@ -56,7 +56,7 @@ func (m *DiBase) create(entity interface{}) bool {
 	now := time.Now()
 	mutable.FieldByName("CreateTime").Set(reflect.ValueOf(now))
 	mutable.FieldByName("UpdateTime").Set(reflect.ValueOf(now))
-	_id, err := orm.NewOrm().Insert(entity)
+	_id, err := m.Orm().Insert(entity)
 	if err != nil {
 		return false
 	} else {
@@ -69,7 +69,7 @@ func (m *DiBase) update(entity interface{}) bool {
 	mutable := reflect.ValueOf(entity).Elem()
 	now := time.Now()
 	mutable.FieldByName("UpdateTime").Set(reflect.ValueOf(now))
-	_, err := orm.NewOrm().Update(entity)
+	_, err := m.Orm().Update(entity)
 	if err != nil {
 		utils.Error(err)
 		return false
