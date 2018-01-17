@@ -14,13 +14,16 @@ import (
 )
 
 func init() {
-	orm.RegisterDriver("mysql", orm.DRMySQL)
 	host := beego.AppConfig.String("dataI_host")
 	port := beego.AppConfig.String("dataI_port")
 	name := beego.AppConfig.String("dataI_name")
 	username := beego.AppConfig.String("dataI_username")
 	password := beego.AppConfig.String("dataI_password")
 	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8", username, password, host, port, name)
+	if host == "" {
+		return
+	}
+	orm.RegisterDriver("mysql", orm.DRMySQL)
 	orm.RegisterDataBase("dataI", "mysql", connection)
 	orm.SetMaxIdleConns("dataI", 30)
 	orm.SetMaxOpenConns("dataI", 30)

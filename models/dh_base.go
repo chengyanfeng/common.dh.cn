@@ -21,6 +21,10 @@ func init() {
 	username := beego.AppConfig.String("mysql_username")
 	password := beego.AppConfig.String("mysql_password")
 	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8", username, password, host, port, name)
+	if host == "" {
+		return
+	}
+	orm.RegisterDriver("mysql", orm.DRMySQL)
 	orm.RegisterDataBase("default", "mysql", connection)
 	orm.SetMaxIdleConns("default", 30)
 	orm.SetMaxOpenConns("default", 30)
