@@ -228,7 +228,7 @@ func (c *BaseController) CheckRelation(user_id string, relate_id string, relate_
 }
 
 func (c *BaseController) Notify(from_crop_id string, from_user_id string, user_id string, notify_type string, config interface{}) {
-	notify := new(models.DhNotify)
+	notify := new(models.DiNotify)
 	notify.FromCropId = from_crop_id
 	notify.FromUserId = from_user_id
 	notify.UserId = user_id
@@ -358,17 +358,17 @@ func (c *BaseController) GetShareName(relate_type string, relate_id string) stri
 	var relate_object interface{}
 	switch relate_type {
 	case "dh_dashboard_group":
-		relate_object = new(models.DhDashboardGroup).Find(relate_id)
+		relate_object = new(models.DiDashboardGroup).Find(relate_id)
 	case "dh_dashboard":
-		relate_object = new(models.DhDashboard).Find(relate_id)
+		relate_object = new(models.DiDashboard).Find(relate_id)
 	case "dh_storyboard_group":
-		relate_object = new(models.DhStoryboardGroup).Find(relate_id)
+		relate_object = new(models.DiStoryboardGroup).Find(relate_id)
 	case "dh_storyboard":
-		relate_object = new(models.DhStoryboard).Find(relate_id)
+		relate_object = new(models.DiStoryboard).Find(relate_id)
 	case "dh_datasource_group":
-		relate_object = new(models.DhDatasourceGroup).Find(relate_id)
+		relate_object = new(models.DiDatasourceGroup).Find(relate_id)
 	case "dh_datasource":
-		relate_object = new(models.DhDatasource).Find(relate_id)
+		relate_object = new(models.DiDatasource).Find(relate_id)
 	}
 	if relate_object == nil {
 		return ""

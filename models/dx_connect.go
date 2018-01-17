@@ -7,7 +7,7 @@ import (
 )
 
 type DxConnect struct {
-	DhBase
+	DxBase
 	Id         int64     `json:"-"`
 	ObjectId   string    `json:"_id"`
 	Name       string    `json:"name"`

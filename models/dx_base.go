@@ -15,15 +15,15 @@ import (
 
 func init() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
-	host := beego.AppConfig.String("mysql_host")
-	port := beego.AppConfig.String("mysql_port")
-	name := beego.AppConfig.String("mysql_name")
-	username := beego.AppConfig.String("mysql_username")
-	password := beego.AppConfig.String("mysql_password")
+	host := beego.AppConfig.String("dataX_host")
+	port := beego.AppConfig.String("dataX_port")
+	name := beego.AppConfig.String("dataX_name")
+	username := beego.AppConfig.String("dataX_username")
+	password := beego.AppConfig.String("dataX_password")
 	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8", username, password, host, port, name)
-	orm.RegisterDataBase("default", "mysql", connection)
-	orm.SetMaxIdleConns("default", 30)
-	orm.SetMaxOpenConns("default", 30)
+	orm.RegisterDataBase("dataX", "mysql", connection)
+	orm.SetMaxIdleConns("dataX", 30)
+	orm.SetMaxOpenConns("dataX", 30)
 	orm.DefaultTimeLoc = time.UTC
 	runmode := beego.AppConfig.DefaultString("runmode", "dev")
 	if runmode == "dev" {
@@ -31,23 +31,23 @@ func init() {
 	}
 }
 
-type DhBase struct {
+type DxBase struct {
 }
 
-func (m *DhBase) Orm() orm.Ormer {
+func (m *DxBase) Orm() orm.Ormer {
 	o := orm.NewOrm()
-	err := o.Using("default")
+	err := o.Using("dataX")
 	if err != nil {
 		panic(err)
 	}
 	return o
 }
 
-func (m *DhBase) query(entity interface{}) orm.QuerySeter {
+func (m *DxBase) query(entity interface{}) orm.QuerySeter {
 	return m.Orm().QueryTable(entity)
 }
 
-func (m *DhBase) create(entity interface{}) bool {
+func (m *DxBase) create(entity interface{}) bool {
 	mutable := reflect.ValueOf(entity).Elem()
 	mutable.FieldByName("ObjectId").SetString(bson.NewObjectId().Hex())
 	now := time.Now()
@@ -62,7 +62,7 @@ func (m *DhBase) create(entity interface{}) bool {
 	}
 }
 
-func (m *DhBase) update(entity interface{}) bool {
+func (m *DxBase) update(entity interface{}) bool {
 	mutable := reflect.ValueOf(entity).Elem()
 	now := time.Now()
 	mutable.FieldByName("UpdateTime").Set(reflect.ValueOf(now))
@@ -75,7 +75,7 @@ func (m *DhBase) update(entity interface{}) bool {
 	}
 }
 
-func (m *DhBase) delete(entity interface{}, args ...interface{}) bool {
+func (m *DxBase) delete(entity interface{}, args ...interface{}) bool {
 	var err error
 	total := len(args)
 	if total == 1 {
@@ -112,7 +112,7 @@ func (m *DhBase) delete(entity interface{}, args ...interface{}) bool {
 	}
 }
 
-func (m *DhBase) softDelete(entity interface{}, args ...interface{}) bool {
+func (m *DxBase) softDelete(entity interface{}, args ...interface{}) bool {
 	var err error
 	total := len(args)
 	params := orm.Params{"status": -1}
@@ -150,7 +150,7 @@ func (m *DhBase) softDelete(entity interface{}, args ...interface{}) bool {
 	}
 }
 
-func (m *DhBase) find(entity interface{}, args ...interface{}) interface{} {
+func (m *DxBase) find(entity interface{}, args ...interface{}) interface{} {
 	total := len(args)
 	var err error
 	if total == 1 {
@@ -192,11 +192,11 @@ func (m *DhBase) find(entity interface{}, args ...interface{}) interface{} {
 	}
 }
 
-func (m *DhBase) findByFilter(entity interface{}, key string, value interface{}) orm.QuerySeter {
+func (m *DxBase) findByFilter(entity interface{}, key string, value interface{}) orm.QuerySeter {
 	return m.query(entity).Filter(key, value)
 }
 
-func (m *DhBase) findByFilters(entity interface{}, filters map[string]interface{}) orm.QuerySeter {
+func (m *DxBase) findByFilters(entity interface{}, filters map[string]interface{}) orm.QuerySeter {
 	query := m.query(entity)
 	for k, v := range filters {
 		query = query.Filter(k, v)
@@ -204,15 +204,15 @@ func (m *DhBase) findByFilters(entity interface{}, filters map[string]interface{
 	return query
 }
 
-func (m *DhBase) findByID(entity interface{}, id int64) orm.QuerySeter {
+func (m *DxBase) findByID(entity interface{}, id int64) orm.QuerySeter {
 	return m.query(entity).Filter("id", id)
 }
 
-func (m *DhBase) findByObjectID(entity interface{}, object_id string) orm.QuerySeter {
+func (m *DxBase) findByObjectID(entity interface{}, object_id string) orm.QuerySeter {
 	return m.query(entity).Filter("object_id", object_id)
 }
 
-func (m *DhBase) count(entity interface{}, filters map[string]interface{}) int64 {
+func (m *DxBase) count(entity interface{}, filters map[string]interface{}) int64 {
 	result, err := m.findByFilters(entity, filters).Count()
 	if err != nil {
 		utils.Error(err)
@@ -221,16 +221,16 @@ func (m *DhBase) count(entity interface{}, filters map[string]interface{}) int64
 	return result
 }
 
-func (m *DhBase) pager(entity interface{}, filters map[string]interface{}, page_size int64) (total int64, total_page int64) {
+func (m *DxBase) pager(entity interface{}, filters map[string]interface{}, page_size int64) (total int64, total_page int64) {
 	total = m.count(entity, filters)
 	total_page = int64(math.Ceil(float64(total) / float64(page_size)))
 	return total, total_page
 }
 
-func (m *DhBase) pagerList(entity interface{}, page int64, page_size int64, filters map[string]interface{}) orm.QuerySeter {
+func (m *DxBase) pagerList(entity interface{}, page int64, page_size int64, filters map[string]interface{}) orm.QuerySeter {
 	return m.findByFilters(entity, filters).Offset((page - 1) * page_size).Limit(page_size)
 }
 
-func (m *DhBase) errReport(err interface{}) {
+func (m *DxBase) errReport(err interface{}) {
 	utils.Error(err)
 }

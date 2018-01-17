@@ -6,34 +6,32 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-type DhRelation struct {
-	DhBase
+type DiDashboard struct {
+	DiBase
 	Id         int64     `json:"-"`
 	ObjectId   string    `json:"_id"`
-	CorpId     string    `json:"corp_id"`
-	UserId     string    `json:"user_id"`
-	RelateType string    `json:"relate_type"`
-	RelateId   string    `json:"relate_id"`
-	Auth       string    `json:"auth"`
+	GroupId    string    `json:"group_id"`
 	Name       string    `json:"name"`
+	Thumbnail  string    `json:"thumbnail"`
+	Status     int       `json:"status"`
 	Sort       int       `json:"sort"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }
 
 func init() {
-	orm.RegisterModel(new(DhRelation))
+	orm.RegisterModel(new(DiDashboard))
 }
 
-func (m *DhRelation) TableName() string {
-	return "dh_relation"
+func (m *DiDashboard) TableName() string {
+	return "di_dashboard"
 }
 
-func (m *DhRelation) Query() orm.QuerySeter {
+func (m *DiDashboard) Query() orm.QuerySeter {
 	return m.query(m)
 }
 
-func (m *DhRelation) Save() bool {
+func (m *DiDashboard) Save() bool {
 	if m.Id == 0 {
 		return m.create(m)
 	} else {
@@ -41,10 +39,10 @@ func (m *DhRelation) Save() bool {
 	}
 }
 
-func (m *DhRelation) Find(args ...interface{}) *DhRelation {
+func (m *DiDashboard) Find(args ...interface{}) *DiDashboard {
 	data := m.find(m, args...)
 	if data != nil {
-		_data, ok := data.(*DhRelation)
+		_data, ok := data.(*DiDashboard)
 		if ok {
 			return _data
 		} else {
@@ -55,20 +53,20 @@ func (m *DhRelation) Find(args ...interface{}) *DhRelation {
 	}
 }
 
-func (m *DhRelation) Delete(args ...interface{}) bool {
+func (m *DiDashboard) Delete(args ...interface{}) bool {
 	return m.delete(m, args...)
 }
 
-func (m *DhRelation) SoftDelete(args ...interface{}) bool {
+func (m *DiDashboard) SoftDelete(args ...interface{}) bool {
 	return m.softDelete(m, args...)
 }
 
-func (m *DhRelation) Count(filters map[string]interface{}) int64 {
+func (m *DiDashboard) Count(filters map[string]interface{}) int64 {
 	return m.count(m, filters)
 }
 
-func (m *DhRelation) List(filters map[string]interface{}) []*DhRelation {
-	var list []*DhRelation
+func (m *DiDashboard) List(filters map[string]interface{}) []*DiDashboard {
+	var list []*DiDashboard
 	_, err := m.findByFilters(m, filters).All(&list)
 	if err != nil {
 		m.errReport(err)
@@ -77,8 +75,8 @@ func (m *DhRelation) List(filters map[string]interface{}) []*DhRelation {
 	return list
 }
 
-func (m *DhRelation) OrderList(filters map[string]interface{}, order ...string) []*DhRelation {
-	var list []*DhRelation
+func (m *DiDashboard) OrderList(filters map[string]interface{}, order ...string) []*DiDashboard {
+	var list []*DiDashboard
 	_, err := m.findByFilters(m, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
@@ -87,8 +85,8 @@ func (m *DhRelation) OrderList(filters map[string]interface{}, order ...string) 
 	return list
 }
 
-func (m *DhRelation) Pager(page int64, page_size int64, filters map[string]interface{}) (total int64, total_page int64, result []*DhRelation) {
-	var list []*DhRelation
+func (m *DiDashboard) Pager(page int64, page_size int64, filters map[string]interface{}) (total int64, total_page int64, result []*DiDashboard) {
+	var list []*DiDashboard
 	total, total_page = m.pager(m, filters, page_size)
 	_, err := m.pagerList(m, page, page_size, filters).All(&list)
 	if err != nil {
@@ -98,8 +96,8 @@ func (m *DhRelation) Pager(page int64, page_size int64, filters map[string]inter
 	return total, total_page, list
 }
 
-func (m *DhRelation) OrderPager(page int64, page_size int64, filters map[string]interface{}, order ...string) (total int64, total_page int64, result []*DhRelation) {
-	var list []*DhRelation
+func (m *DiDashboard) OrderPager(page int64, page_size int64, filters map[string]interface{}, order ...string) (total int64, total_page int64, result []*DiDashboard) {
+	var list []*DiDashboard
 	total, total_page = m.pager(m, filters, page_size)
 	_, err := m.pagerList(m, page, page_size, filters).OrderBy(order...).All(&list)
 	if err != nil {
