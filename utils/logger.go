@@ -39,6 +39,8 @@ func Info(v ...interface{}) {
 
 func Debug(v ...interface{}) {
 	Logger.Debug(v)
+
+	beego.Debug(v)
 }
 
 func Error(v ...interface{}) {
