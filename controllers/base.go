@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/astaxie/beego"
 	"github.com/sirupsen/logrus"
@@ -17,23 +18,34 @@ import (
 
 var Num = []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
 
+var AccessLogger *logrus.Entry
+
 type BaseController struct {
 	beego.Controller
 	Logger *logrus.Entry
 }
 
 func (c *BaseController) Prepare() {
-	c.Logger = utils.GetLogger("access").WithFields(logrus.Fields{
-		"url":    c.Ctx.Request.URL.Path,
-		"host":   c.Ctx.Request.Host,
-		"method": c.Ctx.Request.Method,
-		"proto":  c.Ctx.Request.Proto,
+	c.Data["dh_trace"] = time.Now()
+	controller, action := c.GetControllerAndAction()
+	c.Logger = utils.GetLogger(controller).WithFields(logrus.Fields{
+		"action": action,
 	})
-	c.Logger.Info("begin")
+	AccessLogger = utils.GetLogger("access").WithFields(logrus.Fields{
+		"url":        c.Ctx.Request.URL.Path,
+		"host":       c.Ctx.Request.Host,
+		"method":     c.Ctx.Request.Method,
+		"proto":      c.Ctx.Request.Proto,
+		"user-agent": c.Ctx.Request.Header.Get("User-Agent"),
+	})
+	AccessLogger.Info("begin")
 }
 
 func (c *BaseController) Finish() {
-	c.Logger.Info("finish")
+	finish := time.Now()
+	nanoseconds := finish.Sub(c.Data["dh_trace"].(time.Time)).Nanoseconds()
+	milliseconds := fmt.Sprintf("%d.%d", nanoseconds/1e6, nanoseconds%1e6)
+	AccessLogger.WithField("consume", milliseconds).Info("finish")
 }
 
 func (c *BaseController) Echo(msg ...interface{}) {
@@ -348,7 +360,7 @@ func (c *BaseController) ShareOut(user_emails []string, relate_type string, rela
 			return false
 		}
 		for _, user_id := range user_ids {
-			//跨组分享进入默认分组
+			//跨组分享进入默���分组
 			result := c.SaveRelation(0, "", user_id, user_id, relate_type, relate_id, share_name, "share_out")
 			if !result {
 				o.Rollback()
