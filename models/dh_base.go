@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"math"
+	"net/url"
 	"reflect"
 	"time"
 
@@ -20,7 +21,8 @@ func init() {
 	name := beego.AppConfig.String("mysql_name")
 	username := beego.AppConfig.String("mysql_username")
 	password := beego.AppConfig.String("mysql_password")
-	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8", username, password, host, port, name)
+	timezone := beego.AppConfig.DefaultString("mysql_timezone", "Asia/Shanghai")
+	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&loc=%s", username, password, host, port, name, url.QueryEscape(timezone))
 	if host == "" {
 		return
 	}
@@ -28,7 +30,6 @@ func init() {
 	orm.RegisterDataBase("default", "mysql", connection)
 	orm.SetMaxIdleConns("default", 30)
 	orm.SetMaxOpenConns("default", 30)
-	orm.DefaultTimeLoc = time.UTC
 	runmode := beego.AppConfig.DefaultString("runmode", "dev")
 	if runmode == "dev" {
 		orm.Debug = true

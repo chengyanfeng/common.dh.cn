@@ -15,8 +15,8 @@ type DxConnect struct {
 	Config     string    `json:"config"`
 	ErrMsg     string    `json:"err_msg"`
 	Status     int       `json:"status"`
-	CreateTime time.Time `json:"-"`
-	UpdateTime time.Time `json:"-"`
+	CreateTime time.Time `json:"create_time"`
+	UpdateTime time.Time `json:"update_time"`
 }
 
 func init() {

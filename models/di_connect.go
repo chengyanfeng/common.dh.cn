@@ -13,6 +13,7 @@ type DiConnect struct {
 	Name       string    `json:"name"`
 	Type       string    `json:"type"`
 	Config     string    `json:"config"`
+	ErrMsg     string    `json:"err_msg"`
 	Status     int       `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
