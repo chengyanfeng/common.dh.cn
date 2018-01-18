@@ -11,8 +11,11 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/mgo.v2/bson"
 )
+
+var OrmLogger *logrus.Logger
 
 func init() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
@@ -34,6 +37,7 @@ func init() {
 	if runmode == "dev" {
 		orm.Debug = true
 	}
+	OrmLogger = utils.GetLogger("orm")
 }
 
 type DhBase struct {
@@ -73,7 +77,7 @@ func (m *DhBase) update(entity interface{}) bool {
 	mutable.FieldByName("UpdateTime").Set(reflect.ValueOf(now))
 	_, err := m.Orm().Update(entity)
 	if err != nil {
-		utils.Error(err)
+		OrmLogger.Error(err)
 		return false
 	} else {
 		return true
@@ -95,7 +99,7 @@ func (m *DhBase) delete(entity interface{}, args ...interface{}) bool {
 		default:
 		}
 		if err != nil {
-			utils.Error(err)
+			OrmLogger.Error(err)
 			return false
 		}
 		return true
@@ -108,7 +112,7 @@ func (m *DhBase) delete(entity interface{}, args ...interface{}) bool {
 		}
 		_, err = m.findByFilter(entity, _key, value).Delete()
 		if err != nil {
-			utils.Error(err)
+			OrmLogger.Error(err)
 			return false
 		}
 		return true
@@ -133,7 +137,7 @@ func (m *DhBase) softDelete(entity interface{}, args ...interface{}) bool {
 		default:
 		}
 		if err != nil {
-			utils.Error(err.Error())
+			OrmLogger.Error(err.Error())
 			return false
 		}
 		return true
@@ -146,7 +150,7 @@ func (m *DhBase) softDelete(entity interface{}, args ...interface{}) bool {
 		}
 		_, err = m.findByFilter(entity, _key, value).Update(params)
 		if err != nil {
-			utils.Error(err.Error())
+			OrmLogger.Error(err.Error())
 			return false
 		}
 		return true
@@ -173,7 +177,7 @@ func (m *DhBase) find(entity interface{}, args ...interface{}) interface{} {
 			return nil
 		}
 		if err != nil {
-			utils.Error(err.Error())
+			OrmLogger.Error(err.Error())
 			return nil
 		} else {
 			return entity
@@ -187,7 +191,7 @@ func (m *DhBase) find(entity interface{}, args ...interface{}) interface{} {
 		}
 		err = m.findByFilter(entity, _key, value).One(entity)
 		if err != nil {
-			utils.Error(err.Error())
+			OrmLogger.Error(err.Error())
 			return nil
 		} else {
 			return entity
@@ -220,7 +224,7 @@ func (m *DhBase) findByObjectID(entity interface{}, object_id string) orm.QueryS
 func (m *DhBase) count(entity interface{}, filters map[string]interface{}) int64 {
 	result, err := m.findByFilters(entity, filters).Count()
 	if err != nil {
-		utils.Error(err)
+		OrmLogger.Error(err)
 		return 0
 	}
 	return result
@@ -237,5 +241,5 @@ func (m *DhBase) pagerList(entity interface{}, page int64, page_size int64, filt
 }
 
 func (m *DhBase) errReport(err interface{}) {
-	utils.Error(err)
+	OrmLogger.Error(err)
 }
