@@ -23,8 +23,8 @@ type DxDatasource struct {
 	Spec            string    `json:"spec"`
 	Sort            int       `json:"sort"`
 	Status          int       `json:"status"`
-	CreateTime      time.Time `json:"-"`
-	UpdateTime      time.Time `json:"-"`
+	CreateTime      time.Time `json:"create_time"`
+	UpdateTime      time.Time `json:"update_time"`
 }
 
 func init() {

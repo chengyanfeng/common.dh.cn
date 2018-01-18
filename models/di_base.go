@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"math"
+	"net/url"
 	"reflect"
 	"time"
 
@@ -19,7 +20,8 @@ func init() {
 	name := beego.AppConfig.String("dataI_name")
 	username := beego.AppConfig.String("dataI_username")
 	password := beego.AppConfig.String("dataI_password")
-	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8", username, password, host, port, name)
+	timezone := beego.AppConfig.DefaultString("dataI_timezone", "Asia/Shanghai")
+	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&loc=%s", username, password, host, port, name, url.QueryEscape(timezone))
 	if host == "" {
 		return
 	}
