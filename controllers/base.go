@@ -42,6 +42,10 @@ func (c *BaseController) Prepare() {
 }
 
 func (c *BaseController) Finish() {
+	c.record()
+}
+
+func (c *BaseController) record() {
 	finish := time.Now()
 	nanoseconds := finish.Sub(c.Data["dh_trace"].(time.Time)).Nanoseconds()
 	milliseconds := fmt.Sprintf("%d.%d", nanoseconds/1e6, nanoseconds%1e6)
@@ -53,21 +57,24 @@ func (c *BaseController) Echo(msg ...interface{}) {
 	for _, v := range msg {
 		out += fmt.Sprintf("%v", v)
 	}
-
+	c.record()
 	c.Ctx.WriteString(out)
 }
 
 func (c *BaseController) EchoJson(p utils.P) {
+	c.record()
 	c.Data["json"] = p
 	c.ServeJSON()
 }
 
 func (c *BaseController) EchoJsonMsg(msg interface{}) {
+	c.record()
 	c.Data["json"] = utils.P{"code": 200, "msg": msg}
 	c.ServeJSON()
 }
 
 func (c *BaseController) EchoJsonOk(msg ...interface{}) {
+	c.record()
 	if msg == nil {
 		msg = []interface{}{"ok"}
 	}
@@ -76,6 +83,7 @@ func (c *BaseController) EchoJsonOk(msg ...interface{}) {
 }
 
 func (c *BaseController) EchoJsonErr(msg ...interface{}) {
+	c.record()
 	out := ""
 	if msg != nil {
 		for _, v := range msg {
@@ -158,6 +166,7 @@ func (c *BaseController) Require(k ...string) {
 	for _, v := range k {
 		if utils.IsEmpty(c.GetString(v)) {
 			c.EchoJsonErr(fmt.Sprintf("需要%v参数", v))
+			c.record()
 			c.StopRun()
 		}
 	}
@@ -167,6 +176,7 @@ func (c *BaseController) RequireOid(k ...string) {
 	for _, v := range k {
 		if !utils.IsOid(c.GetString(v)) {
 			c.EchoJsonErr(fmt.Sprintf("%v参数必须是有效id", v))
+			c.record()
 			c.StopRun()
 		}
 	}
@@ -189,6 +199,7 @@ func (c *BaseController) GetAuthUser() (m *models.DhUser) {
 	defer func() {
 		if m == nil {
 			c.EchoJsonErr("用户不存在")
+			c.record()
 			c.StopRun()
 		}
 	}()
@@ -251,6 +262,7 @@ func (c *BaseController) CheckRelation(user_id string, relate_id string, relate_
 	relation := new(models.DhRelation).Find(filter)
 	if relation == nil {
 		c.EchoJsonErr("您不能操作此数据信息!")
+		c.record()
 		c.StopRun()
 	}
 }
