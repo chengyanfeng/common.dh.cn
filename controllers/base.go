@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/astaxie/beego"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/mgo.v2/bson"
 
 	"common.dh.cn/def"
@@ -18,6 +19,21 @@ var Num = []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
 
 type BaseController struct {
 	beego.Controller
+	Logger *logrus.Entry
+}
+
+func (c *BaseController) Prepare() {
+	c.Logger = utils.GetLogger("access").WithFields(logrus.Fields{
+		"url":    c.Ctx.Request.URL.Path,
+		"host":   c.Ctx.Request.Host,
+		"method": c.Ctx.Request.Method,
+		"proto":  c.Ctx.Request.Proto,
+	})
+	c.Logger.Info("begin")
+}
+
+func (c *BaseController) Finish() {
+	c.Logger.Info("finish")
 }
 
 func (c *BaseController) Echo(msg ...interface{}) {
