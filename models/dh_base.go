@@ -30,7 +30,6 @@ func init() {
 	orm.RegisterDataBase("default", "mysql", connection)
 	orm.SetMaxIdleConns("default", 30)
 	orm.SetMaxOpenConns("default", 30)
-	orm.DefaultTimeLoc = time.UTC
 	runmode := beego.AppConfig.DefaultString("runmode", "dev")
 	if runmode == "dev" {
 		orm.Debug = true
