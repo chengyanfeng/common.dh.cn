@@ -23,7 +23,7 @@ func init() {
 
 func GetLogger(subject string) *logrus.Logger {
 	logger := logrus.New()
-	Logger.SetLevel(logrus.DebugLevel)
+	logger.SetLevel(logrus.DebugLevel)
 	logger_root := beego.AppConfig.DefaultString("logger_path", "logs/")
 	pathMap := lfshook.PathMap{
 		logrus.InfoLevel:  logger_root + subject + ".log",
