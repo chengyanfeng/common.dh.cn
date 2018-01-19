@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/astaxie/beego"
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/mgo.v2/bson"
 
@@ -36,7 +37,10 @@ func (c *BaseController) Prepare() {
 		"host":       c.Ctx.Request.Host,
 		"method":     c.Ctx.Request.Method,
 		"proto":      c.Ctx.Request.Proto,
+		"uuid":       uuid.New().String(),
 		"user-agent": c.Ctx.Request.Header.Get("User-Agent"),
+		"form":       utils.JsonEncode(c.FormToP()),
+		"body":       string(c.Ctx.Input.RequestBody),
 	})
 	AccessLogger.Info("begin")
 }
