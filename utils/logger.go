@@ -10,6 +10,7 @@ var Logger *logrus.Logger
 
 func init() {
 	Logger = logrus.New()
+	Logger.SetLevel(logrus.DebugLevel)
 	logger_root := beego.AppConfig.DefaultString("logger_path", "logs/")
 	pathMap := lfshook.PathMap{
 		logrus.InfoLevel:  logger_root + "info.log",
@@ -22,6 +23,7 @@ func init() {
 
 func GetLogger(subject string) *logrus.Logger {
 	logger := logrus.New()
+	Logger.SetLevel(logrus.DebugLevel)
 	logger_root := beego.AppConfig.DefaultString("logger_path", "logs/")
 	pathMap := lfshook.PathMap{
 		logrus.InfoLevel:  logger_root + subject + ".log",
