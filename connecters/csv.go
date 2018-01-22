@@ -1,4 +1,4 @@
-package adapters
+package connecters
 
 import (
 	"encoding/csv"
@@ -10,7 +10,7 @@ import (
 	"common.dh.cn/utils"
 )
 
-type CsvAdapter struct {
+type CsvConnecter struct {
 	file        string
 	split       rune
 	count       int
@@ -21,8 +21,8 @@ type CsvAdapter struct {
 	Data        []utils.P
 }
 
-func NewCsvAdapter(file string) *CsvAdapter {
-	return &CsvAdapter{
+func NewCsv(file string) *CsvConnecter {
+	return &CsvConnecter{
 		file:        file,
 		split:       ',',
 		count:       0,
@@ -34,27 +34,27 @@ func NewCsvAdapter(file string) *CsvAdapter {
 	}
 }
 
-func (a *CsvAdapter) SetSplit(split rune) {
+func (a *CsvConnecter) SetSplit(split rune) {
 	a.split = split
 }
 
-func (a *CsvAdapter) GetRow() int {
+func (a *CsvConnecter) GetRow() int {
 	return a.row
 }
 
-func (a *CsvAdapter) GetColumn() int {
+func (a *CsvConnecter) GetColumn() int {
 	return a.column
 }
 
-func (a *CsvAdapter) GetHead() []string {
+func (a *CsvConnecter) GetHead() []string {
 	return a.head
 }
 
-func (a *CsvAdapter) GetColumnType() []string {
+func (a *CsvConnecter) GetColumnType() []string {
 	return a.column_type
 }
 
-func (a *CsvAdapter) getReader(file *os.File) *csv.Reader {
+func (a *CsvConnecter) getReader(file *os.File) *csv.Reader {
 	reader := csv.NewReader(file)
 	reader.LazyQuotes = true
 	reader.TrailingComma = false
@@ -63,7 +63,7 @@ func (a *CsvAdapter) getReader(file *os.File) *csv.Reader {
 	return reader
 }
 
-func (a *CsvAdapter) ReadHead() ([]string, error) {
+func (a *CsvConnecter) ReadHead() ([]string, error) {
 	file, err := os.Open(a.file)
 	if err != nil {
 		utils.Error("csv open file error:" + err.Error())
@@ -82,7 +82,7 @@ func (a *CsvAdapter) ReadHead() ([]string, error) {
 	return record, nil
 }
 
-func (a *CsvAdapter) ReadAll(use_head bool, parse_type bool) error {
+func (a *CsvConnecter) ReadAll(use_head bool, parse_type bool) error {
 	file, err := os.Open(a.file)
 	if err != nil {
 		utils.Error("csv open file error:" + err.Error())
@@ -130,7 +130,44 @@ func (a *CsvAdapter) ReadAll(use_head bool, parse_type bool) error {
 	return nil
 }
 
-func (a *CsvAdapter) parseType(record []string) []string {
+func (a *CsvConnecter) Export() error {
+	if a.file == "" {
+		utils.Error("csv export error: no such file")
+		return errors.New("csv export error: no such file")
+	}
+	if len(a.Data) == 0 {
+		utils.Error("csv export error: data empty")
+		return errors.New("csv export error: data empty")
+	}
+	file, err := os.Create(a.file)
+	if err != nil {
+		utils.Error("csv export error:" + err.Error())
+		return errors.New("csv export error:" + err.Error())
+	}
+	defer file.Close()
+	file.WriteString("\xEF\xBB\xBF")
+	writer := csv.NewWriter(file)
+	content := make([][]string, 0)
+	head := make([]string, 0)
+	for _, info := range a.Data {
+		row := make([]string, 0)
+		for key, value := range info {
+			if len(content) == 0 {
+				head = append(head, key)
+			}
+			row = append(row, utils.ToString(value))
+		}
+		if len(content) == 0 {
+			content = append(content, head)
+		}
+		content = append(content, row)
+	}
+	writer.WriteAll(content)
+	writer.Flush()
+	return nil
+}
+
+func (a *CsvConnecter) parseType(record []string) []string {
 	result := make([]string, 0)
 	for _, data := range record {
 		if utils.IsDate(data) {
