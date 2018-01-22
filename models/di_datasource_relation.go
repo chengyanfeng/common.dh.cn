@@ -10,6 +10,8 @@ type DiDatasourceRelation struct {
 	DiBase
 	Id          int64     `json:"-"`
 	ObjectId    string    `json:"_id"`
+	CorpId      string    `json:"corp_id"`
+	UserId      string    `json:"user_id"`
 	Datasource1 string    `json:"datasource1"`
 	Datasource2 string    `json:"datasource2"`
 	Join        string    `json:"join"`
