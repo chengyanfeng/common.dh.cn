@@ -14,6 +14,7 @@ type DiDatasourceMeta struct {
 	Column       string    `json:"column"`
 	Name         string    `json:"name"`
 	Type         string    `json:"type"`
+	IsCalc       int       `json:"is_calc"`
 	Extra        string    `json:"extra"`
 	Status       int       `json:"status"`
 	CreateTime   time.Time `json:"-"`
