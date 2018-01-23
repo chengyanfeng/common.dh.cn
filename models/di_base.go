@@ -5,6 +5,7 @@ import (
 	"math"
 	"net/url"
 	"reflect"
+	"strings"
 	"time"
 
 	"common.dh.cn/utils"
@@ -43,6 +44,7 @@ func (m *DiBase) Orm() orm.Ormer {
 	o := orm.NewOrm()
 	err := o.Using("dataI")
 	if err != nil {
+		m.errReport(err)
 		panic(err)
 	}
 	return o
@@ -60,6 +62,7 @@ func (m *DiBase) create(entity interface{}) bool {
 	mutable.FieldByName("UpdateTime").Set(reflect.ValueOf(now))
 	_id, err := m.Orm().Insert(entity)
 	if err != nil {
+		m.errReport(err)
 		return false
 	} else {
 		mutable.FieldByName("Id").SetInt(_id)
@@ -73,7 +76,7 @@ func (m *DiBase) update(entity interface{}) bool {
 	mutable.FieldByName("UpdateTime").Set(reflect.ValueOf(now))
 	_, err := m.Orm().Update(entity)
 	if err != nil {
-		OrmLogger.Error(err)
+		m.errReport(err)
 		return false
 	} else {
 		return true
@@ -95,7 +98,7 @@ func (m *DiBase) delete(entity interface{}, args ...interface{}) bool {
 		default:
 		}
 		if err != nil {
-			OrmLogger.Error(err)
+			m.errReport(err)
 			return false
 		}
 		return true
@@ -108,7 +111,7 @@ func (m *DiBase) delete(entity interface{}, args ...interface{}) bool {
 		}
 		_, err = m.findByFilter(entity, _key, value).Delete()
 		if err != nil {
-			OrmLogger.Error(err)
+			m.errReport(err)
 			return false
 		}
 		return true
@@ -133,7 +136,7 @@ func (m *DiBase) softDelete(entity interface{}, args ...interface{}) bool {
 		default:
 		}
 		if err != nil {
-			OrmLogger.Error(err.Error())
+			m.errReport(err)
 			return false
 		}
 		return true
@@ -146,7 +149,7 @@ func (m *DiBase) softDelete(entity interface{}, args ...interface{}) bool {
 		}
 		_, err = m.findByFilter(entity, _key, value).Update(params)
 		if err != nil {
-			OrmLogger.Error(err.Error())
+			m.errReport(err)
 			return false
 		}
 		return true
@@ -173,7 +176,7 @@ func (m *DiBase) find(entity interface{}, args ...interface{}) interface{} {
 			return nil
 		}
 		if err != nil {
-			OrmLogger.Error(err.Error())
+			m.errReport(err)
 			return nil
 		} else {
 			return entity
@@ -187,7 +190,7 @@ func (m *DiBase) find(entity interface{}, args ...interface{}) interface{} {
 		}
 		err = m.findByFilter(entity, _key, value).One(entity)
 		if err != nil {
-			OrmLogger.Error(err.Error())
+			m.errReport(err)
 			return nil
 		} else {
 			return entity
@@ -220,7 +223,7 @@ func (m *DiBase) findByObjectID(entity interface{}, object_id string) orm.QueryS
 func (m *DiBase) count(entity interface{}, filters map[string]interface{}) int64 {
 	result, err := m.findByFilters(entity, filters).Count()
 	if err != nil {
-		OrmLogger.Error(err)
+		m.errReport(err)
 		return 0
 	}
 	return result
@@ -236,6 +239,8 @@ func (m *DiBase) pagerList(entity interface{}, page int64, page_size int64, filt
 	return m.findByFilters(entity, filters).Offset((page - 1) * page_size).Limit(page_size)
 }
 
-func (m *DiBase) errReport(err interface{}) {
-	OrmLogger.Error(err)
+func (m *DiBase) errReport(err error) {
+	if !strings.HasSuffix(err.Error(), "no row found") {
+		OrmLogger.Error(err.Error())
+	}
 }
