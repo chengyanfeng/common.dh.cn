@@ -15,7 +15,11 @@ type DiDatasource struct {
 	Table           string    `json:"table"`
 	Type            string    `json:"type"`
 	Format          string    `json:"format"`
+	ErrMsg          string    `json:"err_msg"`
 	Url             string    `json:"url"`
+	Sql             string    `json:"sql"`
+	DeleteLine      int       `json:"delete_line"`
+	Spec            string    `json:"spec"`
 	ConnectId       string    `json:"connect_id"`
 	IsAutoUpdate    int       `json:"is_auto_update"`
 	UpdateFrequency int       `json:"update_frequency"`
