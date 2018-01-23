@@ -14,8 +14,6 @@ type DiDatasourceRelation struct {
 	UserId      string    `json:"user_id"`
 	Datasource1 string    `json:"datasource1"`
 	Datasource2 string    `json:"datasource2"`
-	UserId      string    `json:"user_id"`
-	CorpId      string    `json:"corp_id"`
 	Join        string    `json:"join"`
 	On          string    `json:"on"`
 	Status      int       `json:"status"`
