@@ -13,6 +13,7 @@ var (
 
 	Jdbc_proxy_url    string = "http://jdbc.datahunter.cn/sql"
 	Fitting_proxy_url string = "http://jdbc.datahunter.cn/fitting"
+	Jdbc_xinghuan_url string = "http://xinghuan.jdbc.datahunter.cn/sql"
 
 	PUNCTUATION []string = []string{".", ";", ",", "(", ")", "%"}
 )

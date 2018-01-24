@@ -12,28 +12,24 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/sirupsen/logrus"
 	"gopkg.in/mgo.v2/bson"
 )
 
-var OrmLogger *logrus.Logger
-
 func init() {
-	orm.RegisterDriver("mysql", orm.DRMySQL)
-	host := beego.AppConfig.String("mysql_host")
-	port := beego.AppConfig.String("mysql_port")
-	name := beego.AppConfig.String("mysql_name")
-	username := beego.AppConfig.String("mysql_username")
-	password := beego.AppConfig.String("mysql_password")
-	timezone := beego.AppConfig.DefaultString("mysql_timezone", "Asia/Shanghai")
+	host := beego.AppConfig.String("dataI_host")
+	port := beego.AppConfig.String("dataI_port")
+	name := beego.AppConfig.String("dataI_name")
+	username := beego.AppConfig.String("dataI_username")
+	password := beego.AppConfig.String("dataI_password")
+	timezone := beego.AppConfig.DefaultString("dataI_timezone", "Asia/Shanghai")
 	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&loc=%s", username, password, host, port, name, url.QueryEscape(timezone))
 	if host == "" {
 		return
 	}
 	orm.RegisterDriver("mysql", orm.DRMySQL)
-	orm.RegisterDataBase("default", "mysql", connection)
-	orm.SetMaxIdleConns("default", 30)
-	orm.SetMaxOpenConns("default", 30)
+	orm.RegisterDataBase("dataI", "mysql", connection)
+	orm.SetMaxIdleConns("dataI", 30)
+	orm.SetMaxOpenConns("dataI", 30)
 	runmode := beego.AppConfig.DefaultString("runmode", "dev")
 	if runmode == "dev" {
 		orm.Debug = true
@@ -41,12 +37,12 @@ func init() {
 	OrmLogger = utils.GetLogger("orm")
 }
 
-type DhBase struct {
+type DiBase struct {
 }
 
-func (m *DhBase) Orm() orm.Ormer {
+func (m *DiBase) Orm() orm.Ormer {
 	o := orm.NewOrm()
-	err := o.Using("default")
+	err := o.Using("dataI")
 	if err != nil {
 		m.errReport(err)
 		panic(err)
@@ -54,11 +50,11 @@ func (m *DhBase) Orm() orm.Ormer {
 	return o
 }
 
-func (m *DhBase) query(entity interface{}) orm.QuerySeter {
+func (m *DiBase) query(entity interface{}) orm.QuerySeter {
 	return m.Orm().QueryTable(entity)
 }
 
-func (m *DhBase) create(entity interface{}) bool {
+func (m *DiBase) create(entity interface{}) bool {
 	mutable := reflect.ValueOf(entity).Elem()
 	mutable.FieldByName("ObjectId").SetString(bson.NewObjectId().Hex())
 	now := time.Now()
@@ -74,7 +70,7 @@ func (m *DhBase) create(entity interface{}) bool {
 	}
 }
 
-func (m *DhBase) update(entity interface{}) bool {
+func (m *DiBase) update(entity interface{}) bool {
 	mutable := reflect.ValueOf(entity).Elem()
 	now := time.Now()
 	mutable.FieldByName("UpdateTime").Set(reflect.ValueOf(now))
@@ -87,7 +83,7 @@ func (m *DhBase) update(entity interface{}) bool {
 	}
 }
 
-func (m *DhBase) delete(entity interface{}, args ...interface{}) bool {
+func (m *DiBase) delete(entity interface{}, args ...interface{}) bool {
 	var err error
 	total := len(args)
 	if total == 1 {
@@ -124,7 +120,7 @@ func (m *DhBase) delete(entity interface{}, args ...interface{}) bool {
 	}
 }
 
-func (m *DhBase) softDelete(entity interface{}, args ...interface{}) bool {
+func (m *DiBase) softDelete(entity interface{}, args ...interface{}) bool {
 	var err error
 	total := len(args)
 	params := orm.Params{"status": -1}
@@ -162,7 +158,7 @@ func (m *DhBase) softDelete(entity interface{}, args ...interface{}) bool {
 	}
 }
 
-func (m *DhBase) find(entity interface{}, args ...interface{}) interface{} {
+func (m *DiBase) find(entity interface{}, args ...interface{}) interface{} {
 	total := len(args)
 	var err error
 	if total == 1 {
@@ -204,11 +200,11 @@ func (m *DhBase) find(entity interface{}, args ...interface{}) interface{} {
 	}
 }
 
-func (m *DhBase) findByFilter(entity interface{}, key string, value interface{}) orm.QuerySeter {
+func (m *DiBase) findByFilter(entity interface{}, key string, value interface{}) orm.QuerySeter {
 	return m.query(entity).Filter(key, value)
 }
 
-func (m *DhBase) findByFilters(entity interface{}, filters map[string]interface{}) orm.QuerySeter {
+func (m *DiBase) findByFilters(entity interface{}, filters map[string]interface{}) orm.QuerySeter {
 	query := m.query(entity)
 	for k, v := range filters {
 		query = query.Filter(k, v)
@@ -216,15 +212,15 @@ func (m *DhBase) findByFilters(entity interface{}, filters map[string]interface{
 	return query
 }
 
-func (m *DhBase) findByID(entity interface{}, id int64) orm.QuerySeter {
+func (m *DiBase) findByID(entity interface{}, id int64) orm.QuerySeter {
 	return m.query(entity).Filter("id", id)
 }
 
-func (m *DhBase) findByObjectID(entity interface{}, object_id string) orm.QuerySeter {
+func (m *DiBase) findByObjectID(entity interface{}, object_id string) orm.QuerySeter {
 	return m.query(entity).Filter("object_id", object_id)
 }
 
-func (m *DhBase) count(entity interface{}, filters map[string]interface{}) int64 {
+func (m *DiBase) count(entity interface{}, filters map[string]interface{}) int64 {
 	result, err := m.findByFilters(entity, filters).Count()
 	if err != nil {
 		m.errReport(err)
@@ -233,17 +229,17 @@ func (m *DhBase) count(entity interface{}, filters map[string]interface{}) int64
 	return result
 }
 
-func (m *DhBase) pager(entity interface{}, filters map[string]interface{}, page_size int64) (total int64, total_page int64) {
+func (m *DiBase) pager(entity interface{}, filters map[string]interface{}, page_size int64) (total int64, total_page int64) {
 	total = m.count(entity, filters)
 	total_page = int64(math.Ceil(float64(total) / float64(page_size)))
 	return total, total_page
 }
 
-func (m *DhBase) pagerList(entity interface{}, page int64, page_size int64, filters map[string]interface{}) orm.QuerySeter {
+func (m *DiBase) pagerList(entity interface{}, page int64, page_size int64, filters map[string]interface{}) orm.QuerySeter {
 	return m.findByFilters(entity, filters).Offset((page - 1) * page_size).Limit(page_size)
 }
 
-func (m *DhBase) errReport(err error) {
+func (m *DiBase) errReport(err error) {
 	if !strings.HasSuffix(err.Error(), "no row found") {
 		OrmLogger.Error(err.Error())
 	}

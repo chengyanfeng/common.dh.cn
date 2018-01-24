@@ -5,8 +5,11 @@ import (
 	"net/url"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/astaxie/beego"
+	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/mgo.v2/bson"
 
 	"common.dh.cn/def"
@@ -16,8 +19,41 @@ import (
 
 var Num = []string{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
 
+var AccessLogger *logrus.Entry
+
 type BaseController struct {
 	beego.Controller
+	Logger *logrus.Entry
+}
+
+func (c *BaseController) Prepare() {
+	c.Data["dh_trace"] = time.Now()
+	controller, action := c.GetControllerAndAction()
+	c.Logger = utils.GetLogger(controller).WithFields(logrus.Fields{
+		"action": action,
+	})
+	AccessLogger = utils.GetLogger("access").WithFields(logrus.Fields{
+		"url":        c.Ctx.Request.URL.Path,
+		"host":       c.Ctx.Request.Host,
+		"method":     c.Ctx.Request.Method,
+		"proto":      c.Ctx.Request.Proto,
+		"uuid":       uuid.New().String(),
+		"user-agent": c.Ctx.Request.Header.Get("User-Agent"),
+		"form":       utils.JsonEncode(c.FormToP()),
+		"body":       string(c.Ctx.Input.RequestBody),
+	})
+	AccessLogger.Info("begin")
+}
+
+func (c *BaseController) Finish() {
+	c.record()
+}
+
+func (c *BaseController) record() {
+	finish := time.Now()
+	nanoseconds := finish.Sub(c.Data["dh_trace"].(time.Time)).Nanoseconds()
+	milliseconds := fmt.Sprintf("%d.%d", nanoseconds/1e6, nanoseconds%1e6)
+	AccessLogger.WithField("consume", milliseconds).Info("finish")
 }
 
 func (c *BaseController) Echo(msg ...interface{}) {
@@ -25,21 +61,24 @@ func (c *BaseController) Echo(msg ...interface{}) {
 	for _, v := range msg {
 		out += fmt.Sprintf("%v", v)
 	}
-
+	c.record()
 	c.Ctx.WriteString(out)
 }
 
 func (c *BaseController) EchoJson(p utils.P) {
+	c.record()
 	c.Data["json"] = p
 	c.ServeJSON()
 }
 
 func (c *BaseController) EchoJsonMsg(msg interface{}) {
+	c.record()
 	c.Data["json"] = utils.P{"code": 200, "msg": msg}
 	c.ServeJSON()
 }
 
 func (c *BaseController) EchoJsonOk(msg ...interface{}) {
+	c.record()
 	if msg == nil {
 		msg = []interface{}{"ok"}
 	}
@@ -48,6 +87,7 @@ func (c *BaseController) EchoJsonOk(msg ...interface{}) {
 }
 
 func (c *BaseController) EchoJsonErr(msg ...interface{}) {
+	c.record()
 	out := ""
 	if msg != nil {
 		for _, v := range msg {
@@ -130,6 +170,7 @@ func (c *BaseController) Require(k ...string) {
 	for _, v := range k {
 		if utils.IsEmpty(c.GetString(v)) {
 			c.EchoJsonErr(fmt.Sprintf("需要%v参数", v))
+			c.record()
 			c.StopRun()
 		}
 	}
@@ -139,6 +180,7 @@ func (c *BaseController) RequireOid(k ...string) {
 	for _, v := range k {
 		if !utils.IsOid(c.GetString(v)) {
 			c.EchoJsonErr(fmt.Sprintf("%v参数必须是有效id", v))
+			c.record()
 			c.StopRun()
 		}
 	}
@@ -161,6 +203,7 @@ func (c *BaseController) GetAuthUser() (m *models.DhUser) {
 	defer func() {
 		if m == nil {
 			c.EchoJsonErr("用户不存在")
+			c.record()
 			c.StopRun()
 		}
 	}()
@@ -223,12 +266,13 @@ func (c *BaseController) CheckRelation(user_id string, relate_id string, relate_
 	relation := new(models.DhRelation).Find(filter)
 	if relation == nil {
 		c.EchoJsonErr("您不能操作此数据信息!")
+		c.record()
 		c.StopRun()
 	}
 }
 
 func (c *BaseController) Notify(from_crop_id string, from_user_id string, user_id string, notify_type string, config interface{}) {
-	notify := new(models.DhNotify)
+	notify := new(models.DiNotify)
 	notify.FromCropId = from_crop_id
 	notify.FromUserId = from_user_id
 	notify.UserId = user_id
@@ -332,7 +376,7 @@ func (c *BaseController) ShareOut(user_emails []string, relate_type string, rela
 			return false
 		}
 		for _, user_id := range user_ids {
-			//跨组分享进入默认分组
+			//跨组分享进入默���分组
 			result := c.SaveRelation(0, "", user_id, user_id, relate_type, relate_id, share_name, "share_out")
 			if !result {
 				o.Rollback()
@@ -358,17 +402,17 @@ func (c *BaseController) GetShareName(relate_type string, relate_id string) stri
 	var relate_object interface{}
 	switch relate_type {
 	case "dh_dashboard_group":
-		relate_object = new(models.DhDashboardGroup).Find(relate_id)
+		relate_object = new(models.DiDashboardGroup).Find(relate_id)
 	case "dh_dashboard":
-		relate_object = new(models.DhDashboard).Find(relate_id)
+		relate_object = new(models.DiDashboard).Find(relate_id)
 	case "dh_storyboard_group":
-		relate_object = new(models.DhStoryboardGroup).Find(relate_id)
+		relate_object = new(models.DiStoryboardGroup).Find(relate_id)
 	case "dh_storyboard":
-		relate_object = new(models.DhStoryboard).Find(relate_id)
+		relate_object = new(models.DiStoryboard).Find(relate_id)
 	case "dh_datasource_group":
-		relate_object = new(models.DhDatasourceGroup).Find(relate_id)
+		relate_object = new(models.DiDatasourceGroup).Find(relate_id)
 	case "dh_datasource":
-		relate_object = new(models.DhDatasource).Find(relate_id)
+		relate_object = new(models.DiDatasource).Find(relate_id)
 	}
 	if relate_object == nil {
 		return ""

@@ -6,8 +6,8 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-type DhDashboardWidget struct {
-	DhBase
+type DiDashboardWidget struct {
+	DiBase
 	Id           int64     `json:"-"`
 	ObjectId     string    `json:"_id"`
 	DashboardId  string    `json:"dashboard_id"`
@@ -20,18 +20,18 @@ type DhDashboardWidget struct {
 }
 
 func init() {
-	orm.RegisterModel(new(DhDashboardWidget))
+	orm.RegisterModel(new(DiDashboardWidget))
 }
 
-func (m *DhDashboardWidget) TableName() string {
-	return "dh_dashboard_widget"
+func (m *DiDashboardWidget) TableName() string {
+	return "di_dashboard_widget"
 }
 
-func (m *DhDashboardWidget) Query() orm.QuerySeter {
+func (m *DiDashboardWidget) Query() orm.QuerySeter {
 	return m.query(m)
 }
 
-func (m *DhDashboardWidget) Save() bool {
+func (m *DiDashboardWidget) Save() bool {
 	if m.Id == 0 {
 		return m.create(m)
 	} else {
@@ -39,10 +39,10 @@ func (m *DhDashboardWidget) Save() bool {
 	}
 }
 
-func (m *DhDashboardWidget) Find(args ...interface{}) *DhDashboardWidget {
+func (m *DiDashboardWidget) Find(args ...interface{}) *DiDashboardWidget {
 	data := m.find(m, args...)
 	if data != nil {
-		_data, ok := data.(*DhDashboardWidget)
+		_data, ok := data.(*DiDashboardWidget)
 		if ok {
 			return _data
 		} else {
@@ -53,20 +53,20 @@ func (m *DhDashboardWidget) Find(args ...interface{}) *DhDashboardWidget {
 	}
 }
 
-func (m *DhDashboardWidget) Delete(args ...interface{}) bool {
+func (m *DiDashboardWidget) Delete(args ...interface{}) bool {
 	return m.delete(m, args...)
 }
 
-func (m *DhDashboardWidget) SoftDelete(args ...interface{}) bool {
+func (m *DiDashboardWidget) SoftDelete(args ...interface{}) bool {
 	return m.softDelete(m, args...)
 }
 
-func (m *DhDashboardWidget) Count(filters map[string]interface{}) int64 {
+func (m *DiDashboardWidget) Count(filters map[string]interface{}) int64 {
 	return m.count(m, filters)
 }
 
-func (m *DhDashboardWidget) List(filters map[string]interface{}) []*DhDashboardWidget {
-	var list []*DhDashboardWidget
+func (m *DiDashboardWidget) List(filters map[string]interface{}) []*DiDashboardWidget {
+	var list []*DiDashboardWidget
 	_, err := m.findByFilters(m, filters).All(&list)
 	if err != nil {
 		m.errReport(err)
@@ -75,8 +75,8 @@ func (m *DhDashboardWidget) List(filters map[string]interface{}) []*DhDashboardW
 	return list
 }
 
-func (m *DhDashboardWidget) OrderList(filters map[string]interface{}, order ...string) []*DhDashboardWidget {
-	var list []*DhDashboardWidget
+func (m *DiDashboardWidget) OrderList(filters map[string]interface{}, order ...string) []*DiDashboardWidget {
+	var list []*DiDashboardWidget
 	_, err := m.findByFilters(m, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
@@ -85,8 +85,8 @@ func (m *DhDashboardWidget) OrderList(filters map[string]interface{}, order ...s
 	return list
 }
 
-func (m *DhDashboardWidget) Pager(page int64, page_size int64, filters map[string]interface{}) (total int64, total_page int64, result []*DhDashboardWidget) {
-	var list []*DhDashboardWidget
+func (m *DiDashboardWidget) Pager(page int64, page_size int64, filters map[string]interface{}) (total int64, total_page int64, result []*DiDashboardWidget) {
+	var list []*DiDashboardWidget
 	total, total_page = m.pager(m, filters, page_size)
 	_, err := m.pagerList(m, page, page_size, filters).All(&list)
 	if err != nil {
@@ -96,8 +96,8 @@ func (m *DhDashboardWidget) Pager(page int64, page_size int64, filters map[strin
 	return total, total_page, list
 }
 
-func (m *DhDashboardWidget) OrderPager(page int64, page_size int64, filters map[string]interface{}, order ...string) (total int64, total_page int64, result []*DhDashboardWidget) {
-	var list []*DhDashboardWidget
+func (m *DiDashboardWidget) OrderPager(page int64, page_size int64, filters map[string]interface{}, order ...string) (total int64, total_page int64, result []*DiDashboardWidget) {
+	var list []*DiDashboardWidget
 	total, total_page = m.pager(m, filters, page_size)
 	_, err := m.pagerList(m, page, page_size, filters).OrderBy(order...).All(&list)
 	if err != nil {

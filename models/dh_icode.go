@@ -2,15 +2,16 @@ package models
 
 import (
 	"time"
+
 	"github.com/astaxie/beego/orm"
 )
 
 type DhIcode struct {
 	DhBase
-	Id int64 `json:"-"`
-	ObjectId string `json:"_id"`
-	Code string `json:"code"`
-	Status int `json:"status"`
+	Id         int64     `json:"-"`
+	ObjectId   string    `json:"_id"`
+	Code       string    `json:"code"`
+	Status     int       `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
 }
@@ -27,7 +28,7 @@ func (m *DhIcode) Query() orm.QuerySeter {
 	return m.query(m)
 }
 
-func (m *DhIcode) Save() bool{
+func (m *DhIcode) Save() bool {
 	if m.Id == 0 {
 		return m.create(m)
 	} else {
@@ -36,9 +37,9 @@ func (m *DhIcode) Save() bool{
 }
 
 func (m *DhIcode) Find(args ...interface{}) *DhIcode {
-	data := m.find(m,args...)
+	data := m.find(m, args...)
 	if data != nil {
-		_data,ok := data.(*DhIcode)
+		_data, ok := data.(*DhIcode)
 		if ok {
 			return _data
 		} else {
@@ -50,15 +51,15 @@ func (m *DhIcode) Find(args ...interface{}) *DhIcode {
 }
 
 func (m *DhIcode) Delete(args ...interface{}) bool {
-	return m.delete(m,args...)
+	return m.delete(m, args...)
 }
 
 func (m *DhIcode) SoftDelete(args ...interface{}) bool {
-	return m.softDelete(m,args...)
+	return m.softDelete(m, args...)
 }
 
 func (m *DhIcode) Count(filters map[string]interface{}) int64 {
-	return m.count(m,filters)
+	return m.count(m, filters)
 }
 
 func (m *DhIcode) List(filters map[string]interface{}) []*DhIcode {
@@ -83,22 +84,22 @@ func (m *DhIcode) OrderList(filters map[string]interface{}, order ...string) []*
 
 func (m *DhIcode) Pager(page int64, page_size int64, filters map[string]interface{}) (total int64, total_page int64, result []*DhIcode) {
 	var list []*DhIcode
-	total,total_page = m.pager(m, filters, page_size)
+	total, total_page = m.pager(m, filters, page_size)
 	_, err := m.pagerList(m, page, page_size, filters).All(&list)
 	if err != nil {
 		m.errReport(err)
-		return 0,0,nil
+		return 0, 0, nil
 	}
 	return total, total_page, list
 }
 
 func (m *DhIcode) OrderPager(page int64, page_size int64, filters map[string]interface{}, order ...string) (total int64, total_page int64, result []*DhIcode) {
 	var list []*DhIcode
-	total,total_page = m.pager(m, filters, page_size)
+	total, total_page = m.pager(m, filters, page_size)
 	_, err := m.pagerList(m, page, page_size, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
-		return 0,0,nil
+		return 0, 0, nil
 	}
 	return total, total_page, list
 }

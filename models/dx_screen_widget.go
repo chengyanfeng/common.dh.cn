@@ -2,19 +2,20 @@ package models
 
 import (
 	"time"
+
 	"github.com/astaxie/beego/orm"
 )
 
 type DxScreenWidget struct {
-	DhBase
-	Id int64 `json:"-"`
-	ObjectId string `json:"_id"`
-	ScreenId string `json:"screen_id"`
-	DatasourceId string `json:"datasource_id"`
-	Config string `json:"config"`
-	Status int `json:"status"`
-	CreateTime time.Time `json:"-"`
-	UpdateTime time.Time `json:"-"`
+	DxBase
+	Id           int64     `json:"-"`
+	ObjectId     string    `json:"_id"`
+	ScreenId     string    `json:"screen_id"`
+	DatasourceId string    `json:"datasource_id"`
+	Config       string    `json:"config"`
+	Status       int       `json:"status"`
+	CreateTime   time.Time `json:"-"`
+	UpdateTime   time.Time `json:"-"`
 }
 
 func init() {
@@ -29,7 +30,7 @@ func (m *DxScreenWidget) Query() orm.QuerySeter {
 	return m.query(m)
 }
 
-func (m *DxScreenWidget) Save() bool{
+func (m *DxScreenWidget) Save() bool {
 	if m.Id == 0 {
 		return m.create(m)
 	} else {
@@ -38,9 +39,9 @@ func (m *DxScreenWidget) Save() bool{
 }
 
 func (m *DxScreenWidget) Find(args ...interface{}) *DxScreenWidget {
-	data := m.find(m,args...)
+	data := m.find(m, args...)
 	if data != nil {
-		_data,ok := data.(*DxScreenWidget)
+		_data, ok := data.(*DxScreenWidget)
 		if ok {
 			return _data
 		} else {
@@ -52,15 +53,15 @@ func (m *DxScreenWidget) Find(args ...interface{}) *DxScreenWidget {
 }
 
 func (m *DxScreenWidget) Delete(args ...interface{}) bool {
-	return m.delete(m,args...)
+	return m.delete(m, args...)
 }
 
 func (m *DxScreenWidget) SoftDelete(args ...interface{}) bool {
-	return m.softDelete(m,args...)
+	return m.softDelete(m, args...)
 }
 
 func (m *DxScreenWidget) Count(filters map[string]interface{}) int64 {
-	return m.count(m,filters)
+	return m.count(m, filters)
 }
 
 func (m *DxScreenWidget) List(filters map[string]interface{}) []*DxScreenWidget {
@@ -85,22 +86,22 @@ func (m *DxScreenWidget) OrderList(filters map[string]interface{}, order ...stri
 
 func (m *DxScreenWidget) Pager(page int64, page_size int64, filters map[string]interface{}) (total int64, total_page int64, result []*DxScreenWidget) {
 	var list []*DxScreenWidget
-	total,total_page = m.pager(m, filters, page_size)
+	total, total_page = m.pager(m, filters, page_size)
 	_, err := m.pagerList(m, page, page_size, filters).All(&list)
 	if err != nil {
 		m.errReport(err)
-		return 0,0,nil
+		return 0, 0, nil
 	}
 	return total, total_page, list
 }
 
 func (m *DxScreenWidget) OrderPager(page int64, page_size int64, filters map[string]interface{}, order ...string) (total int64, total_page int64, result []*DxScreenWidget) {
 	var list []*DxScreenWidget
-	total,total_page = m.pager(m, filters, page_size)
+	total, total_page = m.pager(m, filters, page_size)
 	_, err := m.pagerList(m, page, page_size, filters).OrderBy(order...).All(&list)
 	if err != nil {
 		m.errReport(err)
-		return 0,0,nil
+		return 0, 0, nil
 	}
 	return total, total_page, list
 }

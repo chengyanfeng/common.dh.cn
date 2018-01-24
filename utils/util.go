@@ -24,7 +24,6 @@ import (
 	"text/template"
 	"time"
 
-	//"code.google.com/p/mahonia"
 	"github.com/astaxie/beego/cache"
 	"github.com/henrylee2cn/mahonia"
 	"gopkg.in/mgo.v2/bson"
@@ -547,4 +546,13 @@ func CopyToP(from, to P) {
 	for k, v := range from {
 		to[k] = v
 	}
+}
+
+func ReplaceRegx(src string, regex []string, r string) string {
+	for _, v := range regex {
+		src = strings.Replace(src, v, r, -1)
+		re := regexp.MustCompile(v)
+		src = re.ReplaceAllString(src, r)
+	}
+	return src
 }
