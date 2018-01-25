@@ -11,6 +11,7 @@ type DxScreen struct {
 	Id         int64     `json:"-"`
 	ObjectId   string    `json:"_id"`
 	Name       string    `json:"name"`
+	Theme      string    `json:"theme"`
 	Config     string    `json:"config"`
 	Thumbnail  string    `json:"thumbnail"`
 	Status     int       `json:"status"`
