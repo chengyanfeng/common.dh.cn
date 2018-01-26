@@ -118,3 +118,20 @@ func (m *DiDatasource) OrderPager(page int64, page_size int64, filters map[strin
 	}
 	return total, total_page, list
 }
+
+func (m *DiDatasource) SortById(_ids []string) bool {
+	o := new(DhBase).Orm()
+	for i, _id := range _ids {
+		ds := new(DiDatasource).Find("object_id", _id)
+		if ds != nil {
+			ds.Sort = i
+			if ok := ds.Save(); !ok {
+				o.Rollback()
+				return false
+			}
+		}
+	}
+	o.Commit()
+
+	return true
+}

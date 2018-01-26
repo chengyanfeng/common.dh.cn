@@ -200,11 +200,19 @@ func (m *DiBase) findByFilter(entity interface{}, key string, value interface{})
 	return m.query(entity).Filter(key, value)
 }
 
-func (m *DiBase) findByFilters(entity interface{}, filters map[string]interface{}) orm.QuerySeter {
+func (m *DiBase) findByFilters(entity interface{}, filters interface{}) orm.QuerySeter {
 	query := m.query(entity)
-	for k, v := range filters {
-		query = query.Filter(k, v)
+	switch value := filters.(type) {
+	case map[string]interface{}:
+		for k, v := range value {
+			query = query.Filter(k, v)
+		}
+	case *orm.Condition:
+		query = query.SetCond(value)
+	default:
+		return nil
 	}
+
 	return query
 }
 
