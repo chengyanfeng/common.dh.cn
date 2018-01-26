@@ -67,7 +67,7 @@ func (m *DiDatasourceRelation) Count(filters map[string]interface{}) int64 {
 	return m.count(m, filters)
 }
 
-func (m *DiDatasourceRelation) List(filters map[string]interface{}) []*DiDatasourceRelation {
+func (m *DiDatasourceRelation) List(filters interface{}) []*DiDatasourceRelation {
 	var list []*DiDatasourceRelation
 	_, err := m.findByFilters(m, filters).All(&list)
 	if err != nil {
