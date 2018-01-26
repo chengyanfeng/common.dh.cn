@@ -21,9 +21,10 @@ type DiDatasource struct {
 	DeleteLine      int       `json:"delete_line"`
 	Spec            string    `json:"spec"`
 	ConnectId       string    `json:"connect_id"`
+	UpdatePosition  string    `json:"update_position"`
 	IsAutoUpdate    int       `json:"is_auto_update"`
 	UpdateFrequency int       `json:"update_frequency"`
-	UpdateLocation  int64     `json:"update_location"`
+	Mode            int       `json:"mode"`
 	Sort            int       `json:"sort"`
 	Status          int       `json:"status"`
 	CreateTime      time.Time `json:"-"`
