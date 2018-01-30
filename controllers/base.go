@@ -285,24 +285,27 @@ func (c *BaseController) Notify(from_crop_id string, from_user_id string, user_i
 	}
 }
 
-func (c *BaseController) SaveRelation(id int64, object_id string, crop_id string, user_id string, relate_type string, relate_id string, name string, auth string) bool {
+func (c *BaseController) SaveRelation(id int64, objectId string, corpId string, userId string, relateType string, relateId string, name string, auth string) bool {
 	relation := new(models.DhRelation)
 	if id != 0 {
 		relation.Id = id
-		relation.ObjectId = object_id
+		relation.ObjectId = objectId
+		relation.Sort = new(models.DhRelation).Find(objectId).Sort
+	} else {
+		relation.Sort = 0
 	}
-	relation.CorpId = crop_id
-	relation.UserId = user_id
-	relation.RelateType = relate_type
-	relation.RelateId = relate_id
+	relation.CorpId = corpId
+	relation.UserId = userId
+	relation.RelateType = relateType
+	relation.RelateId = relateId
 	relation.Name = name
 	relation.Auth = auth
-	relation.Sort = 0
 	return relation.Save()
 }
 
 func (c *BaseController) SortRelation(corp_id string, user_id string, relate_type string, relate_ids []string) bool {
 	o := new(models.DhBase).Orm()
+	count := len(relate_ids)
 	for k, relate_id := range relate_ids {
 		params := map[string]interface{}{}
 		params["corp_id"] = corp_id
@@ -311,7 +314,7 @@ func (c *BaseController) SortRelation(corp_id string, user_id string, relate_typ
 		params["relate_id"] = relate_id
 		relation := new(models.DhRelation).Find(params)
 		if relation != nil {
-			relation.Sort = k
+			relation.Sort = count - k
 			result := relation.Save()
 			if !result {
 				o.Rollback()
