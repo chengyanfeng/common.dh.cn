@@ -285,19 +285,34 @@ func (c *BaseController) Notify(from_crop_id string, from_user_id string, user_i
 	}
 }
 
-func (c *BaseController) SaveRelation(id int64, object_id string, crop_id string, user_id string, relate_type string, relate_id string, name string, auth string) bool {
+func (c *BaseController) SaveRelation(id int64, objectId string, corpId string, userId string, relateType string, relateId string, name string, auth string) bool {
 	relation := new(models.DhRelation)
 	if id != 0 {
 		relation.Id = id
-		relation.ObjectId = object_id
-		relation.Sort = new(models.DhRelation).Find(object_id).Sort
+		relation.ObjectId = objectId
+		relation.Sort = new(models.DhRelation).Find(objectId).Sort
 	} else {
-		relation.Sort = 0
+		var relateCount int64
+		switch relateType {
+		case "di_dashboard_group":
+			relateCount = new(models.DhRelation).Count(map[string]interface{}{"user_id": userId, "corp_id": corpId, "relate_type": "di_dashboard_group"})
+		case "di_dashboard":
+			relateCount = new(models.DhRelation).Count(map[string]interface{}{"user_id": userId, "corp_id": corpId, "relate_type": "di_dashboard"})
+		case "di_storyboard_group":
+			relateCount = new(models.DhRelation).Count(map[string]interface{}{"user_id": userId, "corp_id": corpId, "relate_type": "di_storyboard_group"})
+		case "di_storyboard":
+			relateCount = new(models.DhRelation).Count(map[string]interface{}{"user_id": userId, "corp_id": corpId, "relate_type": "di_storyboard"})
+		case "di_datasource_group":
+			relateCount = new(models.DhRelation).Count(map[string]interface{}{"user_id": userId, "corp_id": corpId, "relate_type": "di_datasource_group"})
+		case "di_datasource":
+			relateCount = new(models.DhRelation).Count(map[string]interface{}{"user_id": userId, "corp_id": corpId, "relate_type": "di_datasource"})
+		}
+		relation.Sort = int(relateCount)
 	}
-	relation.CorpId = crop_id
-	relation.UserId = user_id
-	relation.RelateType = relate_type
-	relation.RelateId = relate_id
+	relation.CorpId = corpId
+	relation.UserId = userId
+	relation.RelateType = relateType
+	relation.RelateId = relateId
 	relation.Name = name
 	relation.Auth = auth
 	return relation.Save()
