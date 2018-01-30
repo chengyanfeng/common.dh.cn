@@ -158,7 +158,8 @@ func (c *BaseController) GetOid(str string) bson.ObjectId {
 }
 
 func (c *BaseController) Hostname() string {
-	hostname := utils.ToString(c.Ctx.Request.Header.Get("Hostname"), "localhost:8080")
+	default_name := fmt.Sprintf("localhost:%v", beego.BConfig.Listen.HTTPPort)
+	hostname := utils.ToString(c.Ctx.Request.Header.Get("Hostname"), default_name)
 	return hostname
 }
 
