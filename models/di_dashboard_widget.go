@@ -14,6 +14,7 @@ type DiDashboardWidget struct {
 	DatasourceId string    `json:"datasource_id"`
 	Grid         string    `json:"grid"`
 	Config       string    `json:"config"`
+	Filter       int       `json:"filter"`
 	Status       int       `json:"status"`
 	CreateTime   time.Time `json:"-"`
 	UpdateTime   time.Time `json:"-"`

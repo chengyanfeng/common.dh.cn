@@ -402,17 +402,17 @@ func (c *BaseController) RemoveShare(relate_type string, relate_id string, auth 
 func (c *BaseController) GetShareName(relate_type string, relate_id string) string {
 	var relate_object interface{}
 	switch relate_type {
-	case "dh_dashboard_group":
+	case "di_dashboard_group":
 		relate_object = new(models.DiDashboardGroup).Find(relate_id)
-	case "dh_dashboard":
+	case "di_dashboard":
 		relate_object = new(models.DiDashboard).Find(relate_id)
-	case "dh_storyboard_group":
+	case "di_storyboard_group":
 		relate_object = new(models.DiStoryboardGroup).Find(relate_id)
-	case "dh_storyboard":
+	case "di_storyboard":
 		relate_object = new(models.DiStoryboard).Find(relate_id)
-	case "dh_datasource_group":
+	case "di_datasource_group":
 		relate_object = new(models.DiDatasourceGroup).Find(relate_id)
-	case "dh_datasource":
+	case "di_datasource":
 		relate_object = new(models.DiDatasource).Find(relate_id)
 	}
 	if relate_object == nil {
