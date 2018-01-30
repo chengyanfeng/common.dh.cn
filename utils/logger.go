@@ -40,7 +40,7 @@ func Info(v ...interface{}) {
 }
 
 func Debug(v ...interface{}) {
-	Logger.Debug(v)
+	Logger.Info(v)
 }
 
 func Error(v ...interface{}) {
