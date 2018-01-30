@@ -292,22 +292,7 @@ func (c *BaseController) SaveRelation(id int64, objectId string, corpId string, 
 		relation.ObjectId = objectId
 		relation.Sort = new(models.DhRelation).Find(objectId).Sort
 	} else {
-		var relateCount int64
-		switch relateType {
-		case "di_dashboard_group":
-			relateCount = new(models.DhRelation).Count(map[string]interface{}{"user_id": userId, "corp_id": corpId, "relate_type": "di_dashboard_group"})
-		case "di_dashboard":
-			relateCount = new(models.DhRelation).Count(map[string]interface{}{"user_id": userId, "corp_id": corpId, "relate_type": "di_dashboard"})
-		case "di_storyboard_group":
-			relateCount = new(models.DhRelation).Count(map[string]interface{}{"user_id": userId, "corp_id": corpId, "relate_type": "di_storyboard_group"})
-		case "di_storyboard":
-			relateCount = new(models.DhRelation).Count(map[string]interface{}{"user_id": userId, "corp_id": corpId, "relate_type": "di_storyboard"})
-		case "di_datasource_group":
-			relateCount = new(models.DhRelation).Count(map[string]interface{}{"user_id": userId, "corp_id": corpId, "relate_type": "di_datasource_group"})
-		case "di_datasource":
-			relateCount = new(models.DhRelation).Count(map[string]interface{}{"user_id": userId, "corp_id": corpId, "relate_type": "di_datasource"})
-		}
-		relation.Sort = int(relateCount)
+		relation.Sort = 0
 	}
 	relation.CorpId = corpId
 	relation.UserId = userId
@@ -320,6 +305,7 @@ func (c *BaseController) SaveRelation(id int64, objectId string, corpId string, 
 
 func (c *BaseController) SortRelation(corp_id string, user_id string, relate_type string, relate_ids []string) bool {
 	o := new(models.DhBase).Orm()
+	count := len(relate_ids)
 	for k, relate_id := range relate_ids {
 		params := map[string]interface{}{}
 		params["corp_id"] = corp_id
@@ -328,7 +314,7 @@ func (c *BaseController) SortRelation(corp_id string, user_id string, relate_typ
 		params["relate_id"] = relate_id
 		relation := new(models.DhRelation).Find(params)
 		if relation != nil {
-			relation.Sort = k
+			relation.Sort = count - k
 			result := relation.Save()
 			if !result {
 				o.Rollback()
