@@ -290,6 +290,9 @@ func (c *BaseController) SaveRelation(id int64, object_id string, crop_id string
 	if id != 0 {
 		relation.Id = id
 		relation.ObjectId = object_id
+		relation.Sort = new(models.DhRelation).Find(object_id).Sort
+	} else {
+		relation.Sort = 0
 	}
 	relation.CorpId = crop_id
 	relation.UserId = user_id
@@ -297,7 +300,6 @@ func (c *BaseController) SaveRelation(id int64, object_id string, crop_id string
 	relation.RelateId = relate_id
 	relation.Name = name
 	relation.Auth = auth
-	relation.Sort = 0
 	return relation.Save()
 }
 
