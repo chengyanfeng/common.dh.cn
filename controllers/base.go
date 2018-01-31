@@ -418,7 +418,7 @@ func (c *BaseController) GetShareName(relate_type string, relate_id string) stri
 	case "di_datasource":
 		relate_object = new(models.DiDatasource).Find(relate_id)
 	}
-	if relate_object == nil {
+	if reflect.ValueOf(relate_object).IsNil() {
 		return ""
 	} else {
 		return reflect.ValueOf(relate_object).Elem().FieldByName("Name").String()
