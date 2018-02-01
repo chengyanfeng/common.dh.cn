@@ -26,7 +26,7 @@ func init() {
 	username := beego.AppConfig.String("mysql_username")
 	password := beego.AppConfig.String("mysql_password")
 	timezone := beego.AppConfig.DefaultString("mysql_timezone", "Asia/Shanghai")
-	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&loc=%s", username, password, host, port, name, url.QueryEscape(timezone))
+	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&loc=%s", username, password, host, port, name, url.QueryEscape(timezone))
 	if host == "" {
 		return
 	}

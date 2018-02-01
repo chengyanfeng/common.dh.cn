@@ -22,7 +22,7 @@ func init() {
 	username := beego.AppConfig.String("dataX_username")
 	password := beego.AppConfig.String("dataX_password")
 	timezone := beego.AppConfig.DefaultString("dataX_timezone", "Asia/Shanghai")
-	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&loc=%s", username, password, host, port, name, url.QueryEscape(timezone))
+	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&loc=%s", username, password, host, port, name, url.QueryEscape(timezone))
 	if host == "" {
 		return
 	}

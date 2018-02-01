@@ -22,7 +22,7 @@ func init() {
 	username := beego.AppConfig.String("dataI_username")
 	password := beego.AppConfig.String("dataI_password")
 	timezone := beego.AppConfig.DefaultString("dataI_timezone", "Asia/Shanghai")
-	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&loc=%s", username, password, host, port, name, url.QueryEscape(timezone))
+	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&loc=%s", username, password, host, port, name, url.QueryEscape(timezone))
 	if host == "" {
 		return
 	}
@@ -204,11 +204,19 @@ func (m *DiBase) findByFilter(entity interface{}, key string, value interface{})
 	return m.query(entity).Filter(key, value)
 }
 
-func (m *DiBase) findByFilters(entity interface{}, filters map[string]interface{}) orm.QuerySeter {
+func (m *DiBase) findByFilters(entity interface{}, filters interface{}) orm.QuerySeter {
 	query := m.query(entity)
-	for k, v := range filters {
-		query = query.Filter(k, v)
+	switch value := filters.(type) {
+	case map[string]interface{}:
+		for k, v := range value {
+			query = query.Filter(k, v)
+		}
+	case *orm.Condition:
+		query = query.SetCond(value)
+	default:
+		return nil
 	}
+
 	return query
 }
 

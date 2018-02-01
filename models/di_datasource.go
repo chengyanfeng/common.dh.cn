@@ -21,9 +21,10 @@ type DiDatasource struct {
 	DeleteLine      int       `json:"delete_line"`
 	Spec            string    `json:"spec"`
 	ConnectId       string    `json:"connect_id"`
+	UpdatePosition  string    `json:"update_position"`
 	IsAutoUpdate    int       `json:"is_auto_update"`
 	UpdateFrequency int       `json:"update_frequency"`
-	UpdateLocation  int64     `json:"update_location"`
+	Mode            int       `json:"mode"`
 	Sort            int       `json:"sort"`
 	Status          int       `json:"status"`
 	CreateTime      time.Time `json:"-"`
@@ -116,4 +117,21 @@ func (m *DiDatasource) OrderPager(page int64, page_size int64, filters map[strin
 		return 0, 0, nil
 	}
 	return total, total_page, list
+}
+
+func (m *DiDatasource) SortById(_ids []string) bool {
+	o := new(DhBase).Orm()
+	for i, _id := range _ids {
+		ds := new(DiDatasource).Find("object_id", _id)
+		if ds != nil {
+			ds.Sort = i
+			if ok := ds.Save(); !ok {
+				o.Rollback()
+				return false
+			}
+		}
+	}
+	o.Commit()
+
+	return true
 }

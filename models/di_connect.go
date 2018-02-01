@@ -12,6 +12,7 @@ type DiConnect struct {
 	ObjectId   string    `json:"_id"`
 	Name       string    `json:"name"`
 	Type       string    `json:"type"`
+	Format     string    `json:"format"`
 	Config     string    `json:"config"`
 	ErrMsg     string    `json:"err_msg"`
 	Status     int       `json:"status"`

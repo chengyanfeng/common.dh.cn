@@ -158,7 +158,8 @@ func (c *BaseController) GetOid(str string) bson.ObjectId {
 }
 
 func (c *BaseController) Hostname() string {
-	hostname := utils.ToString(c.Ctx.Request.Header.Get("Hostname"), "localhost:8080")
+	default_name := fmt.Sprintf("localhost:%v", beego.BConfig.Listen.HTTPPort)
+	hostname := utils.ToString(c.Ctx.Request.Header.Get("Hostname"), default_name)
 	return hostname
 }
 
@@ -284,24 +285,27 @@ func (c *BaseController) Notify(from_crop_id string, from_user_id string, user_i
 	}
 }
 
-func (c *BaseController) SaveRelation(id int64, object_id string, crop_id string, user_id string, relate_type string, relate_id string, name string, auth string) bool {
+func (c *BaseController) SaveRelation(id int64, objectId string, corpId string, userId string, relateType string, relateId string, name string, auth string) bool {
 	relation := new(models.DhRelation)
 	if id != 0 {
 		relation.Id = id
-		relation.ObjectId = object_id
+		relation.ObjectId = objectId
+		relation.Sort = new(models.DhRelation).Find(objectId).Sort
+	} else {
+		relation.Sort = 0
 	}
-	relation.CorpId = crop_id
-	relation.UserId = user_id
-	relation.RelateType = relate_type
-	relation.RelateId = relate_id
+	relation.CorpId = corpId
+	relation.UserId = userId
+	relation.RelateType = relateType
+	relation.RelateId = relateId
 	relation.Name = name
 	relation.Auth = auth
-	relation.Sort = 0
 	return relation.Save()
 }
 
 func (c *BaseController) SortRelation(corp_id string, user_id string, relate_type string, relate_ids []string) bool {
 	o := new(models.DhBase).Orm()
+	count := len(relate_ids)
 	for k, relate_id := range relate_ids {
 		params := map[string]interface{}{}
 		params["corp_id"] = corp_id
@@ -310,7 +314,7 @@ func (c *BaseController) SortRelation(corp_id string, user_id string, relate_typ
 		params["relate_id"] = relate_id
 		relation := new(models.DhRelation).Find(params)
 		if relation != nil {
-			relation.Sort = k
+			relation.Sort = count - k
 			result := relation.Save()
 			if !result {
 				o.Rollback()
@@ -358,36 +362,32 @@ func (c *BaseController) ShareOut(user_emails []string, relate_type string, rela
 			user_ids = append(user_ids, user.ObjectId)
 		}
 	}
-	if len(user_ids) > 0 {
-		o := new(models.DhBase).Orm()
-		var err error
-		err = o.Begin()
-		if err != nil {
-			return false
-		}
-		share_name := c.GetShareName(relate_type, relate_id)
-		if share_name == "" {
-			o.Commit()
-			return false
-		}
-		result := c.RemoveShare(relate_type, relate_id, "share_out")
+	o := new(models.DhBase).Orm()
+	var err error
+	err = o.Begin()
+	if err != nil {
+		return false
+	}
+	share_name := c.GetShareName(relate_type, relate_id)
+	if share_name == "" {
+		o.Commit()
+		return false
+	}
+	result := c.RemoveShare(relate_type, relate_id, "share_out")
+	if !result {
+		o.Rollback()
+		return false
+	}
+	for _, user_id := range user_ids {
+		//跨组分享进入默���分组
+		result := c.SaveRelation(0, "", user_id, user_id, relate_type, relate_id, share_name, "share_out")
 		if !result {
 			o.Rollback()
 			return false
 		}
-		for _, user_id := range user_ids {
-			//跨组分享进入默���分组
-			result := c.SaveRelation(0, "", user_id, user_id, relate_type, relate_id, share_name, "share_out")
-			if !result {
-				o.Rollback()
-				return false
-			}
-		}
-		o.Commit()
-		return true
-	} else {
-		return false
 	}
+	o.Commit()
+	return true
 }
 
 func (c *BaseController) RemoveShare(relate_type string, relate_id string, auth string) bool {
@@ -401,20 +401,20 @@ func (c *BaseController) RemoveShare(relate_type string, relate_id string, auth 
 func (c *BaseController) GetShareName(relate_type string, relate_id string) string {
 	var relate_object interface{}
 	switch relate_type {
-	case "dh_dashboard_group":
+	case "di_dashboard_group":
 		relate_object = new(models.DiDashboardGroup).Find(relate_id)
-	case "dh_dashboard":
+	case "di_dashboard":
 		relate_object = new(models.DiDashboard).Find(relate_id)
-	case "dh_storyboard_group":
+	case "di_storyboard_group":
 		relate_object = new(models.DiStoryboardGroup).Find(relate_id)
-	case "dh_storyboard":
+	case "di_storyboard":
 		relate_object = new(models.DiStoryboard).Find(relate_id)
-	case "dh_datasource_group":
+	case "di_datasource_group":
 		relate_object = new(models.DiDatasourceGroup).Find(relate_id)
-	case "dh_datasource":
+	case "di_datasource":
 		relate_object = new(models.DiDatasource).Find(relate_id)
 	}
-	if relate_object == nil {
+	if reflect.ValueOf(relate_object).IsNil() {
 		return ""
 	} else {
 		return reflect.ValueOf(relate_object).Elem().FieldByName("Name").String()

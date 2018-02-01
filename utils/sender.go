@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/httplib"
 	"github.com/astaxie/beego/logs"
 )
@@ -13,8 +14,6 @@ import (
 var (
 	Monitor = "http://alert.datahunter.cn:16880/transfer/portal"
 	Tos     = "WangChengLong"
-
-	Rpc = "http://ws.dh.cn:8001/v2/notify/receive"
 )
 
 func send(tos, appid, title, content, tp string, eventtime int64, merge int8) {
@@ -44,6 +43,7 @@ func Send(tos, title, content string) {
 
 func NotifyHandle(uid string) {
 	go func() {
-		HttpPost(Rpc, nil, &P{"uid": uid})
+		notify := beego.AppConfig.DefaultString("notify", "http://localhost:8001/v2/notify/receive")
+		HttpPost(notify, nil, &P{"uid": uid})
 	}()
 }
