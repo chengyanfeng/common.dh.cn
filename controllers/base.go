@@ -362,36 +362,32 @@ func (c *BaseController) ShareOut(user_emails []string, relate_type string, rela
 			user_ids = append(user_ids, user.ObjectId)
 		}
 	}
-	if len(user_ids) > 0 {
-		o := new(models.DhBase).Orm()
-		var err error
-		err = o.Begin()
-		if err != nil {
-			return false
-		}
-		share_name := c.GetShareName(relate_type, relate_id)
-		if share_name == "" {
-			o.Commit()
-			return false
-		}
-		result := c.RemoveShare(relate_type, relate_id, "share_out")
+	o := new(models.DhBase).Orm()
+	var err error
+	err = o.Begin()
+	if err != nil {
+		return false
+	}
+	share_name := c.GetShareName(relate_type, relate_id)
+	if share_name == "" {
+		o.Commit()
+		return false
+	}
+	result := c.RemoveShare(relate_type, relate_id, "share_out")
+	if !result {
+		o.Rollback()
+		return false
+	}
+	for _, user_id := range user_ids {
+		//跨组分享进入默���分组
+		result := c.SaveRelation(0, "", user_id, user_id, relate_type, relate_id, share_name, "share_out")
 		if !result {
 			o.Rollback()
 			return false
 		}
-		for _, user_id := range user_ids {
-			//跨组分享进入默���分组
-			result := c.SaveRelation(0, "", user_id, user_id, relate_type, relate_id, share_name, "share_out")
-			if !result {
-				o.Rollback()
-				return false
-			}
-		}
-		o.Commit()
-		return true
-	} else {
-		return false
 	}
+	o.Commit()
+	return true
 }
 
 func (c *BaseController) RemoveShare(relate_type string, relate_id string, auth string) bool {
