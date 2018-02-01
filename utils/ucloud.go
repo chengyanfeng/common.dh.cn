@@ -1,110 +1,89 @@
 package utils
 
 import (
-	"bytes"
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"sort"
+
+	"github.com/astaxie/beego/config"
 )
 
-var m_CONFIG map[string]string = map[string]string{
-	"public_key":  "ucloudsupport@mrocker.com1392263197892193080",
-	"private_key": "cff5a64df861f90a91eba840c51bae8f44fe008b",
-	"project_id":  "org-5875",
-	"base_url":    "https://api.ucloud.cn",
-}
-
 type Ucloud struct {
+	Config map[string]string
 }
 
-func (m *Ucloud) SendSms(msg string, mobile ...string) (result string) {
-	params := m.CommonParams()
+func NewUcloud() *Ucloud {
+	cnf, err := config.NewConfig("ini", "conf/ucloud.conf")
+	if err != nil {
+		Debug("ucloud配置文件失败")
+		return nil
+	} else {
+		config, err := cnf.GetSection("ucloud")
+		if err != nil {
+			Debug("获取ucloud配置文件失败")
+			return nil
+		}
+		ucloud := new(Ucloud)
+		ucloud.Config = config
+		return ucloud
+	}
+}
+
+func (m *Ucloud) SendSms(msg string, mobile ...string) bool {
+	params := P{}
+	params["PublicKey"] = m.Config["public_key"]
+	params["ProjectId"] = m.Config["project_id"]
 	params["Action"] = "SendSms"
 	params["Content"] = msg
-
 	for key, val := range mobile {
 		params["Phone."+string(key)] = val
 	}
-	params["Signature"] = m.VerfyAc(params, m_CONFIG["private_key"])
-
-	data, err := m.Request(m_CONFIG["base_url"], params)
+	params["Signature"] = m.VerfyAc(params, m.Config["private_key"])
+	body, _ := json.Marshal(params)
+	data, err := HttpPostBody(m.Config["base_url"], &P{}, body)
 	if err != nil {
-		Error(err)
+		Error("Ucloud Send Sms Error :", err)
+		return false
 	}
-	result = data
-	Debug(result)
-	return
+	result := *JsonDecode([]byte(data))
+	code, _ := result["RetCode"].(int)
+	if code == 0 {
+		return true
+	} else {
+		Error("Ucloud Send Sms Error :", result)
+		return false
+	}
 }
 
 func (m *Ucloud) RefreshCdn(url string) (result string) {
-	params := m.CommonParams()
+	params := P{}
+	params["PublicKey"] = m.Config["public_key"]
+	params["ProjectId"] = m.Config["project_id"]
 	params["Action"] = "RefreshUcdnDomainCache"
 	params["Type"] = "dir"
 	params["DomainId"] = "ucdn-d11yag"
 	params["UrlList.0"] = url
-	params["Signature"] = m.VerfyAc(params, m_CONFIG["private_key"])
-
-	data, err := m.Request(m_CONFIG["base_url"], params)
+	params["Signature"] = m.VerfyAc(params, m.Config["private_key"])
+	body, _ := json.Marshal(params)
+	data, err := HttpPostBody(m.Config["base_url"], &P{}, body)
 	if err != nil {
-		Error(err)
+		Error("Ucloud Refresh Cdn Error :", err)
 	}
-	result = data
-	Debug(result)
-	return
+	return data
 }
 
-func (m *Ucloud) CommonParams() map[string]string {
-	params := map[string]string{}
-	params["PublicKey"] = m_CONFIG["public_key"]
-	params["ProjectId"] = m_CONFIG["project_id"]
-	return params
-}
-
-func (m *Ucloud) VerfyAc(params map[string]string, private_key string) string {
+func (m *Ucloud) VerfyAc(params P, private_key string) string {
 	params_data := ""
-
 	sorted_keys := make([]string, 0)
 	for key, _ := range params {
 		sorted_keys = append(sorted_keys, key)
 	}
-
 	sort.Strings(sorted_keys)
-
 	for _, v := range sorted_keys {
 		params_data += v
-		params_data += params[v]
+		params_data += params[v].(string)
 	}
-
 	params_data += private_key
-
 	return fmt.Sprintf("%x", sha1.Sum([]byte(params_data)))
-}
-
-func (m *Ucloud) Request(base_url string, params map[string]string) (string, error) {
-	client := &http.Client{}
-	b, err := json.Marshal(params)
-
-	if err != nil {
-		return "", err
-	}
-
-	req, err := http.NewRequest("POST", base_url, bytes.NewBuffer([]byte(b)))
-
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := client.Do(req)
-
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-	return string(body), nil
 }

@@ -24,9 +24,8 @@ import (
 	"text/template"
 	"time"
 
-	"code.google.com/p/mahonia"
-	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/cache"
+	"github.com/henrylee2cn/mahonia"
 	"gopkg.in/mgo.v2/bson"
 
 	. "common.dh.cn/def"
@@ -35,7 +34,7 @@ import (
 var localCache cache.Cache
 var CronAuth = &P{"Authorization": JoinStr("Basic ", Base64Encode([]byte("mrocker:mrocker")))}
 
-func InitCache() {
+func init() {
 	c, err := cache.NewCache("memory", `{"interval":60}`)
 	//c, err := cache.NewCache("file", `{"CachePath":"./dhcache","FileSuffix":".cache","DirectoryLevel":2,"EmbedExpiry":120}`)
 	if err != nil {
@@ -175,16 +174,6 @@ func Count(src string, find []string) (c int) {
 		c += strings.Count(src, v)
 	}
 	return
-}
-
-// 记录debug信息
-func Debug(v ...interface{}) {
-	beego.Debug(v)
-}
-
-// 记录err信息
-func Error(v ...interface{}) {
-	beego.Error(v)
 }
 
 func IsEmpty(v interface{}) bool {
@@ -551,4 +540,19 @@ func ParseTableHead(th interface{}) []P {
 		}
 	}
 	return tmp
+}
+
+func CopyToP(from, to P) {
+	for k, v := range from {
+		to[k] = v
+	}
+}
+
+func ReplaceRegx(src string, regex []string, r string) string {
+	for _, v := range regex {
+		src = strings.Replace(src, v, r, -1)
+		re := regexp.MustCompile(v)
+		src = re.ReplaceAllString(src, r)
+	}
+	return src
 }

@@ -1,0 +1,5 @@
+conf/*
+test/logs/*
+logs/*
+samples/*
+common.dh.cn

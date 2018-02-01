@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"reflect"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -80,4 +81,41 @@ func (p *P) Get(k string, def interface{}) interface{} {
 		r = def
 	}
 	return r
+}
+
+func SetKv(p P, k string, v []string) {
+	if len(v) == 1 {
+		if len(v[0]) > 0 {
+			p[k] = v[0]
+		}
+	} else {
+		p[k] = v
+	}
+}
+
+func ModelToP(o interface{}) P {
+	info := P{}
+	if o == nil {
+		return info
+	} else {
+		s := reflect.ValueOf(o).Elem()
+		for i := 0; i < s.NumField(); i++ {
+			f := s.Type().Field(i)
+			key := f.Tag.Get("json")
+			if key == "" || key == "-" {
+				continue
+			}
+			value := s.Field(i).Interface()
+			info[key] = value
+		}
+		return info
+	}
+}
+
+func ModelToArrayP(o []*interface{}) []P {
+	var array = []P{}
+	for _,v := range o {
+		array = append(array,ModelToP(v))
+	}
+	return array
 }

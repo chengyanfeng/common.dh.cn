@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"net/smtp"
+	"github.com/astaxie/beego"
 )
 
 func Mail(to string, subject string, body string) {
@@ -13,41 +14,29 @@ func Mail(to string, subject string, body string) {
 		Error("SendMail", to, subject, body)
 		return
 	}
-	host := "smtp.exmail.qq.com"
-	port := 465
-	email := "support@datahunter.cn"
-	password := "mRocker8"
-
+	//邮件配置
+	host := beego.AppConfig.String("mail_host")
+	port,_ := beego.AppConfig.Int("mail_port")
+	email := beego.AppConfig.String("mail_email")
+	password := beego.AppConfig.String("mail_password")
+	//Debug("mail config:", host, port, email, password)
+	//邮件内容
 	header := P{}
 	header["From"] = "DataHunter" + "<" + email + ">"
 	header["To"] = to
 	subject = base64.StdEncoding.EncodeToString([]byte(subject))
 	header["Subject"] = "=?UTF-8?B?" + subject + "?="
 	header["Content-Type"] = "text/html; charset=UTF-8"
-
 	message := ""
 	for k, v := range header {
 		message += fmt.Sprintf("%s: %s\r\n", k, v)
 	}
 	message += "\r\n" + body
-
-	auth := smtp.PlainAuth(
-		"",
-		email,
-		password,
-		host,
-	)
-
-	err := SendMailTls(
-		fmt.Sprintf("%s:%d", host, port),
-		auth,
-		email,
-		[]string{to},
-		[]byte(message),
-	)
-
+	auth := smtp.PlainAuth("",email,password,host)
+	//发送邮件
+	err := SendMailTls(fmt.Sprintf("%s:%d", host, port),auth,email,[]string{to},[]byte(message))
 	if err != nil {
-		Error(err)
+		Error("SendMail", err)
 	}
 }
 

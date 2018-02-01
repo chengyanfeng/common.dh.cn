@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"gopkg.in/mgo.v2/bson"
+	"reflect"
 )
 
 func ToInt(s interface{}, default_v ...int) int {
@@ -193,3 +194,23 @@ func ToOids(ids interface{}) (oids []bson.ObjectId) {
 	}
 	return
 }
+
+func StructToMap(obj interface{}) P {
+	t := reflect.TypeOf(obj)
+	v := reflect.ValueOf(obj)
+
+	var data = make(map[string]interface{})
+	for i := 0; i < t.NumField(); i++ {
+		data[strings.ToLower(t.Field(i).Name)] = v.Field(i).Interface()
+	}
+	return data
+}
+
+//func StructToMapArray(obj interface{}) (datas []P) {
+// 	if objs, ok := obj.([]*models.DhBase); ok {
+// 		for _, value := range objs {
+// 			datas = append(datas, StructToMap(*value))
+// 		}
+// 	}
+// 	return
+// }

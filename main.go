@@ -17,12 +17,21 @@ type TemplateData struct {
 	TableName string
 	ModelName string
 	Fields []MateData
+	Tables []TableData
+}
+
+type TableData struct {
+	TableName string
+	TableComment string
+	Fields []MateData
 }
 
 type MateData struct {
 	Name string
 	Type string
 	Tag string
+	Null string
+	Comment string
 }
 
 func main () {
@@ -43,7 +52,60 @@ func main () {
 		fmt.Printf("ganerate %s", file_name)
 	} else if cmd == "ganerate_database" {
 		ganerateDataBase()
+	} else if cmd == "ganerate_dictionary" {
+		ganerateDictionary()
 	}
+}
+
+func ganerateDictionary() {
+	sql := "show table status"
+	var maps []orm.Params
+	num, err := new(models.DhBase).Orm().Raw(sql).Values(&maps)
+	data := TemplateData{}
+	data.Tables = []TableData{}
+	if err == nil && num > 0 {
+		for _,info := range maps {
+			table := TableData{}
+			table.TableName = info["Name"].(string)
+			table.TableComment = info["Comment"].(string)
+			table.Fields = []MateData{}
+			sql := fmt.Sprintf("show full columns from %s", info["Name"].(string))
+			var maps []orm.Params
+			num, err := new(models.DhBase).Orm().Raw(sql).Values(&maps)
+			if err == nil && num > 0 {
+				for _,info := range maps {
+					field_name := info["Field"].(string)
+					field_type := info["Type"].(string)
+					field_null := info["Null"].(string)
+					field_comment := info["Comment"].(string)
+					mate_data := MateData{}
+					mate_data.Name = field_name
+					mate_data.Type = field_type
+					mate_data.Null = field_null
+					mate_data.Comment = field_comment
+					table.Fields = append(table.Fields,mate_data)
+				}
+			}
+			data.Tables = append(data.Tables,table)
+		}
+	}
+	tmpl, err := template.ParseFiles("generate/dictionary.tpl")
+	if err != nil {   
+		panic(err)
+	}
+	var doc bytes.Buffer
+	err = tmpl.Execute(&doc, data)
+	if err != nil {
+		panic(err)
+	}
+	var file_name = fmt.Sprintf("Dictionary.md")
+	var f *os.File
+	if checkFileIsExist(file_name) {
+		_ = os.Remove(file_name)
+	}
+	f, _ = os.Create(file_name)
+	io.WriteString(f, doc.String())
+	fmt.Printf("ganerate %s finish\r\n", file_name)
 }
 
 func ganerateDataBase() {
@@ -84,13 +146,13 @@ func ganerateModel(table string) string {
 			mate_data := MateData{}
 			mate_data.Name = strFirstToUpper(field_name)
 			mate_data.Tag = fmt.Sprintf("`json:\"%s\"`",field_name)
-			if HasPrefix(field_type, "varchar") || HasPrefix(field_type, "char") || HasPrefix(field_type, "text") {
+			if HasPrefix(field_type, "varchar") || HasPrefix(field_type, "char") || HasPrefix(field_type, "text") || HasPrefix(field_type, "longtext") {
 				mate_data.Type = "string"
 			}
 			if HasPrefix(field_type, "int") || HasPrefix(field_type, "bigint") {
 				mate_data.Type = "int64"
 			}
-			if HasPrefix(field_type, "tinyint") {
+			if HasPrefix(field_type, "tinyint") || HasPrefix(field_type, "mediumint") {
 				mate_data.Type = "int"
 			}
 			if HasPrefix(field_type, "timestamp") {

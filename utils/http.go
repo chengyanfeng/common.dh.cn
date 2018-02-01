@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	. "common.dh.cn/def"
+	"common.dh.cn/def"
 )
 
 func HttpGet(url string, header *P, param *P) (body string, e error) {
@@ -45,7 +45,7 @@ func HttpDelete(url string, header *P, param *P) (body []byte, e error) {
 }
 
 func HttpDo(method string, httpurl string, header *P, param *P) (body []byte, err error) {
-	client := &http.Client{Timeout: time.Duration(DEFAULT_HTTP_TIMEOUT)}
+	client := &http.Client{Timeout: time.Duration(def.DEFAULT_HTTP_TIMEOUT)}
 	var req *http.Request
 	vs := url.Values{}
 	if param != nil {
@@ -90,8 +90,47 @@ func HttpDo(method string, httpurl string, header *P, param *P) (body []byte, er
 	return
 }
 
+func HttpRequest(method string, httpurl string, param *P) (body []byte, cookies []*http.Cookie, err error) {
+	client := &http.Client{Timeout: time.Duration(def.DEFAULT_HTTP_TIMEOUT)}
+	var req *http.Request
+	vs := url.Values{}
+	if param != nil {
+		for k, v := range *param {
+			key := ToString(k)
+			if IsMapArray(v) {
+				vs.Set(key, JsonEncode(v))
+			} else if IsArray(v) {
+				a, _ := v.([]interface{})
+				for i, iv := range a {
+					if i == 0 {
+						vs.Set(key, ToString(iv))
+					} else {
+						vs.Add(key, ToString(iv))
+					}
+				}
+			} else {
+				vs.Set(key, ToString(v))
+			}
+		}
+	}
+	method = strings.ToUpper(method)
+	req, err = http.NewRequest(method, httpurl, strings.NewReader(vs.Encode()))
+	resp, err := client.Do(req)
+	if err != nil {
+		return []byte(ToString(resp)), nil, err
+	}
+	defer func() {
+		if resp != nil {
+			resp.Body.Close()
+		}
+	}()
+	cookies = resp.Cookies()
+	body, err = ioutil.ReadAll(resp.Body)
+	return
+}
+
 func HttpPostBody(url string, header *P, body []byte) (string, error) {
-	client := &http.Client{Timeout: DEFAULT_HTTP_TIMEOUT}
+	client := &http.Client{Timeout: def.DEFAULT_HTTP_TIMEOUT}
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	req.Header.Set("Content-Type", "application/json")
 	if header != nil {

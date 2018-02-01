@@ -41,14 +41,14 @@ func JsonDecodeArray_str(b []byte) (p []string, e error) {
 	return
 }
 
-//func JsonDecodeArrays(b []byte) (p *[]P) {
-//	p = &[]P{}
-//	e := json.Unmarshal(b, p)
-//	if e != nil {
-//		Error(e)
-//	}
-//	return
-//}
+func JsonDecodeArrays(b []byte) (p *[]P) {
+	p = &[]P{}
+	e := json.Unmarshal(b, p)
+	if e != nil {
+		Error(e)
+	}
+	return
+}
 
 func JsonDecodeStrings(s string) (r []string) {
 	r = []string{}
