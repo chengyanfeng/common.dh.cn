@@ -4,17 +4,16 @@ import (
 	"fmt"
 	"time"
 
-	"common.dh.cn/def"
 	"github.com/astaxie/beego"
 	"github.com/sirupsen/logrus"
 )
 
 var JDBCLogger *logrus.Logger
-var JDBCUrl string
+var Jdbc_proxy_url string
 
 func init() {
 	JDBCLogger = GetLogger("jdbc")
-	JDBCUrl = beego.AppConfig.DefaultString("jdbc_url", "http://jdbcdev.datahunter.cn/sql")
+	Jdbc_proxy_url = beego.AppConfig.DefaultString("jdbc_url", "http://127.0.0.1:4567/sql")
 }
 
 func JDBC(sql string, db P) (result string, err error) {
@@ -25,7 +24,7 @@ func JDBC(sql string, db P) (result string, err error) {
 	})
 	begin := time.Now()
 	logger.Info("begin")
-	result, err = HttpPost(def.Jdbc_proxy_url, nil, &P{"sql": sql, "db": db_config})
+	result, err = HttpPost(Jdbc_proxy_url, nil, &P{"sql": sql, "db": db_config})
 	if err != nil {
 		logger.Error(err)
 	}
@@ -44,7 +43,7 @@ func JDBCToCSV(sql string, db P) (result string, err error) {
 	})
 	begin := time.Now()
 	logger.Info("begin")
-	result, err = HttpPost(def.Jdbc_proxy_url, nil, &P{"sql": sql, "db": db_config, "o": "csv"})
+	result, err = HttpPost(Jdbc_proxy_url, nil, &P{"sql": sql, "db": db_config, "o": "csv"})
 	if err != nil {
 		logger.Error(err)
 	}
