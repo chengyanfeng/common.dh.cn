@@ -102,11 +102,15 @@ func (c *BaseController) FormToP(keys ...string) (p utils.P) {
 	p = utils.P{}
 	referer := c.Ctx.Request.Header["Dhref"]
 	if !utils.IsEmpty(referer) && len(referer) > 0 {
-		u, err := url.Parse(utils.Replace(referer[0], []string{"#"}, ""))
-		if err == nil {
-			vs := u.Query()
-			for k, v := range vs {
-				p[k] = utils.ToString(v)
+		dhref, _ := url.QueryUnescape(referer[0])
+		dhref, _ = url.QueryUnescape(dhref)
+		index := strings.LastIndex(dhref, "#")
+		dhref = dhref[index+1:]
+		dhref_slice := strings.Split(dhref, "&")
+		for _, v := range dhref_slice {
+			v_slice := strings.Split(v, "=")
+			if len(v_slice) == 2 {
+				p[utils.ToString(v_slice[0])] = strings.TrimSpace(utils.ToString(v_slice[1]))
 			}
 		}
 	}
