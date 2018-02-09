@@ -28,7 +28,7 @@ type DiDatasource struct {
 	Sort            int       `json:"sort"`
 	Status          int       `json:"status"`
 	CreateTime      time.Time `json:"-"`
-	UpdateTime      time.Time `json:"-"`
+	UpdateTime      time.Time `json:"update_time"`
 }
 
 func init() {
