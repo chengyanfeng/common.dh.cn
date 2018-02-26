@@ -16,7 +16,7 @@ type DiDashboardWarning struct {
 	Field      string    `json:"field"`
 	Key        string    `json:"key"`
 	Compare    string    `json:"compare"`
-	Value      int64     `json:"value"`
+	Value      float64     `json:"value"`
 	Status     int       `json:"status"`
 	CreateTime time.Time `json:"-"`
 	UpdateTime time.Time `json:"-"`
