@@ -4,12 +4,17 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"image"
+	"image/png"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/BurntSushi/graphics-go/graphics"
 )
 
 func ReadFile(path string) string {
@@ -24,11 +29,13 @@ func ReadFileBytes(path string) []byte {
 	return c
 }
 
-func WriteFile(path string, body []byte) {
+func WriteFile(path string, body []byte) error {
 	err := ioutil.WriteFile(path, body, 0644)
 	if err != nil {
 		Error(err)
+		return err
 	}
+	return nil
 }
 
 func AppendFile(file string, text string) {
@@ -159,4 +166,50 @@ func RemoveSpaceLine(file string, filter interface{}) {
 func FileInsertLine(file string, start int, txt string) {
 	cmd := fmt.Sprintf("sed -i '%vi %v' %v", start, txt, file)
 	Exec(cmd)
+}
+
+func ResizeImage(file string, width int) error {
+	src, err := LoadImage(file)
+	if err != nil {
+		return err
+	}
+	bound := src.Bounds()
+	dx := bound.Dx()
+	dy := bound.Dy()
+	// 缩略图的大小
+	dst := image.NewRGBA(image.Rect(0, 0, width, width*dy/dx))
+	// 产生缩略图,等比例缩放
+	err = graphics.Scale(dst, src)
+	if err != nil {
+		return err
+	}
+	//保存文件
+	err = SaveImage(file, dst)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func LoadImage(path string) (img image.Image, err error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	img, _, err = image.Decode(file)
+	if err != nil {
+		return nil, err
+	}
+	return img, err
+}
+
+func SaveImage(path string, img image.Image) (err error) {
+	imgfile, err := os.Create(path)
+	defer imgfile.Close()
+	err = png.Encode(imgfile, img)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return
 }

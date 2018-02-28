@@ -8,13 +8,14 @@ import (
 
 type DxScreenTemplate struct {
 	DxBase
-	Id         int64     `json:"-"`
-	ObjectId   string    `json:"_id"`
-	ScreenId   string    `json:"screen_id"`
-	Name       string    `json:"name"`
-	Status     int       `json:"status"`
-	CreateTime time.Time `json:"-"`
-	UpdateTime time.Time `json:"-"`
+	Id          int64     `json:"-"`
+	ObjectId    string    `json:"_id"`
+	ScreenId    string    `json:"screen_id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Status      int       `json:"-"`
+	CreateTime  time.Time `json:"-"`
+	UpdateTime  time.Time `json:"-"`
 }
 
 func init() {

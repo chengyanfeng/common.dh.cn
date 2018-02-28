@@ -13,10 +13,11 @@ type DxConnect struct {
 	Name       string    `json:"name"`
 	Type       string    `json:"type"`
 	Config     string    `json:"config"`
-	ErrMsg     string    `json:"err_msg"`
-	Status     int       `json:"status"`
+	Sign       string    `json:"-"`
+	ErrMsg     string    `json:"-"`
+	Status     int       `json:"-"`
 	CreateTime time.Time `json:"create_time"`
-	UpdateTime time.Time `json:"update_time"`
+	UpdateTime time.Time `json:"-"`
 }
 
 func init() {
