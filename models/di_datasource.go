@@ -19,6 +19,7 @@ type DiDatasource struct {
 	Url             string    `json:"url"`
 	Sql             string    `json:"sql"`
 	DeleteLine      int       `json:"delete_line"`
+	FileHeader      int       `json:"file_header"`
 	Spec            string    `json:"spec"`
 	ConnectId       string    `json:"connect_id"`
 	UpdatePosition  string    `json:"update_position"`
