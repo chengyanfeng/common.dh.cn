@@ -61,7 +61,8 @@ func (m *DhBase) query(entity interface{}) orm.QuerySeter {
 func (m *DhBase) create(entity interface{}) bool {
 	mutable := reflect.ValueOf(entity).Elem()
 	mutable.FieldByName("ObjectId").SetString(bson.NewObjectId().Hex())
-	now := time.Now()
+	loc, _ := time.LoadLocation("Asia/Shanghai")
+	now := time.Now().In(loc)
 	mutable.FieldByName("CreateTime").Set(reflect.ValueOf(now))
 	mutable.FieldByName("UpdateTime").Set(reflect.ValueOf(now))
 	_id, err := m.Orm().Insert(entity)
@@ -76,7 +77,8 @@ func (m *DhBase) create(entity interface{}) bool {
 
 func (m *DhBase) update(entity interface{}) bool {
 	mutable := reflect.ValueOf(entity).Elem()
-	now := time.Now()
+	loc, _ := time.LoadLocation("Asia/Shanghai")
+	now := time.Now().In(loc)
 	mutable.FieldByName("UpdateTime").Set(reflect.ValueOf(now))
 	_, err := m.Orm().Update(entity)
 	if err != nil {
