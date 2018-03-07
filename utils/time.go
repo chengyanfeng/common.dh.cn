@@ -42,3 +42,8 @@ func IsDate(s interface{}) bool {
 	_, e := ToDate(ToString(s))
 	return e == nil
 }
+
+func ToBeiJingTime(t time.Time) time.Time {
+	setLocation, _ := time.LoadLocation("Asia/Shanghai")
+	return t.In(setLocation)
+}
