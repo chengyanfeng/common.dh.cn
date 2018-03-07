@@ -5,11 +5,11 @@ import (
 )
 
 func Timestamp() int64 {
-	return time.Now().UnixNano() / int64(time.Millisecond)
+	return ToBeiJingTime(time.Now()).UnixNano() / int64(time.Millisecond)
 }
 
 func DateTimeStr() string {
-	return time.Now().Format("2006/01/02 15:04:05")
+	return ToBeiJingTime(time.Now()).Format("2006/01/02 15:04:05")
 }
 
 func ToDate(s string) (str string, e error) {
@@ -46,4 +46,8 @@ func IsDate(s interface{}) bool {
 func ToBeiJingTime(t time.Time) time.Time {
 	setLocation, _ := time.LoadLocation("Asia/Shanghai")
 	return t.In(setLocation)
+}
+
+func NowTime() time.Time {
+	return ToBeiJingTime(time.Now())
 }
