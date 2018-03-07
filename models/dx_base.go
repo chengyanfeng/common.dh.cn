@@ -57,7 +57,8 @@ func (m *DxBase) query(entity interface{}) orm.QuerySeter {
 func (m *DxBase) create(entity interface{}) bool {
 	mutable := reflect.ValueOf(entity).Elem()
 	mutable.FieldByName("ObjectId").SetString(bson.NewObjectId().Hex())
-	now := time.Now()
+	loc, _ := time.LoadLocation("Asia/Shanghai")
+	now := time.Now().In(loc)
 	mutable.FieldByName("CreateTime").Set(reflect.ValueOf(now))
 	mutable.FieldByName("UpdateTime").Set(reflect.ValueOf(now))
 	_id, err := m.Orm().Insert(entity)
@@ -72,7 +73,8 @@ func (m *DxBase) create(entity interface{}) bool {
 
 func (m *DxBase) update(entity interface{}) bool {
 	mutable := reflect.ValueOf(entity).Elem()
-	now := time.Now()
+	loc, _ := time.LoadLocation("Asia/Shanghai")
+	now := time.Now().In(loc)
 	mutable.FieldByName("UpdateTime").Set(reflect.ValueOf(now))
 	_, err := m.Orm().Update(entity)
 	if err != nil {
