@@ -2,6 +2,8 @@ package utils
 
 import (
 	"reflect"
+	"time"
+
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -106,6 +108,9 @@ func ModelToP(o interface{}) P {
 				continue
 			}
 			value := s.Field(i).Interface()
+			if key == "update_time" {
+				value = ToBeiJingTime(value.(time.Time))
+			}
 			info[key] = value
 		}
 		return info
@@ -114,8 +119,8 @@ func ModelToP(o interface{}) P {
 
 func ModelToArrayP(o []*interface{}) []P {
 	var array = []P{}
-	for _,v := range o {
-		array = append(array,ModelToP(v))
+	for _, v := range o {
+		array = append(array, ModelToP(v))
 	}
 	return array
 }
