@@ -109,7 +109,8 @@ func ModelToP(o interface{}) P {
 			}
 			value := s.Field(i).Interface()
 			if key == "update_time" {
-				value = ToBeiJingTime(value.(time.Time))
+				//value = ToBeiJingTime(value.(time.Time))
+				value = value.(time.Time).Format("2006-01-02 15:04:05")
 			}
 			info[key] = value
 		}
