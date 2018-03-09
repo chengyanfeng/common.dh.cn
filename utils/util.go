@@ -330,7 +330,7 @@ func TransFunc(o string) (n string) {
 				n = JoinStr(n, " as ", as)
 			}
 		}
-	} else if StartsWith(o, `"`) && EndsWith(o, `"`) && Count(o, []string{","}) == 0 {
+	} else if StartsWith(o, `"`) && EndsWith(o, `"`) && Count(o, []string{","}) == 0 && len(o) > 1 {
 		n = o[1 : len(o)-1]
 	} else {
 		n = o
