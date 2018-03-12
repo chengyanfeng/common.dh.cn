@@ -54,7 +54,6 @@ func NowTime() time.Time {
 
 func RealTime() time.Time {
 	_time := time.Now().Format("2006-01-02 15:04:05")
-	local, _ := time.LoadLocation("Asia/Shanghai")
-	t, _ := time.ParseInLocation("2006-01-02 15:04:05", _time, local)
+	t, _ := time.Parse("2006-01-02 15:04:05", _time)
 	return t
 }
