@@ -42,7 +42,7 @@ func (c *BaseController) Prepare() {
 		"form":       utils.JsonEncode(c.FormToP()),
 		"body":       string(c.Ctx.Input.RequestBody),
 	})
-	AccessLogger.WithField("moment", time.Now().Format("2006-01-02 15:04:05")).Info("begin")
+	AccessLogger.WithField("moment", utils.RealTime()).Info("begin")
 }
 
 func (c *BaseController) Finish() {
@@ -53,7 +53,7 @@ func (c *BaseController) record() {
 	finish := time.Now()
 	nanoseconds := finish.Sub(c.Data["dh_trace"].(time.Time)).Nanoseconds()
 	milliseconds := fmt.Sprintf("%d.%d", nanoseconds/1e6, nanoseconds%1e6)
-	AccessLogger.WithField("moment", time.Now().Format("2006-01-02 15:04:05")).WithField("consume", milliseconds).Info("finish")
+	AccessLogger.WithField("moment", utils.RealTime()).WithField("consume", milliseconds).Info("finish")
 }
 
 func (c *BaseController) Echo(msg ...interface{}) {

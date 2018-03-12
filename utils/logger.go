@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/astaxie/beego"
 	"github.com/rifflock/lfshook"
@@ -46,15 +45,15 @@ func GetLogger(subject string) *logrus.Logger {
 }
 
 func Info(v ...interface{}) {
-	Logger.WithField("moment", time.Now().Format("2006-01-02 15:04:05")).Info(v)
+	Logger.WithField("moment", RealTime()).Info(v)
 }
 
 func Debug(v ...interface{}) {
-	Logger.WithField("moment", time.Now().Format("2006-01-02 15:04:05")).Debug(v)
+	Logger.WithField("moment", RealTime()).Debug(v)
 }
 
 func Error(v ...interface{}) {
-	Logger.WithField("moment", time.Now().Format("2006-01-02 15:04:05")).Error(v)
+	Logger.WithField("moment", RealTime()).Error(v)
 }
 
 func Subject(subject string, v ...interface{}) {
