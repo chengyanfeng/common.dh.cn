@@ -41,7 +41,7 @@ func (c *BaseController) Prepare() {
 }
 
 func (c *BaseController) Finish() {
-	c.record()
+	//c.record()
 }
 
 func (c *BaseController) record() {
