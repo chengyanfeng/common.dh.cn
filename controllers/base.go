@@ -60,7 +60,7 @@ func (c *BaseController) Echo(msg ...interface{}) {
 	c.Ctx.WriteString(out)
 }
 
-func (c *BaseController) EchoJson(p *utils.P) {
+func (c *BaseController) EchoJson(p utils.P) {
 	c.record()
 	c.Data["json"] = p
 	c.ServeJSON()
