@@ -31,7 +31,7 @@ func (c *BaseController) Prepare() {
 	c.Data["dh_uuid"] = uuid.New().String()
 	AccessLogger = utils.GetLogger("access").WithFields(logrus.Fields{
 		"url":        c.Ctx.Request.URL.Path,
-		"addr":       c.Ctx.Request.RemoteAddr,
+		"addr":       c.Ctx.Input.IP,
 		"uuid":       c.Data["dh_uuid"],
 		"user-agent": c.Ctx.Request.Header.Get("User-Agent"),
 		"form":       utils.JsonEncode(c.FormToP()),
