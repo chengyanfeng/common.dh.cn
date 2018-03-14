@@ -80,7 +80,7 @@ func Sha_256(sha_str string) (str string) {
 }
 
 //DES加密
-func DesEncrypt(origData, key []byte) (string, error) {
+func DesEncrypt(origData []byte, key []byte) (string, error) {
 	//UTF-8 to GBK
 	var enc mahonia.Encoder
 	enc = mahonia.NewEncoder("gbk")

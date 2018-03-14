@@ -28,21 +28,16 @@ type BaseController struct {
 
 func (c *BaseController) Prepare() {
 	c.Data["dh_trace"] = time.Now()
-	controller, action := c.GetControllerAndAction()
-	c.Logger = utils.GetLogger(controller).WithFields(logrus.Fields{
-		"action": action,
-	})
+	c.Data["dh_uuid"] = uuid.New().String()
 	AccessLogger = utils.GetLogger("access").WithFields(logrus.Fields{
 		"url":        c.Ctx.Request.URL.Path,
-		"host":       c.Ctx.Request.Host,
-		"method":     c.Ctx.Request.Method,
-		"proto":      c.Ctx.Request.Proto,
-		"uuid":       uuid.New().String(),
+		"addr":       c.Ctx.Request.RemoteAddr,
+		"uuid":       c.Data["dh_uuid"],
 		"user-agent": c.Ctx.Request.Header.Get("User-Agent"),
 		"form":       utils.JsonEncode(c.FormToP()),
 		"body":       string(c.Ctx.Input.RequestBody),
+		"begin":      c.Data["dh_trace"],
 	})
-	AccessLogger.Info("begin")
 }
 
 func (c *BaseController) Finish() {
@@ -53,7 +48,7 @@ func (c *BaseController) record() {
 	finish := time.Now()
 	nanoseconds := finish.Sub(c.Data["dh_trace"].(time.Time)).Nanoseconds()
 	milliseconds := fmt.Sprintf("%d.%d", nanoseconds/1e6, nanoseconds%1e6)
-	AccessLogger.WithField("consume", milliseconds).Info("finish")
+	AccessLogger.WithField("consume", milliseconds).WithField("finish", finish).Info("finish")
 }
 
 func (c *BaseController) Echo(msg ...interface{}) {
