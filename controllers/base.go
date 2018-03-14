@@ -283,8 +283,15 @@ func (c *BaseController) Notify(from_crop_id string, from_user_id string, user_i
 	notify.Config = utils.JsonEncode(config)
 	result := notify.Save()
 	if result {
-		utils.NotifyHandle(user_id)
+		c.NotifyHandle(user_id)
 	}
+}
+
+func (c *BaseController) NotifyHandle(uid string) {
+	go func() {
+		notify := beego.AppConfig.DefaultString("notify", "http://localhost:8001/v2/notify/receive")
+		utils.HttpPost(notify, nil, &utils.P{"uid": uid})
+	}()
 }
 
 func (c *BaseController) SaveRelation(id int64, objectId string, corpId string, userId string, relateType string, relateId string, name string, auth string) bool {
