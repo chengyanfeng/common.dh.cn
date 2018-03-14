@@ -17,7 +17,7 @@ import (
 func HttpGet(url string, header *P, param *P) (body string, e error) {
 	r, err := HttpGetBytes(url, header, param)
 	if err != nil {
-		Error(err)
+		Error("HttpGet异常:", err.Error())
 	}
 	e = err
 	body = string(r)
@@ -31,7 +31,7 @@ func HttpGetBytes(url string, header *P, param *P) (body []byte, e error) {
 func HttpPost(url string, header *P, param *P) (body string, err error) {
 	r, e := HttpDo("POST", url, header, param)
 	if e != nil {
-		Error("HttpPost", e)
+		Error("HttpPost异常:", e.Error())
 		body = e.Error()
 		err = e
 	} else {
@@ -79,6 +79,7 @@ func HttpDo(method string, httpurl string, header *P, param *P) (body []byte, er
 	}
 	resp, err := client.Do(req)
 	if err != nil {
+		Error("HttpDo异常:", err.Error())
 		return []byte(ToString(resp)), err
 	}
 	defer func() {
@@ -117,6 +118,7 @@ func HttpRequest(method string, httpurl string, param *P) (body []byte, cookies 
 	req, err = http.NewRequest(method, httpurl, strings.NewReader(vs.Encode()))
 	resp, err := client.Do(req)
 	if err != nil {
+		Error("HttpRequest异常:", err.Error())
 		return []byte(ToString(resp)), nil, err
 	}
 	defer func() {
@@ -140,6 +142,7 @@ func HttpPostBody(url string, header *P, body []byte) (string, error) {
 	}
 	resp, err := client.Do(req)
 	if err != nil {
+		Error("HttpPostBody异常:", err.Error())
 		return ToString(resp), err
 	}
 	defer func() {
@@ -200,6 +203,7 @@ func Upload(url, file string) (body []byte, err error) {
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
+		Error("Upload异常:", err.Error())
 		return []byte(ToString(res)), err
 	}
 	defer func() {
