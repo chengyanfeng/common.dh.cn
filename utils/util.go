@@ -497,7 +497,7 @@ func ReplaceWhere(p P) {
 	}
 	hasUrlParam := false
 	for k, v := range p {
-		if StartsWith(k, "$") {
+		if StartsWith(k, "__") {
 			hasUrlParam = true
 			for _, wp := range where {
 				if wp["v"] == k {
@@ -509,7 +509,7 @@ func ReplaceWhere(p P) {
 	if hasUrlParam {
 		r := []P{}
 		for _, wp := range where {
-			if !StartsWith(ToString(wp["v"]), "$") {
+			if !StartsWith(ToString(wp["v"]), "__") {
 				r = append(r, wp)
 			}
 		}
