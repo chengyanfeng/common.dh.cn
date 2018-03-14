@@ -45,15 +45,15 @@ func GetLogger(subject string) *logrus.Logger {
 }
 
 func Info(v ...interface{}) {
-	Logger.WithField("moment", RealTime()).Info(v)
+	Logger.Info(v)
 }
 
 func Debug(v ...interface{}) {
-	Logger.WithField("moment", RealTime()).Debug(v)
+	Logger.Debug(v)
 }
 
 func Error(v ...interface{}) {
-	Logger.WithField("moment", RealTime()).Error(v)
+	Logger.Error(v)
 }
 
 func Subject(subject string, v ...interface{}) {

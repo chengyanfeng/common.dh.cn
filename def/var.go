@@ -10,6 +10,7 @@ var (
 	MONGO_HOST string = ""
 	UPTIME            = time.Now().UnixNano() / int64(time.Millisecond)
 	Md5Salt    string = "Dh@)!^o5l3!%Op0"
+	DESSalt           = []byte("!@#$%^&*")
 
 	Fitting_proxy_url string = "http://jdbc.datahunter.cn/fitting"
 	Jdbc_xinghuan_url string = "http://xinghuan.jdbc.datahunter.cn/sql"

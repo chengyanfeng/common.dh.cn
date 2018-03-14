@@ -72,7 +72,6 @@ func (p *P) ToP(s ...string) (r P) {
 		v := ToString((*p)[k])
 		r = *JsonDecode([]byte(v))
 		(*p)[k] = r
-		Debug("ToP", k, (*p)[k])
 	}
 	return
 }

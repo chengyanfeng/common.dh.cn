@@ -341,7 +341,7 @@ func TransFunc(o string) (n string) {
 func Exec(cmd string, exp ...int) (str string, e error) {
 	osname := runtime.GOOS
 	var r *exec.Cmd
-	Debug("Exec:", cmd)
+	Info("Exec:", cmd)
 	if osname == "windows" {
 		r = exec.Command("cmd", "/c", cmd)
 	} else {
@@ -517,7 +517,7 @@ func ReplaceWhere(p P) {
 	} else {
 		p["where"] = JsonEncode(where)
 	}
-	Debug("ReplaceWhere", p["where"])
+	Info("ReplaceWhere", p["where"])
 }
 
 func ParseTableHead(th interface{}) []P {

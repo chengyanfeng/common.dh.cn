@@ -122,23 +122,18 @@ func Mkdir(path string) error {
 }
 
 func ExtractFile(path string, target string, ext string) {
-	err := filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
-		Debug(path)
-		//if !f.IsDir() {
+	filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
 		if strings.HasSuffix(f.Name(), ext) {
 			Copy(path, target+"/"+f.Name())
 		}
-		//}
 		return nil
 	})
-	Debug("filepath.Walk() %v\n", err)
 }
 
 func DirTree(path string, ext string, limit int) (files []P) {
 	files = []P{}
 	i := 0
 	filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
-		//Debug(path)
 		if i >= limit {
 			return errors.New("reach limit")
 		}

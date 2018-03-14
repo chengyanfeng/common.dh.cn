@@ -16,12 +16,12 @@ type Ucloud struct {
 func NewUcloud() *Ucloud {
 	cnf, err := config.NewConfig("ini", "conf/ucloud.conf")
 	if err != nil {
-		Debug("ucloud配置文件失败")
+		Error("ucloud配置文件失败")
 		return nil
 	} else {
 		config, err := cnf.GetSection("ucloud")
 		if err != nil {
-			Debug("获取ucloud配置文件失败")
+			Error("获取ucloud配置文件失败")
 			return nil
 		}
 		ucloud := new(Ucloud)

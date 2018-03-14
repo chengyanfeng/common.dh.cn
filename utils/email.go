@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"net/smtp"
+
 	"github.com/astaxie/beego"
 )
 
@@ -16,10 +17,9 @@ func Mail(to string, subject string, body string) {
 	}
 	//邮件配置
 	host := beego.AppConfig.String("mail_host")
-	port,_ := beego.AppConfig.Int("mail_port")
+	port, _ := beego.AppConfig.Int("mail_port")
 	email := beego.AppConfig.String("mail_email")
 	password := beego.AppConfig.String("mail_password")
-	//Debug("mail config:", host, port, email, password)
 	//邮件内容
 	header := P{}
 	header["From"] = "DataHunter" + "<" + email + ">"
@@ -32,9 +32,9 @@ func Mail(to string, subject string, body string) {
 		message += fmt.Sprintf("%s: %s\r\n", k, v)
 	}
 	message += "\r\n" + body
-	auth := smtp.PlainAuth("",email,password,host)
+	auth := smtp.PlainAuth("", email, password, host)
 	//发送邮件
-	err := SendMailTls(fmt.Sprintf("%s:%d", host, port),auth,email,[]string{to},[]byte(message))
+	err := SendMailTls(fmt.Sprintf("%s:%d", host, port), auth, email, []string{to}, []byte(message))
 	if err != nil {
 		Error("SendMail", err)
 	}
