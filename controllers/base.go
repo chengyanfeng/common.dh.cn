@@ -105,7 +105,14 @@ func (c *BaseController) FormToP(keys ...string) (p utils.P) {
 		for _, v := range dhref_slice {
 			v_slice := strings.Split(v, "=")
 			if len(v_slice) == 2 {
-				p[utils.ToString(v_slice[0])] = strings.TrimSpace(utils.ToString(v_slice[1]))
+				if strings.Contains(utils.ToString(v_slice[1]), "|") {
+					str := strings.TrimSpace(utils.ToString(v_slice[1]))
+					str = strings.Replace(str, "|", "','", -1)
+					str = "('" + strings.TrimSpace(str) + "')"
+					p[utils.ToString(v_slice[0])] = strings.TrimSpace(str)
+				} else {
+					p[utils.ToString(v_slice[0])] = strings.TrimSpace(utils.ToString(v_slice[1]))
+				}
 			}
 		}
 	}
