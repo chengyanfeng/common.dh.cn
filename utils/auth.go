@@ -7,8 +7,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"strconv"
@@ -16,8 +14,12 @@ import (
 	"time"
 
 	"common.dh.cn/def"
+	"github.com/astaxie/beego"
 	"github.com/henrylee2cn/mahonia"
 )
+
+var SecretPath string
+var LicensePath string
 
 type License struct {
 	Address string
@@ -40,14 +42,15 @@ func GetHostname() (host string) {
 	return host
 }
 
+func init() {
+	SecretPath = beego.AppConfig.DefaultString("Secret", "secret.key")
+	LicensePath = beego.AppConfig.DefaultString("License", "license.key")
+}
+
 func GetAuthNumber() int {
-	_, err := os.Stat("license.key")
+	license, err := GetLicense()
 	if err == nil {
-		p := map[string]interface{}{}
-		data, _ := ioutil.ReadFile("license.key")
-		json.Unmarshal([]byte(data), &p)
-		number := fmt.Sprintf("%v", p["user"])
-		return ToInt(number)
+		return license.Number
 	}
 	return 10
 }
@@ -64,10 +67,10 @@ func Etho() (str string) {
 
 //GetSecret 获取秘钥信息
 func GetSecret() (secret *Secret, err error) {
-	if !FileExists("secret.key") {
+	if !FileExists(SecretPath) {
 		return nil, errors.New("secret.key不存在")
 	}
-	data := ReadFile("secret.key")
+	data := ReadFile(SecretPath)
 	if data == "" {
 		return nil, errors.New("secret.key内容为空")
 	}
@@ -97,7 +100,7 @@ func GetSecret() (secret *Secret, err error) {
 
 //GetLicense 获取授权信息
 func GetLicense() (license *License, err error) {
-	data := ReadFile("license.key")
+	data := ReadFile(LicensePath)
 	if data == "" {
 		return nil, errors.New("license.key内容为空")
 	}
@@ -132,7 +135,7 @@ func GenerateLicense(address string) error {
 	if err != nil {
 		return errors.New("license.key生成失败")
 	}
-	err = WriteFile("license.key", []byte(encrypt))
+	err = WriteFile(LicensePath, []byte(encrypt))
 	if err != nil {
 		return errors.New("license.key生成失败")
 	}
