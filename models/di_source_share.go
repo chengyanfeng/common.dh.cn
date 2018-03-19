@@ -16,6 +16,7 @@ type DiSourceShare struct {
 	Corpid            string    `json:"corp_id"`
 	DiDatasourceId   string    `json:"di_datasource_id"`
 	Fields       string    `json:"fields"`
+	Ifshow       string    `json:"ifshow"`
 
 	CreateTime       time.Time `json:"-"`
 	UpdateTime       time.Time `json:"-"`
