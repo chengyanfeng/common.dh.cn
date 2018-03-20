@@ -12,11 +12,11 @@ type DiSourceShare struct {
 	ObjectId         string    `json:"_id"`
 	Name             string    `json:"name"`
 	Status           int       `json:"status"`
-	Auth 			string    `json:"auth"`
-	Corpid            string    `json:"corp_id"`
-	DiDatasourceId   string    `json:"di_datasource_id"`
+	UserId 			string    `json:"user_id"`
+	CorpId            string    `json:"corp_id"`
+	DatasourceId   string    `json:"datasource_id"`
 	Fields       string    `json:"fields"`
-	Ifshow       string    `json:"ifshow"`
+	IsFullShow       string    `json:"is_full_show"`
 
 	CreateTime       time.Time `json:"-"`
 	UpdateTime       time.Time `json:"-"`
@@ -27,7 +27,7 @@ func init() {
 }
 
 func (m *DiSourceShare) TableName() string {
-	return "di_source_share"
+	return "di_datasource_share"
 }
 
 func (m *DiSourceShare) Query() orm.QuerySeter {
