@@ -28,6 +28,7 @@ type DiDatasource struct {
 	Mode            int       `json:"mode"`
 	Sort            int       `json:"sort"`
 	Status          int       `json:"status"`
+	ShareFlag        int       `json:"share_flag"`
 	CreateTime      time.Time `json:"-"`
 	UpdateTime      time.Time `json:"update_time"`
 }
